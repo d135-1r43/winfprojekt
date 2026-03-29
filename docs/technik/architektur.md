@@ -11,50 +11,23 @@ Das System besteht aus mehreren spezialisierten Komponenten, die als Container b
 ```mermaid
 graph TD
     Browser(["Browser / Client"])
+    NGINX["NGINX\nReverse Proxy"]
+    UI["React\nSingle Page App"]
+    MS["Microservices\nQuarkus"]
+    CIB["CIB seven\nProcess Engine"]
+    Keycloak["Keycloak\nOIDC Provider"]
 
     Browser -->|HTTPS| NGINX
+    NGINX --> UI
+    NGINX --> MS
+    NGINX --> CIB
+    NGINX --> Keycloak
 
-    subgraph Infrastruktur
-        NGINX["NGINX\nReverse Proxy"]
-    end
-
-    subgraph Authentifizierung
-        Keycloak["Keycloak\nOIDC Provider"]
-    end
-
-    subgraph Frontend
-        UI["React\nSingle Page App"]
-    end
-
-    subgraph Prozessautomatisierung
-        CIB["CIB seven\nProcess Engine\n(Camunda-Fork)"]
-    end
-
-    subgraph Microservices["Microservices (Quarkus)"]
-        MS1["Microservice A"]
-        MS2["Microservice B"]
-        MS3["Microservice C"]
-    end
-
-    NGINX -->|Routing| UI
-    NGINX -->|Routing| CIB
-    NGINX -->|Routing| MS1
-    NGINX -->|Routing| MS2
-    NGINX -->|Routing| MS3
-    NGINX -->|Routing| Keycloak
-
-    UI -->|REST-Aufrufe| MS1
-    UI -->|REST-Aufrufe| MS2
-    UI -->|REST-Aufrufe| MS3
+    UI -->|REST| MS
     UI -->|Login / Token| Keycloak
 
-    MS1 <-->|REST / Events| CIB
-    MS2 <-->|REST / Events| CIB
-    MS3 <-->|REST / Events| CIB
-
-    MS1 -->|Token-Validierung| Keycloak
-    MS2 -->|Token-Validierung| Keycloak
-    MS3 -->|Token-Validierung| Keycloak
+    MS <-->|REST / Events| CIB
+    MS -->|Token-Validierung| Keycloak
     CIB -->|Token-Validierung| Keycloak
 ```
 
