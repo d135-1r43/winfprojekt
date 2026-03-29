@@ -1,0 +1,90 @@
+---
+sidebar_position: 1
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+# Entwicklungsumgebung einrichten
+
+Für die Mitarbeit am Projekt werden Java 21, Docker, Maven und eine IDE benötigt.
+
+## Java 21
+
+Als JDK-Distribution empfehlen wir [Eclipse Temurin 21](https://adoptium.net/) (OpenJDK, kostenlos, von der Adoptium-Community gepflegt).
+
+<Tabs groupId="os">
+  <TabItem value="mac" label="macOS">
+    Mit [Homebrew](https://brew.sh/):
+    ```bash
+    brew install --cask temurin@21
+    ```
+    Installation prüfen:
+    ```bash
+    java -version
+    ```
+  </TabItem>
+  <TabItem value="win" label="Windows">
+    Mit [winget](https://learn.microsoft.com/de-de/windows/package-manager/winget/):
+    ```powershell
+    winget install EclipseAdoptium.Temurin.21.JDK
+    ```
+    Danach ein neues Terminal öffnen und prüfen:
+    ```powershell
+    java -version
+    ```
+    Alternativ den Installer direkt von [adoptium.net](https://adoptium.net/) herunterladen — dieser setzt `JAVA_HOME` und den `PATH` automatisch.
+  </TabItem>
+</Tabs>
+
+## Docker
+
+[Docker Desktop](https://www.docker.com/products/docker-desktop/) stellt sowohl die Docker Engine als auch Docker Compose bereit.
+
+<Tabs groupId="os">
+  <TabItem value="mac" label="macOS">
+    ```bash
+    brew install --cask docker
+    ```
+    Anschließend Docker Desktop aus dem Launchpad starten. Docker läuft im Hintergrund als Menüleisten-App.
+  </TabItem>
+  <TabItem value="win" label="Windows">
+    Installer von [docker.com/products/docker-desktop](https://www.docker.com/products/docker-desktop/) herunterladen und ausführen.
+
+    Docker Desktop benötigt unter Windows das **WSL 2**-Backend (wird beim Setup automatisch eingerichtet, sofern noch nicht vorhanden).
+  </TabItem>
+</Tabs>
+
+Installation prüfen:
+```bash
+docker run hello-world
+```
+
+## Maven
+
+<Tabs groupId="os">
+  <TabItem value="mac" label="macOS">
+    ```bash
+    brew install maven
+    ```
+  </TabItem>
+  <TabItem value="win" label="Windows">
+    ```powershell
+    winget install Apache.Maven
+    ```
+    Danach ein neues Terminal öffnen. Alternativ den manuellen Installationsweg über [maven.apache.org](https://maven.apache.org/download.cgi) mit anschließendem Setzen der Umgebungsvariablen `MAVEN_HOME` und `PATH`.
+  </TabItem>
+</Tabs>
+
+Installation prüfen:
+```bash
+mvn -version
+```
+
+## IDE: IntelliJ IDEA
+
+Wir empfehlen [IntelliJ IDEA](https://www.jetbrains.com/idea/) als Entwicklungsumgebung. Die **Community Edition** ist kostenlos und für dieses Projekt ausreichend.
+
+IntelliJ erkennt Maven-Projekte automatisch beim Öffnen und bringt ein integriertes Terminal, Git-Unterstützung und Debugger für Spring Boot mit. Das JDK kann direkt in IntelliJ unter **File → Project Structure → SDK** verwaltet werden.
+
+Als Studierende der THI besteht Anspruch auf die **Ultimate Edition** kostenlos über das [JetBrains Student Program](https://www.jetbrains.com/community/education/#students).
