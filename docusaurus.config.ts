@@ -5,8 +5,8 @@ import type * as Preset from '@docusaurus/preset-classic';
 // This runs in Node.js - Don't use client-side code here (browser APIs, JSX...)
 
 const config: Config = {
-  title: 'WInf Projekt – THI',
-  tagline: 'Dokumentation für Studierende',
+  title: 'WInf Projekt Markus Herhoffer',
+  tagline: 'Dokumentation für Studierende BA/MA der Technischen Hochschule Ingolstadt',
   favicon: 'img/favicon.ico',
 
   future: {
@@ -111,7 +111,7 @@ const config: Config = {
           ],
         },
       ],
-      copyright: `© ${new Date().getFullYear()} Technische Hochschule Ingolstadt`,
+      copyright: `© ${new Date().getFullYear()} <a href="https://herhoffer.net" target="_blank" rel="noopener noreferrer">Markus Herhoffer</a>`,
     },
     prism: {
       theme: prismThemes.github,
