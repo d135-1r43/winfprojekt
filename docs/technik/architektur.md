@@ -22,6 +22,10 @@ graph TD
         Keycloak["Keycloak\nOIDC Provider"]
     end
 
+    subgraph Frontend
+        UI["React\nSingle Page App"]
+    end
+
     subgraph Prozessautomatisierung
         CIB["CIB seven\nProcess Engine\n(Camunda-Fork)"]
     end
@@ -32,11 +36,17 @@ graph TD
         MS3["Microservice C"]
     end
 
+    NGINX -->|Routing| UI
     NGINX -->|Routing| CIB
     NGINX -->|Routing| MS1
     NGINX -->|Routing| MS2
     NGINX -->|Routing| MS3
     NGINX -->|Routing| Keycloak
+
+    UI -->|REST-Aufrufe| MS1
+    UI -->|REST-Aufrufe| MS2
+    UI -->|REST-Aufrufe| MS3
+    UI -->|Login / Token| Keycloak
 
     MS1 <-->|REST / Events| CIB
     MS2 <-->|REST / Events| CIB
@@ -53,6 +63,10 @@ graph TD
 ### [NGINX](https://nginxproxymanager.com/) Reverse Proxy
 
 NGINX ist der einzige öffentlich erreichbare Endpunkt. Er nimmt alle eingehenden HTTPS-Anfragen entgegen und leitet sie anhand von Pfad- oder Subdomain-Regeln an den zuständigen Container weiter. Dadurch sind die internen Dienste nicht direkt exponiert.
+
+### [React](https://react.dev/) Frontend
+
+Die Benutzeroberfläche ist eine Single Page Application auf Basis von React. Sie kommuniziert ausschließlich über die REST-APIs der Microservices mit dem Backend. Die Authentifizierung läuft über Keycloak: Nach dem Login speichert die App das JWT und schickt es bei jedem API-Aufruf als Bearer-Token mit.
 
 ### [Keycloak](https://www.keycloak.org/) OIDC Provider
 
