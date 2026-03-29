@@ -7,7 +7,7 @@ import type * as Preset from '@docusaurus/preset-classic';
 const config: Config = {
   title: 'WInf Projekt Markus Herhoffer',
   tagline: 'Dokumentation für Studierende BA/MA der Technischen Hochschule Ingolstadt',
-  favicon: 'img/favicon.ico',
+  favicon: 'img/code-parakeet.svg',
 
   future: {
     v4: true,
@@ -57,8 +57,8 @@ const config: Config = {
     navbar: {
       title: 'WInf Projekt',
       logo: {
-        alt: 'THI Logo',
-        src: 'img/logo.svg',
+        alt: 'Code Parakeet',
+        src: 'img/code-parakeet.svg',
       },
       items: [
         {
