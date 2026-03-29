@@ -13,8 +13,8 @@ const config: Config = {
     v4: true,
   },
 
-  url: 'https://d135-1r43.github.io',
-  baseUrl: '/winfprojekt/',
+  url: 'https://winfprojekt.de',
+  baseUrl: '/',
 
   organizationName: 'd135-1r43',
   projectName: 'winfprojekt',
