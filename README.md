@@ -1,21 +1,8 @@
 # WInf Projekt – Dokumentation
 
-Projektdokumentation für Studierende der Technischen Hochschule Ingolstadt, bereitgestellt von [Markus Herhoffer](https://herhoffer.net).
+Projektdokumentation für Studierende der Technischen Hochschule Ingolstadt, bereitgestellt von [Markus Herhoffer](https://herhoffer.net). Erreichbar unter **[winfprojekt.de](https://winfprojekt.de)**.
 
-Erreichbar unter **[winfprojekt.de](https://winfprojekt.de)**.
-
-## Inhalt
-
-Die Dokumentation ist in zwei Bereiche gegliedert:
-
-**Methodik** — Agiles Arbeiten mit Scrum: Sprints, Rollen, Sprint Planning, Review und Retrospektive nach den 5 Phasen (Derby & Larsen). Der Dozent übernimmt die Rolle des Product Owners, der Scrum Master rotiert jeden Sprint unter den Studierenden.
-
-**Technik** — Systemarchitektur und eingesetzte Technologien:
-- React Single Page App als Frontend
-- Quarkus Microservices als Backend
-- CIB seven (Camunda-Fork) als Process Engine
-- Keycloak als OIDC Provider
-- NGINX Proxy Manager als Reverse Proxy
+Die Seite ist mit [Docusaurus](https://docusaurus.io/) gebaut. Korrekturen und Ergänzungen sind willkommen — einfach einen Pull Request öffnen.
 
 ## Lokale Entwicklung
 
