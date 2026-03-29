@@ -1,41 +1,61 @@
-# Website
+# WInf Projekt – Dokumentation
 
-This website is built using [Docusaurus](https://docusaurus.io/), a modern static website generator.
+Projektdokumentation für Studierende der Technischen Hochschule Ingolstadt, bereitgestellt von [Markus Herhoffer](https://herhoffer.net).
 
-## Installation
+Erreichbar unter **[winfprojekt.de](https://winfprojekt.de)**.
+
+## Inhalt
+
+Die Dokumentation ist in zwei Bereiche gegliedert:
+
+**Methodik** — Agiles Arbeiten mit Scrum: Sprints, Rollen, Sprint Planning, Review und Retrospektive nach den 5 Phasen (Derby & Larsen). Der Dozent übernimmt die Rolle des Product Owners, der Scrum Master rotiert jeden Sprint unter den Studierenden.
+
+**Technik** — Systemarchitektur und eingesetzte Technologien:
+- React Single Page App als Frontend
+- Quarkus Microservices als Backend
+- CIB seven (Camunda-Fork) als Process Engine
+- Keycloak als OIDC Provider
+- NGINX Proxy Manager als Reverse Proxy
+
+## Lokale Entwicklung
 
 ```bash
-yarn
+npm install
+npm start        # Dev-Server auf http://localhost:3000
+npm run build    # Produktions-Build nach /build
+npm run serve    # Build lokal ausliefern
+npx tsc --noEmit # Typprüfung
 ```
 
-## Local Development
-
-```bash
-yarn start
-```
-
-This command starts a local development server and opens up a browser window. Most changes are reflected live without having to restart the server.
-
-## Build
-
-```bash
-yarn build
-```
-
-This command generates static content into the `build` directory and can be served using any static contents hosting service.
+Die Suche (`@easyops-cn/docusaurus-search-local`) funktioniert nur im Production Build, nicht im Dev-Server.
 
 ## Deployment
 
-Using SSH:
+Ein Push auf `main` oder ein `v*`-Tag löst die GitHub Action aus:
 
-```bash
-USE_SSH=true yarn deploy
+1. Docker-Image bauen (`node:20-alpine` + `nginx:alpine`)
+2. Image nach `ghcr.io/d135-1r43/winfprojekt` pushen
+3. Portainer-Webhook aufrufen → automatisches Redeployment
+
+Das Secret `PORTAINER_WEBHOOK_URL` muss in den GitHub Repository Secrets hinterlegt sein.
+
+### Docker Compose (Portainer)
+
+```yaml
+services:
+  winfprojekt:
+    image: ghcr.io/d135-1r43/winfprojekt:main
+    restart: unless-stopped
+    networks:
+      - npm_default
+
+networks:
+  npm_default:
+    external: true
 ```
 
-Not using SSH:
+## Neue Inhalte hinzufügen
 
-```bash
-GIT_USER=<Your GitHub username> yarn deploy
-```
-
-If you are using GitHub pages for hosting, this command is a convenient way to build the website and push to the `gh-pages` branch.
+- Seiten in `docs/methodik/` oder `docs/technik/` als `.md` oder `.mdx` ablegen
+- Die Sidebar wird automatisch aus der Verzeichnisstruktur generiert
+- `sidebar_position` im Frontmatter steuert die Reihenfolge
