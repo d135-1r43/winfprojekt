@@ -6,6 +6,10 @@ sidebar_position: 4
 
 Niemand arbeitet direkt auf `main`. Stattdessen bekommt jedes Feature oder jeder Bugfix einen eigenen Branch — eine isolierte Arbeitskopie, die erst nach Review in `main` landet.
 
+:::warning Kein Fork
+Wir arbeiten **nicht** mit Forks. Das Repository wird einmalig geklont, alle Branches werden direkt im gemeinsamen Repository erstellt und gepusht. Pull Requests entstehen aus Branches, nicht aus Forks.
+:::
+
 ## Ein Feature entwickeln
 
 Der Ausgangspunkt ist immer ein GitHub Issue. Daraus entsteht ein Branch, auf dem die Änderung entwickelt wird. Ist die Arbeit fertig, wird ein Pull Request geöffnet, der den Dozenten zum Review einlädt. Nach dem Review wird der PR gemerged oder rebased — je nachdem, was die sauberere Historie ergibt.
