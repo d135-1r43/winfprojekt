@@ -10,7 +10,7 @@ sidebar_position: 3
 
 ## Prozesse entwickeln
 
-Für die lokale Entwicklung läuft CIB seven als Docker-Container. Prozesse werden mit dem Camunda Modeler als BPMN-Diagramme modelliert und direkt in die lokale Engine deployed.
+Für die lokale Entwicklung läuft CIB seven als Docker-Container. Prozesse werden mit dem Camunda Modeler als BPMN-Diagramme modelliert und direkt in die lokale Engine deployed. Eine schrittweise Einführung bietet die offizielle [Quick-Start-Dokumentation](https://docs.cibseven.org/get-started/quick-start/deploy/).
 
 ### Setup
 
