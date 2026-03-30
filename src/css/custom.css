@@ -47,6 +47,14 @@
   color: #ffffff;
 }
 
+/* Footer ist immer dark-styled, unabhängig vom Theme */
+.footer--dark {
+  --ifm-footer-link-color: #ffffff;
+  --ifm-footer-link-hover-color: #ffd0e0;
+  --ifm-footer-color: #c8bce0;
+  --ifm-footer-title-color: #ffffff;
+}
+
 [data-theme='dark'] {
   /* Primary: Light Lavender (lesbar auf dunklem Hintergrund) */
   --ifm-color-primary:          #b0a0d0;
