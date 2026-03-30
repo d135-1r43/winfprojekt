@@ -95,34 +95,38 @@ const config: Config = {
       style: 'dark',
       links: [
         {
-          title: 'Methodik',
+          title: 'Markus Herhoffer',
           items: [
             {
-              label: 'Übersicht',
-              to: '/docs/methodik',
+              label: 'herhoffer.net',
+              href: 'https://herhoffer.net',
             },
-          ],
-        },
-        {
-          title: 'Technik',
-          items: [
-            {
-              label: 'Übersicht',
-              to: '/docs/technik',
-            },
-          ],
-        },
-        {
-          title: 'Links',
-          items: [
             {
               label: 'GitHub',
+              href: 'https://github.com/d135-1r43',
+            },
+          ],
+        },
+        {
+          title: 'Hochschule',
+          items: [
+            {
+              label: 'Technische Hochschule Ingolstadt',
+              href: 'https://www.thi.de',
+            },
+          ],
+        },
+        {
+          title: 'Projekt',
+          items: [
+            {
+              label: 'GitHub Repository',
               href: 'https://github.com/d135-1r43/winfprojekt',
             },
           ],
         },
       ],
-      copyright: `© ${new Date().getFullYear()} <a href="https://herhoffer.net" target="_blank" rel="noopener noreferrer">Markus Herhoffer</a>`,
+      copyright: `<img src="https://herhoffer.net/assets/images/profile.jpg" alt="Markus Herhoffer" style="width:40px;height:40px;border-radius:50%;vertical-align:middle;margin-right:10px;" /> © ${new Date().getFullYear()} <a href="https://herhoffer.net" target="_blank" rel="noopener noreferrer">Markus Herhoffer</a>`,
     },
     prism: {
       theme: prismThemes.github,
