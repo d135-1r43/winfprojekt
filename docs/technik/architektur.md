@@ -11,7 +11,7 @@ Das System besteht aus mehreren spezialisierten Komponenten, die als Container b
 ```mermaid
 graph TD
     Browser(["Browser / Client"])
-    NGINX["NGINX\nReverse Proxy"]
+    NGINX["NGINX Proxy Manager\nReverse Proxy"]
     UI["React\nSingle Page App"]
     MS["Microservices\nQuarkus"]
     CIB["CIB seven\nProcess Engine"]
@@ -33,9 +33,11 @@ graph TD
 
 ## Komponenten
 
-### [NGINX](https://nginxproxymanager.com/) Reverse Proxy
+### [NGINX Proxy Manager](https://nginxproxymanager.com/) Reverse Proxy
 
-NGINX ist der einzige öffentlich erreichbare Endpunkt. Er nimmt alle eingehenden HTTPS-Anfragen entgegen und leitet sie anhand von Pfad- oder Subdomain-Regeln an den zuständigen Container weiter. Dadurch sind die internen Dienste nicht direkt exponiert.
+Der NGINX Proxy Manager ist der einzige öffentlich erreichbare Endpunkt. Er nimmt alle eingehenden HTTPS-Anfragen entgegen und leitet sie anhand von Subdomain-Regeln an den zuständigen Container weiter. Dadurch sind die internen Dienste nicht direkt exponiert. Die Konfiguration der Proxy-Hosts, SSL-Zertifikate (Let's Encrypt) und Weiterleitungen erfolgt über eine Weboberfläche — ohne manuelle nginx-Konfigurationsdateien.
+
+![NGINX Proxy Manager – Proxy-Hosts Übersicht](/img/screenshots/nginx-proxy-manager.png)
 
 ### [React](https://react.dev/) Frontend
 
@@ -44,6 +46,8 @@ Die Benutzeroberfläche ist eine Single Page Application auf Basis von React. Si
 ### [Keycloak](https://www.keycloak.org/) OIDC Provider
 
 Keycloak übernimmt die zentrale Authentifizierung und Autorisierung nach dem OpenID-Connect-Standard. Nach erfolgreichem Login erhält der Client ein JWT, das bei jedem API-Aufruf mitgeschickt wird. Alle Microservices und CIB seven validieren dieses Token direkt gegen Keycloak.
+
+![Keycloak – Benutzerverwaltung](/img/screenshots/keycloak.png)
 
 ### [CIB seven](https://cibseven.org/en/) Process Engine
 
