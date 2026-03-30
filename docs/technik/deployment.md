@@ -26,6 +26,80 @@ Das Image wird mit zwei Tags versehen:
 
 Für Releases empfiehlt sich ein Git-Tag mit `v`-Präfix (z. B. `v1.2.0`), der dann als Semver-Tag im GHCR landet.
 
+### Beispiel: GitHub Action für Quarkus/Maven
+
+Die Workflow-Datei liegt unter `.github/workflows/docker.yml` im Repository:
+
+```yaml
+name: Build and Push Docker Image
+
+on:
+  push:
+    branches:
+      - main
+    tags:
+      - 'v*'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: maven
+
+      - name: Build with Maven
+        run: mvn -B package -DskipTests
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ghcr.io/${{ github.repository }}
+          tags: |
+            type=ref,event=branch
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=sha,prefix=sha-
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+```
+
+Das dazugehörige `Dockerfile` nutzt den Maven-Build-Output aus dem vorherigen Schritt:
+
+```dockerfile
+FROM registry.access.redhat.com/ubi9/openjdk-21:latest
+COPY target/quarkus-app/lib/ /deployments/lib/
+COPY target/quarkus-app/*.jar /deployments/
+COPY target/quarkus-app/app/ /deployments/app/
+COPY target/quarkus-app/quarkus/ /deployments/quarkus/
+EXPOSE 8080
+CMD ["java", "-jar", "/deployments/quarkus-run.jar"]
+```
+
 ## Portainer und Docker Compose
 
 Portainer verwaltet die laufenden Container. Die Konfiguration liegt als `docker-compose.yml` im Git-Repository des jeweiligen Services. Portainer liest diese Datei und startet die Container entsprechend.
