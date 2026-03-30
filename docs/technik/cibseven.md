@@ -59,12 +59,4 @@ Die CI/CD-Pipeline baut daraufhin automatisch ein Docker-Image und veröffentlic
 
 ### Versionierung
 
-Es gilt [Semantic Versioning](./semver):
-
-| Teil | Bedeutung |
-|---|---|
-| `MAJOR` | Inkompatible Änderungen am Prozessmodell (z. B. entfernte Tasks) |
-| `MINOR` | Neue Elemente, die abwärtskompatibel sind |
-| `PATCH` | Bugfixes ohne Modelländerung |
-
-Laufende Instanzen einer alten Version werden nicht automatisch migriert; bei Breaking Changes muss eine Migrationsstrategie mitgedacht werden.
+Für die zentrale Process Engine verwenden wir auch [Semantic Versioning](./semver). 
