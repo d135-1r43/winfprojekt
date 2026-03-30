@@ -55,6 +55,14 @@
   --ifm-footer-title-color: #ffffff;
 }
 
+.footer__copyright a {
+  color: #ffffff;
+}
+
+.footer__copyright a:hover {
+  color: #ffd0e0;
+}
+
 [data-theme='dark'] {
   /* Primary: Light Lavender (lesbar auf dunklem Hintergrund) */
   --ifm-color-primary:          #b0a0d0;
