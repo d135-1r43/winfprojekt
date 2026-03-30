@@ -7,7 +7,7 @@ import TabItem from '@theme/TabItem';
 
 # Entwicklungsumgebung einrichten
 
-Für die Mitarbeit am Projekt werden Java 21, Docker, Maven und eine IDE benötigt.
+Für die Mitarbeit am Projekt werden Java 21, Node.js, Docker, Maven und eine IDE benötigt.
 
 ## Java 21
 
@@ -34,6 +34,33 @@ Als JDK-Distribution empfehlen wir [Eclipse Temurin 21](https://adoptium.net/) (
     java -version
     ```
     Alternativ den Installer direkt von [adoptium.net](https://adoptium.net/) herunterladen; dieser setzt `JAVA_HOME` und den `PATH` automatisch.
+  </TabItem>
+</Tabs>
+
+## Node.js
+
+Für das React-Frontend wird [Node.js](https://nodejs.org/) in der LTS-Version benötigt.
+
+<Tabs groupId="os">
+  <TabItem value="mac" label="macOS">
+    ```bash
+    brew install node
+    ```
+    Installation prüfen:
+    ```bash
+    node -v
+    npm -v
+    ```
+  </TabItem>
+  <TabItem value="win" label="Windows">
+    ```powershell
+    winget install OpenJS.NodeJS.LTS
+    ```
+    Danach ein neues Terminal öffnen und prüfen:
+    ```powershell
+    node -v
+    npm -v
+    ```
   </TabItem>
 </Tabs>
 
