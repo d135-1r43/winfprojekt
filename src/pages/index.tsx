@@ -55,19 +55,6 @@ export default function Home(): ReactNode {
             to="/docs/technik"
           />
         </div>
-        <div className={clsx('container', styles.author)}>
-          <a href="https://herhoffer.net" target="_blank" rel="noopener noreferrer" className={styles.authorLink}>
-            <img
-              src="https://herhoffer.net/assets/images/profile.jpg"
-              alt="Markus Herhoffer"
-              className={styles.authorAvatar}
-            />
-            <div>
-              <div className={styles.authorName}>Markus Herhoffer</div>
-              <div className={styles.authorMeta}>Gastdozent THI · CTO <a href="https://explore.de" target="_blank" rel="noopener noreferrer">explore.de</a></div>
-            </div>
-          </a>
-        </div>
       </main>
     </Layout>
   );
