@@ -105,6 +105,10 @@ const config: Config = {
               label: 'GitHub',
               href: 'https://github.com/d135-1r43',
             },
+            {
+              label: 'explore.de',
+              href: 'https://explore.de',
+            },
           ],
         },
         {
