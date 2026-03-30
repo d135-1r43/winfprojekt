@@ -39,7 +39,7 @@ Prozesse werden mit dem [Camunda Modeler](https://camunda.com/download/modeler/)
 
 ## Prozesse releasen
 
-Wenn ein Prozess lokal stabil ist, wird er in einen dedizierten Spring-Boot-Service überführt. Dafür steht [d135-1r43/cibseven-template](https://github.com/d135-1r43/cibseven-template) als **Template-Repository** bereit. Es wird **nicht direkt verwendet** — jeder Prozess bekommt ein eigenes Repository, das vom Template geforkt oder kopiert wird. Das Template enthält CIB seven, Keycloak-Anbindung, Dockerfile und CI/CD-Pipeline bereits vorkonfiguriert.
+Wenn ein Prozess lokal stabil ist, wird die fertige `.bpmn`-Datei in die zentrale Process Engine eingespielt. Alle Prozesse laufen gemeinsam in einer gemeinsam genutzten CIB-seven-Instanz. Für den Deployment-Prozess steht [d135-1r43/cibseven-template](https://github.com/d135-1r43/cibseven-template) als **Template-Repository** bereit.
 
 1. Die fertige `.bpmn`-Datei nach `src/main/resources/` kopieren.
 2. Den Service lokal bauen und testen:
@@ -66,4 +66,4 @@ Es gilt [Semantic Versioning](./semver):
 | `MINOR` | Neue Elemente, die abwärtskompatibel sind |
 | `PATCH` | Bugfixes ohne Modelländerung |
 
-Laufende Instanzen einer alten Version werden nicht automatisch migriert — bei Breaking Changes muss eine Migrationsstrategie mitgedacht werden.
+Laufende Instanzen einer alten Version werden nicht automatisch migriert; bei Breaking Changes muss eine Migrationsstrategie mitgedacht werden.

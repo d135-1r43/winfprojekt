@@ -8,7 +8,7 @@ Das Projekt wird als **Monorepo** auf GitHub verwaltet. Alle Services, die Porta
 
 ## Was ist ein Monorepo?
 
-Ein Monorepo ist ein einzelnes Git-Repository, das mehrere unabhängige Komponenten oder Services enthält — im Gegensatz zum **Polyrepo-Ansatz**, bei dem jeder Service ein eigenes Repository bekommt.
+Ein Monorepo ist ein einzelnes Git-Repository, das mehrere unabhängige Komponenten oder Services enthält, im Gegensatz zum **Polyrepo-Ansatz**, bei dem jeder Service ein eigenes Repository bekommt.
 
 | | Monorepo | Polyrepo |
 |---|---|---|
@@ -34,7 +34,7 @@ Im Projektkontext überwiegen die Vorteile: Änderungen, die mehrere Services be
 └── ...
 ```
 
-Jeder Service lebt in einem eigenen Unterordner mit eigenem `Dockerfile`, `docker-compose.yml` und GitHub Action. Der Ordner `portainer/` enthält die Compose-Dateien, die Portainer direkt aus dem Repository liest — wie das Deployment funktioniert ist auf der [Deployment-Seite](./deployment) beschrieben.
+Jeder Service lebt in einem eigenen Unterordner mit eigenem `Dockerfile`, `docker-compose.yml` und GitHub Action. Der Ordner `portainer/` enthält die Compose-Dateien, die Portainer direkt aus dem Repository liest; wie das Deployment funktioniert ist auf der [Deployment-Seite](./deployment) beschrieben.
 
 ## Pull Requests
 
@@ -46,7 +46,7 @@ Neue Features und Bugfixes werden nicht direkt auf `main` gepusht, sondern über
 
 ## GitHub Actions
 
-Die CI/CD-Pipeline läuft sowohl auf `main` als auch auf **Pull Requests** — jedoch mit einem Unterschied:
+Die CI/CD-Pipeline läuft sowohl auf `main` als auch auf **Pull Requests**, jedoch mit einem Unterschied:
 
 | Ereignis | Build | Tests | Docker-Image pushen |
 |----------|-------|-------|---------------------|

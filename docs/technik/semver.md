@@ -10,13 +10,13 @@ sidebar_position: 10
 
 | Teil | Hochzählen wenn... |
 |---|---|
-| `MAJOR` | inkompatible Änderungen — bestehende Nutzer müssen etwas anpassen |
+| `MAJOR` | inkompatible Änderungen; bestehende Nutzer müssen etwas anpassen |
 | `MINOR` | neue Funktionalität, die abwärtskompatibel ist |
 | `PATCH` | Bugfixes ohne Änderung der Schnittstelle |
 
 ## Regeln
 
-- Vor dem ersten stabilen Release gilt `0.x.y` — breaking changes sind dort auch in Minor-Versionen erlaubt.
+- Vor dem ersten stabilen Release gilt `0.x.y`; breaking changes sind dort auch in Minor-Versionen erlaubt.
 - Eine veröffentlichte Version darf nicht nachträglich verändert werden. Fehler werden als neue `PATCH`-Version korrigiert.
 - Pre-Release-Versionen werden mit einem Suffix gekennzeichnet, z. B. `1.0.0-alpha`, `1.0.0-rc.1`.
 

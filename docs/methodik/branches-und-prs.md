@@ -4,7 +4,7 @@ sidebar_position: 4
 
 # Branches und Pull Requests
 
-Niemand arbeitet direkt auf `main`. Stattdessen bekommt jedes Feature oder jeder Bugfix einen eigenen Branch — eine isolierte Arbeitskopie, die erst nach Review in `main` landet.
+Niemand arbeitet direkt auf `main`. Stattdessen bekommt jedes Feature oder jeder Bugfix einen eigenen Branch, eine isolierte Arbeitskopie, die erst nach Review in `main` landet.
 
 :::warning Kein Fork
 Wir arbeiten **nicht** mit Forks. Das Repository wird einmalig geklont, alle Branches werden direkt im gemeinsamen Repository erstellt und gepusht. Pull Requests entstehen aus Branches, nicht aus Forks.
@@ -12,7 +12,7 @@ Wir arbeiten **nicht** mit Forks. Das Repository wird einmalig geklont, alle Bra
 
 ## Ein Feature entwickeln
 
-Der Ausgangspunkt ist immer ein GitHub Issue. Daraus entsteht ein Branch, auf dem die Änderung entwickelt wird. Ist die Arbeit fertig, wird ein Pull Request geöffnet, der den Dozenten zum Review einlädt. Nach dem Review wird der PR gemerged oder rebased — je nachdem, was die sauberere Historie ergibt.
+Der Ausgangspunkt ist immer ein GitHub Issue. Daraus entsteht ein Branch, auf dem die Änderung entwickelt wird. Ist die Arbeit fertig, wird ein Pull Request geöffnet, der den Dozenten zum Review einlädt. Nach dem Review wird der PR gemerged oder rebased, je nachdem, was die sauberere Historie ergibt.
 
 **Ablauf:**
 
@@ -24,7 +24,7 @@ Der Ausgangspunkt ist immer ein GitHub Issue. Daraus entsteht ein Branch, auf de
 
 ## Merge vs. Rebase
 
-Beide Strategien bringen die Änderungen eines Branches in `main` — aber sie hinterlassen unterschiedliche Historien.
+Beide Strategien bringen die Änderungen eines Branches in `main`, aber sie hinterlassen unterschiedliche Historien.
 
 ### Merge
 
@@ -43,7 +43,7 @@ gitGraph
    merge feature/login id: "Merge PR #12"
 ```
 
-Sinnvoll, wenn die Entwicklung auf dem Branch als zusammenhängende Einheit sichtbar bleiben soll — z. B. bei größeren Features mit mehreren Commits, die gemeinsam nachvollziehbar sein sollen.
+Sinnvoll, wenn die Entwicklung auf dem Branch als zusammenhängende Einheit sichtbar bleiben soll, z. B. bei größeren Features mit mehreren Commits, die gemeinsam nachvollziehbar sein sollen.
 
 ### Rebase
 
@@ -71,7 +71,7 @@ Sinnvoll bei kleinen, sauberen Branches mit wenigen Commits, die thematisch zusa
 
 ## Änderungen von Kollegen holen
 
-Während man am eigenen Branch arbeitet, entwickelt sich `main` weiter. Damit der eigene Branch nicht zu weit abweicht, holt man sich regelmäßig den aktuellen Stand — ebenfalls per Merge oder Rebase.
+Während man am eigenen Branch arbeitet, entwickelt sich `main` weiter. Damit der eigene Branch nicht zu weit abweicht, holt man sich regelmäßig den aktuellen Stand, ebenfalls per Merge oder Rebase.
 
 ```mermaid
 gitGraph
@@ -107,6 +107,6 @@ Beim Rebase werden die eigenen Commits auf die Spitze von `main` umgeschrieben. 
 
 ## Warum nicht direkt auf main?
 
-- `main` ist immer deploybar — fehlerhafte Stände kommen nicht rein
+- `main` ist immer deploybar, fehlerhafte Stände kommen nicht rein
 - Änderungen werden reviewed, bevor sie für alle sichtbar sind
 - Paralleles Arbeiten ist möglich, ohne sich gegenseitig zu blockieren

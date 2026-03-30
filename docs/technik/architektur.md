@@ -35,7 +35,7 @@ graph TD
 
 ### [NGINX Proxy Manager](https://nginxproxymanager.com/) Reverse Proxy
 
-Der NGINX Proxy Manager ist der einzige öffentlich erreichbare Endpunkt. Er nimmt alle eingehenden HTTPS-Anfragen entgegen und leitet sie anhand von Subdomain-Regeln an den zuständigen Container weiter. Dadurch sind die internen Dienste nicht direkt exponiert. Die Konfiguration der Proxy-Hosts, SSL-Zertifikate (Let's Encrypt) und Weiterleitungen erfolgt über eine Weboberfläche — ohne manuelle nginx-Konfigurationsdateien.
+Der NGINX Proxy Manager ist der einzige öffentlich erreichbare Endpunkt. Er nimmt alle eingehenden HTTPS-Anfragen entgegen und leitet sie anhand von Subdomain-Regeln an den zuständigen Container weiter. Dadurch sind die internen Dienste nicht direkt exponiert. Die Konfiguration der Proxy-Hosts, SSL-Zertifikate (Let's Encrypt) und Weiterleitungen erfolgt über eine Weboberfläche, ohne manuelle nginx-Konfigurationsdateien.
 
 ![NGINX Proxy Manager – Proxy-Hosts Übersicht](/img/screenshots/nginx-proxy-manager.png)
 

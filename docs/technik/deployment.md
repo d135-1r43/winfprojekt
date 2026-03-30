@@ -117,7 +117,7 @@ Danach zieht Portainer das neue Image und startet den Container neu. Der Schritt
 
 ## Stack in Portainer einrichten
 
-Ein neuer Service wird in Portainer als **Repository-Stack** angelegt. Portainer liest die `docker-compose.yml` direkt aus dem Git-Repository — es muss keine Datei manuell hochgeladen werden.
+Ein neuer Service wird in Portainer als **Repository-Stack** angelegt. Portainer liest die `docker-compose.yml` direkt aus dem Git-Repository; es muss keine Datei manuell hochgeladen werden.
 
 ![Portainer – Stack aus Repository erstellen](/img/screenshots/portainer.png)
 
@@ -133,7 +133,7 @@ Ein neuer Service wird in Portainer als **Repository-Stack** angelegt. Portainer
 8. Umgebungsvariablen bei Bedarf unter **Environment variables** eintragen.
 9. **Deploy the stack** klicken.
 
-Nach dem ersten Deployment kann der Stack jederzeit über **Pull and redeploy** aktualisiert werden — sinnvoll, nachdem der Image-Tag in der `docker-compose.yml` hochgezogen wurde.
+Nach dem ersten Deployment kann der Stack jederzeit über **Pull and redeploy** aktualisiert werden, sinnvoll nachdem der Image-Tag in der `docker-compose.yml` hochgezogen wurde.
 
 ## Ablauf eines Deployments
 
