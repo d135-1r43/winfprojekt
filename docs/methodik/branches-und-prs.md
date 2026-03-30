@@ -8,19 +8,7 @@ Niemand arbeitet direkt auf `main`. Stattdessen bekommt jedes Feature oder jeder
 
 ## Ein Feature entwickeln
 
-Der Ausgangspunkt ist immer ein GitHub Issue. Daraus entsteht ein Branch, auf dem die Änderung entwickelt wird. Ist die Arbeit fertig, wird ein Pull Request geöffnet, der den Dozenten zum Review einlädt. Nach dem Merge ist der Stand auf `main` und der Branch wird gelöscht.
-
-```mermaid
-gitGraph
-   commit id: "main: Projektstart"
-   branch feature/login
-   checkout feature/login
-   commit id: "Login-Formular"
-   commit id: "Token-Handling"
-   checkout main
-   merge feature/login id: "PR #12 gemerged"
-   commit id: "main: weiter"
-```
+Der Ausgangspunkt ist immer ein GitHub Issue. Daraus entsteht ein Branch, auf dem die Änderung entwickelt wird. Ist die Arbeit fertig, wird ein Pull Request geöffnet, der den Dozenten zum Review einlädt. Nach dem Review wird der PR gemerged oder rebased — je nachdem, was die sauberere Historie ergibt.
 
 **Ablauf:**
 
@@ -28,36 +16,90 @@ gitGraph
 2. Branch von `main` erstellen, z. B. `feature/login` oder `fix/token-expiry`
 3. Änderungen committen und den Branch pushen
 4. Pull Request öffnen und im PR-Text auf das Issue verweisen (`Closes #12`)
-5. Dozent reviewed und mergt den PR
+5. Dozent reviewed und integriert den PR per Merge oder Rebase
 
-## Änderungen von Kollegen holen
+## Merge vs. Rebase
 
-Während man am eigenen Branch arbeitet, entwickelt sich `main` weiter — andere PRs werden gemerged. Damit der eigene Branch nicht zu weit abweicht, holt man sich regelmäßig den aktuellen Stand von `main`.
+Beide Strategien bringen die Änderungen eines Branches in `main` — aber sie hinterlassen unterschiedliche Historien.
+
+### Merge
+
+Beim Merge bleibt die Branch-Geschichte vollständig erhalten. Ein zusätzlicher Merge-Commit verbindet die beiden Historien.
 
 ```mermaid
 gitGraph
-   commit id: "Projektstart"
-   branch feature/suche
-   checkout feature/suche
-   commit id: "Suchfeld"
+   commit id: "A"
+   commit id: "B"
+   branch feature/login
+   checkout feature/login
+   commit id: "C"
+   commit id: "D"
    checkout main
-   commit id: "PR Kollege A gemerged"
-   commit id: "PR Kollege B gemerged"
-   checkout feature/suche
-   merge main id: "main reingezogen"
-   commit id: "Suchergebnisse"
-   checkout main
-   merge feature/suche id: "PR #17 gemerged"
+   commit id: "E"
+   merge feature/login id: "Merge PR #12"
 ```
 
+Sinnvoll, wenn die Entwicklung auf dem Branch als zusammenhängende Einheit sichtbar bleiben soll — z. B. bei größeren Features mit mehreren Commits, die gemeinsam nachvollziehbar sein sollen.
+
+### Rebase
+
+Beim Rebase werden die Commits des Branches so umgeschrieben, als wären sie direkt auf dem aktuellen `main` entstanden. Es entsteht eine lineare Historie ohne Merge-Commit.
+
+```mermaid
+gitGraph
+   commit id: "A"
+   commit id: "B"
+   commit id: "E"
+   commit id: "C'"
+   commit id: "D'"
+```
+
+Sinnvoll bei kleinen, sauberen Branches mit wenigen Commits, die thematisch zusammenpassen und die `main`-Historie nicht mit Merge-Commits belasten sollen.
+
+### Wann was?
+
+| Situation | Strategie |
+|-----------|-----------|
+| Größeres Feature, mehrere Commits, soll als Einheit erkennbar bleiben | Merge |
+| Kleiner, überschaubarer Branch mit 1-3 sauberen Commits | Rebase |
+| Branch hat viele Zwischen-Commits ("WIP", "fix fix") | Rebase (bereinigt die Historie) |
+| Parallele Arbeit mehrerer Personen auf demselben Branch | Merge (Rebase würde fremde Commits umschreiben) |
+
+## Änderungen von Kollegen holen
+
+Während man am eigenen Branch arbeitet, entwickelt sich `main` weiter. Damit der eigene Branch nicht zu weit abweicht, holt man sich regelmäßig den aktuellen Stand — ebenfalls per Merge oder Rebase.
+
+```mermaid
+gitGraph
+   commit id: "A"
+   branch feature/suche
+   checkout feature/suche
+   commit id: "B"
+   checkout main
+   commit id: "C (Kollege)"
+   commit id: "D (Kollege)"
+   checkout feature/suche
+   merge main id: "main reingezogen"
+   commit id: "E"
+   checkout main
+   merge feature/suche id: "PR #17"
+```
+
+**Per Merge** (einfach, sicher):
 ```bash
-git checkout main
-git pull
+git checkout main && git pull
 git checkout feature/suche
 git merge main
 ```
 
-Konflikte, die dabei entstehen, werden lokal gelöst, bevor die Arbeit weitergeht.
+**Per Rebase** (lineare Historie, etwas aufwendiger):
+```bash
+git checkout main && git pull
+git checkout feature/suche
+git rebase main
+```
+
+Beim Rebase werden die eigenen Commits auf die Spitze von `main` umgeschrieben. Konflikte müssen commit-weise aufgelöst werden (`git rebase --continue`). Danach muss der Branch force-gepusht werden (`git push --force-with-lease`), da die Commit-Hashes sich geändert haben.
 
 ## Warum nicht direkt auf main?
 
