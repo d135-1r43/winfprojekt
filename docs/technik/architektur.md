@@ -41,18 +41,18 @@ Der NGINX Proxy Manager ist der einzige öffentlich erreichbare Endpunkt. Er nim
 
 ### [React](https://react.dev/) Frontend
 
-Die Benutzeroberfläche ist eine Single Page Application auf Basis von React. Sie kommuniziert ausschließlich über die REST-APIs der Microservices mit dem Backend. Die Authentifizierung läuft über Keycloak: Nach dem Login speichert die App das JWT und schickt es bei jedem API-Aufruf als Bearer-Token mit.
+Die Benutzeroberfläche ist eine Single Page Application auf Basis von React. Sie kommuniziert ausschließlich über die REST-APIs der Microservices mit dem Backend. Die Authentifizierung läuft über Keycloak: Nach dem Login speichert die App das JWT und schickt es bei jedem API-Aufruf als Bearer-Token mit. Details zur Authentifizierung beschreibt die [OAuth2/OIDC-Seite](./oauth2-oidc).
 
 ### [Keycloak](https://www.keycloak.org/) OIDC Provider
 
-Keycloak übernimmt die zentrale Authentifizierung und Autorisierung nach dem OpenID-Connect-Standard. Nach erfolgreichem Login erhält der Client ein JWT, das bei jedem API-Aufruf mitgeschickt wird. Alle Microservices und CIB seven validieren dieses Token direkt gegen Keycloak.
+Keycloak übernimmt die zentrale Authentifizierung und Autorisierung nach dem OpenID-Connect-Standard. Nach erfolgreichem Login erhält der Client ein JWT, das bei jedem API-Aufruf mitgeschickt wird. Alle Microservices und CIB seven validieren dieses Token direkt gegen Keycloak. Mehr dazu auf der [OAuth2/OIDC-Seite](./oauth2-oidc).
 
 ![Keycloak – Benutzerverwaltung](/img/screenshots/keycloak.png)
 
 ### [CIB seven](https://cibseven.org/en/) Process Engine
 
-CIB seven ist ein Fork von Camunda 7 und stellt die BPMN-Prozess-Engine bereit. Geschäftsprozesse werden als BPMN-Diagramme modelliert und von CIB seven ausgeführt. Die Microservices können Prozessinstanzen starten, Tasks abarbeiten und Prozessvariablen lesen und schreiben.
+CIB seven ist ein Fork von Camunda 7 und stellt die BPMN-Prozess-Engine bereit. Geschäftsprozesse werden als BPMN-Diagramme modelliert und von CIB seven ausgeführt. Die Microservices können Prozessinstanzen starten, Tasks abarbeiten und Prozessvariablen lesen und schreiben. Mehr dazu auf der [CIB seven-Seite](./cibseven).
 
 ### Microservices ([Quarkus](https://quarkus.io/))
 
-Die fachliche Logik ist auf spezialisierte Microservices aufgeteilt, die jeweils mit Quarkus implementiert sind. Quarkus bietet kurze Startup-Zeiten und geringen Speicherbedarf, was den Container-Betrieb vereinfacht. Die Microservices kommunizieren mit der Process Engine über deren REST-API und sichern ihre eigenen Endpunkte mit den von Keycloak ausgestellten Tokens ab.
+Die fachliche Logik ist auf spezialisierte Microservices aufgeteilt, die jeweils mit Quarkus implementiert sind. Quarkus bietet kurze Startup-Zeiten und geringen Speicherbedarf, was den Container-Betrieb vereinfacht. Die Microservices kommunizieren mit der Process Engine über deren REST-API und sichern ihre eigenen Endpunkte mit den von Keycloak ausgestellten Tokens ab. Mehr dazu auf der [Microservices-Seite](./microservices).
