@@ -33,6 +33,20 @@
   --ifm-footer-title-color: #ffffff;
 }
 
+/* Mobile Navbar Sidebar */
+.navbar-sidebar {
+  --ifm-menu-color: #ffd0e0;
+  --ifm-menu-color-active: #ffffff;
+}
+
+.navbar-sidebar__back {
+  color: #ffd0e0;
+}
+
+.navbar-sidebar__back:hover {
+  color: #ffffff;
+}
+
 [data-theme='dark'] {
   /* Primary: Light Lavender (lesbar auf dunklem Hintergrund) */
   --ifm-color-primary:          #b0a0d0;
