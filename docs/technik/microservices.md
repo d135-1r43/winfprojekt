@@ -4,11 +4,11 @@ sidebar_position: 7
 
 # Microservices mit Quarkus
 
-Die fachliche Logik ist auf spezialisierte Microservices aufgeteilt, die jeweils mit [Quarkus](https://quarkus.io/) implementiert sind. Quarkus bietet kurze Startup-Zeiten, geringen Speicherbedarf und eine moderne, auf CDI und MicroProfile basierende Entwicklungserfahrung.
+Die fachliche Logik ist auf spezialisierte Microservices aufgeteilt, die jeweils mit [Quarkus](https://quarkus.io/) implementiert sind. Quarkus bietet kurze Startup-Zeiten, geringen Speicherbedarf und eine moderne, auf CDI und MicroProfile basierende Entwicklungserfahrung. Wie die Services in die Gesamtarchitektur eingebettet sind, ist auf der [Systemarchitektur-Seite](./architektur) beschrieben.
 
 ## Neuen Service anlegen
 
-Neue Services werden über [code.quarkus.io](https://code.quarkus.io/) initialisiert. Dort lassen sich Extensions auswählen und ein fertiges Maven-Projekt herunterladen.
+Neue Services werden über [code.quarkus.io](https://code.quarkus.io/) initialisiert. Dort lassen sich Extensions auswählen und ein fertiges Maven-Projekt herunterladen. Das Projekt landet anschließend als eigener Unterordner im [Monorepo](./github).
 
 ## Extensions
 
@@ -28,8 +28,8 @@ Ein klassischer Service im Projekt braucht die folgenden fünf Extensions:
 
 - **Hibernate + PostgreSQL** bilden den Persistenz-Stack. Panache reduziert Boilerplate beim Datenbankzugriff deutlich.
 - **REST Jackson** stellt die REST-API bereit und serialisiert Java-Objekte automatisch als JSON.
-- **SmallRye Health** ermöglicht Portainer und dem NGINX Proxy Manager zu prüfen, ob der Service läuft.
-- **OpenID Connect** bindet Keycloak an: Eingehende Bearer-Tokens werden automatisch validiert, ohne dass dafür eigener Code nötig ist.
+- **SmallRye Health** ermöglicht Portainer und dem [NGINX Proxy Manager](./architektur#nginx-proxy-manager-reverse-proxy) zu prüfen, ob der Service läuft.
+- **OpenID Connect** bindet [Keycloak](./oauth2-oidc) an: Eingehende Bearer-Tokens werden automatisch validiert, ohne dass dafür eigener Code nötig ist.
 
 ## Konfiguration
 
@@ -52,3 +52,7 @@ quarkus.oidc.application-type=service
 ```
 
 Sensible Werte wie Passwörter und URLs werden als Umgebungsvariablen übergeben und nicht in die Codebasis eingecheckt.
+
+## Versionierung und Deployment
+
+Jeder Service wird eigenständig versioniert nach [Semantic Versioning](./semver). Ein Git-Tag mit `v`-Präfix löst die CI/CD-Pipeline aus, die ein Docker-Image baut und in die GitHub Container Registry veröffentlicht. Wie das Image dann auf dem Server landet, beschreibt die [Deployment-Seite](./deployment).
