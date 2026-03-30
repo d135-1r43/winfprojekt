@@ -105,7 +105,11 @@ git rebase main
 
 Beim Rebase werden die eigenen Commits auf die Spitze von `main` umgeschrieben. Konflikte müssen commit-weise aufgelöst werden (`git rebase --continue`). Danach muss der Branch force-gepusht werden (`git push --force-with-lease`), da die Commit-Hashes sich geändert haben.
 
-## Technische Umsetzung\n\nWie das Repository strukturiert ist, welche GitHub Actions laufen und wie das Deployment funktioniert, ist in der [Technik-Seite zu GitHub](../technik/github) beschrieben.\n\n## Warum nicht direkt auf main?
+## Technische Umsetzung
+
+Wie das Repository strukturiert ist, welche GitHub Actions laufen und wie das Deployment funktioniert, ist in der [Technik-Seite zu GitHub](../technik/github) beschrieben.
+
+## Warum nicht direkt auf main?
 
 - `main` ist immer deploybar, fehlerhafte Stände kommen nicht rein
 - Änderungen werden reviewed, bevor sie für alle sichtbar sind
