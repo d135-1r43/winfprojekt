@@ -38,7 +38,7 @@ Jeder Service lebt in einem eigenen Unterordner mit eigenem `Dockerfile`, `docke
 
 ## Pull Requests
 
-Neue Features und Bugfixes werden nicht direkt auf `main` gepusht, sondern über **Pull Requests** eingebracht:
+Neue Features und Bugfixes werden nicht direkt auf `main` gepusht, sondern über **Pull Requests** eingebracht. Wie Branches erstellt, aktuell gehalten und per Merge oder Rebase integriert werden, ist in der [Methodik-Seite zu Branches und Pull Requests](../methodik/branches-und-prs) beschrieben.
 
 - Jeder PR ist mit einem **GitHub Issue** verknüpft (z. B. `Closes #42` im PR-Text)
 - PRs werden vom **Dozenten** gemerged oder per Rebase integriert
