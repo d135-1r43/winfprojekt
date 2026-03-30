@@ -6,6 +6,19 @@ sidebar_position: 6
 
 Das Projekt wird als **Monorepo** auf GitHub verwaltet. Alle Services, die Portainer-Konfiguration und die CI/CD-Pipelines liegen in einem einzigen Repository.
 
+## Was ist ein Monorepo?
+
+Ein Monorepo ist ein einzelnes Git-Repository, das mehrere unabhängige Komponenten oder Services enthält — im Gegensatz zum **Polyrepo-Ansatz**, bei dem jeder Service ein eigenes Repository bekommt.
+
+| | Monorepo | Polyrepo |
+|---|---|---|
+| **Änderungen über Services hinweg** | Ein einziger Commit, ein einziger PR | Koordination über mehrere Repos |
+| **Gemeinsamer Code** | Direkt als Unterordner teilbar | Erfordert eigene Packages oder Submodules |
+| **Überblick** | Alles an einem Ort | Verteilt auf viele Repositories |
+| **Berechtigungen** | Einheitlich für das gesamte Repo | Feingranular pro Service möglich |
+
+Im Projektkontext überwiegen die Vorteile: Änderungen, die mehrere Services betreffen (z. B. eine neue Schnittstelle zwischen Frontend und Backend), lassen sich atomar in einem PR beschreiben und reviewen.
+
 ## Struktur
 
 ```
