@@ -1,0 +1,50 @@
+---
+sidebar_position: 5
+---
+
+# Deployment
+
+Jeder Service wird als Docker-Image gebaut und über [Portainer](https://www.portainer.io/) betrieben. Das Deployment erfolgt manuell durch Hochziehen des Image-Tags in der `docker-compose.yml`.
+
+## CI/CD-Pipeline
+
+Ein Push auf den `main`-Branch löst automatisch eine GitHub Action aus, die das Docker-Image baut und in die **GitHub Container Registry (GHCR)** veröffentlicht.
+
+```
+Push → main
+  └─ GitHub Action
+       ├─ Docker-Image bauen
+       └─ Image pushen nach ghcr.io/<org>/<repo>:<tag>
+```
+
+Das Image wird mit zwei Tags versehen:
+
+| Tag | Bedeutung |
+|-----|-----------|
+| `main` | Immer der aktuelle Stand von `main` |
+| `sha-<commit>` | Unveränderlicher Verweis auf einen konkreten Commit |
+
+Für Releases empfiehlt sich ein Git-Tag mit `v`-Präfix (z. B. `v1.2.0`), der dann als Semver-Tag im GHCR landet.
+
+## Portainer und Docker Compose
+
+Portainer verwaltet die laufenden Container. Die Konfiguration liegt als `docker-compose.yml` im Git-Repository des jeweiligen Services. Portainer liest diese Datei und startet die Container entsprechend.
+
+Um eine neue Version auszurollen, wird der Image-Tag in der `docker-compose.yml` auf den gewünschten Stand geändert:
+
+```yaml
+services:
+  mein-service:
+    # vorher: image: ghcr.io/org/mein-service:1.1.0
+    image: ghcr.io/org/mein-service:1.2.0
+```
+
+Danach zieht Portainer das neue Image und startet den Container neu. Der Schritt ist bewusst manuell, um unkontrollierte Deployments auf Produktivsysteme zu vermeiden.
+
+## Ablauf eines Deployments
+
+1. Änderungen auf `main` mergen
+2. GitHub Action abwarten, bis das Image in GHCR erscheint
+3. In der `docker-compose.yml` des Services den Tag aktualisieren
+4. Änderung committen und pushen
+5. In Portainer den Stack neu deployen
