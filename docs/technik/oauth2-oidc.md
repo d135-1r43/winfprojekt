@@ -76,6 +76,46 @@ sequenceDiagram
     end
 ```
 
+## Token-Weitergabe zwischen Services
+
+Ein Microservice kann das empfangene Token nicht nur validieren, sondern auch an nachgelagerte Services weitergeben. Das ist der Standard-Weg, wenn Service A im Auftrag des eingeloggten Nutzers Service B aufruft: Das Token des Nutzers wird durchgereicht, sodass Service B dieselbe Identität und dieselben Rechte sieht.
+
+Dieses Muster heißt **Token Propagation** und ist in OAuth2 als **Bearer Token Relay** spezifiziert.
+
+```mermaid
+sequenceDiagram
+    participant React as React App
+    participant MS_A as Microservice A
+    participant MS_B as Microservice B / CIB seven
+    participant Keycloak
+
+    React->>MS_A: Request + Bearer Token (Nutzer)
+    MS_A->>MS_A: Validiert Token
+    MS_A->>MS_B: Request + dasselbe Bearer Token
+    MS_B->>MS_B: Validiert Token
+    MS_B->>MS_A: Antwort
+    MS_A->>React: Antwort
+```
+
+In Quarkus wird das mit der Extension `quarkus-oidc-token-propagation` umgesetzt. Sie leitet das eingehende Bearer Token automatisch an ausgehende REST-Calls weiter:
+
+```xml title="pom.xml"
+<dependency>
+  <groupId>io.quarkus</groupId>
+  <artifactId>quarkus-oidc-token-propagation</artifactId>
+</dependency>
+```
+
+```java
+@RegisterRestClient
+@AccessToken  // leitet das eingehende Token automatisch weiter
+public interface AndererServiceClient {
+    @GET
+    @Path("/interne-ressource")
+    String holeRessource();
+}
+```
+
 ## Rollen und Zugriffssteuerung
 
 Keycloak verwaltet Rollen, die im JWT als Claims enthalten sind. Die Microservices lesen diese Claims aus und entscheiden damit, welche Aktionen ein Nutzer ausführen darf. Die React-App liest die Rollen aus dem ID Token und blendet Funktionen entsprechend ein oder aus.
