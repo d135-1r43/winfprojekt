@@ -14,7 +14,7 @@ graph TD
     NGINX["NGINX Proxy Manager\nReverse Proxy"]
     UI["React\nSingle Page App"]
     MS["Microservices\nQuarkus"]
-    CIB["CIB seven\nProcess Engine"]
+    CIB["CIB seven\nProcess Engine\n(nur Prozesse)"]
     Keycloak["Keycloak\nOIDC Provider"]
 
     Browser -->|HTTPS| NGINX
@@ -29,7 +29,14 @@ graph TD
     MS <-->|REST / Events| CIB
     MS -->|Token-Validierung| Keycloak
     CIB -->|Token-Validierung| Keycloak
+
+    classDef developed fill:#80a040,stroke:#5a7030,color:#ffffff,font-weight:bold
+    class UI,MS developed
 ```
+
+:::note Legende
+Grün hinterlegt: wird im Projekt entwickelt. Bei CIB seven werden nur die BPMN-Prozesse entwickelt, nicht die Engine selbst.
+:::
 
 ## Komponenten
 
