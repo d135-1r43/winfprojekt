@@ -10,11 +10,22 @@ Jeder Service wird als Docker-Image gebaut und über [Portainer](https://www.por
 
 Ein Push auf den `main`-Branch löst automatisch eine GitHub Action aus, die das Docker-Image baut und in die **GitHub Container Registry (GHCR)** veröffentlicht.
 
-```
-Push → main
-  └─ GitHub Action
-       ├─ Docker-Image bauen
-       └─ Image pushen nach ghcr.io/<org>/<repo>:<tag>
+```mermaid
+flowchart LR
+    subgraph Trigger
+        A["Push auf main"]
+        B["Git-Tag v1.2.0"]
+    end
+
+    GHA["GitHub Action\nBuild + Push"]
+
+    subgraph GHCR["GitHub Container Registry"]
+        C[":main · :sha-abc123"]
+        D[":1.2.0 · :1.2"]
+    end
+
+    A --> GHA --> C
+    B --> GHA --> D
 ```
 
 Das Image wird mit zwei Tags versehen:
