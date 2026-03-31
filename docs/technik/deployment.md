@@ -2,7 +2,7 @@
 sidebar_position: 5
 ---
 
-# Deployment
+# Deployment mit Portainer
 
 Jeder Service wird als Docker-Image gebaut und über [Portainer](https://www.portainer.io/) betrieben. Das Deployment erfolgt manuell durch Hochziehen des Image-Tags in der `docker-compose.yml`.
 
