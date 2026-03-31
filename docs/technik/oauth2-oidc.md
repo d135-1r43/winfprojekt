@@ -97,24 +97,43 @@ sequenceDiagram
     MS_A->>React: Antwort
 ```
 
-In Quarkus wird das mit der Extension `quarkus-oidc-token-propagation` umgesetzt. Sie leitet das eingehende Bearer Token automatisch an ausgehende REST-Calls weiter:
+In Quarkus wird das mit der Extension `rest-client-oidc-token-propagation` umgesetzt:
 
-```xml title="pom.xml"
-<dependency>
-  <groupId>io.quarkus</groupId>
-  <artifactId>quarkus-oidc-token-propagation</artifactId>
-</dependency>
+```bash
+quarkus extension add rest-client-oidc-token-propagation
 ```
+
+Die Annotation `@AccessToken` am REST-Client-Interface registriert automatisch einen Filter, der das eingehende Bearer Token an den ausgehenden Call weiterleitet:
 
 ```java
 @RegisterRestClient
-@AccessToken  // leitet das eingehende Token automatisch weiter
+@AccessToken
+@Path("/")
 public interface AndererServiceClient {
     @GET
     @Path("/interne-ressource")
-    String holeRessource();
+    Uni<String> holeRessource();
 }
 ```
+
+```java
+@Path("/mein-endpunkt")
+public class MeinResource {
+
+    @Inject
+    @RestClient
+    AndererServiceClient client;
+
+    @GET
+    public Uni<String> get() {
+        return client.holeRessource(); // Token wird automatisch weitergeleitet
+    }
+}
+```
+
+:::warning
+`@OidcClientFilter` und `@AccessToken` dürfen nicht am selben Client kombiniert werden — `@OidcClientFilter` holt ein neues Token, `@AccessToken` leitet das bestehende weiter.
+:::
 
 ## Rollen und Zugriffssteuerung
 
