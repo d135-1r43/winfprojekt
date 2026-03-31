@@ -108,6 +108,42 @@ Installation prüfen:
 mvn -version
 ```
 
+### CIB seven Maven Repository einrichten
+
+:::warning Pflichtschritt für CIB seven Services
+Das CIB seven Enterprise Repository ist nicht öffentlich zugänglich. Ohne diese Konfiguration schlägt der Maven-Build aller Services fehl, die auf dem [cibseven-template](https://github.com/d135-1r43/cibseven-template) basieren. Zugangsdaten (Kundennummer + Passwort) beim Dozenten erfragen.
+:::
+
+Die Zugangsdaten werden einmalig in `~/.m2/settings.xml` hinterlegt:
+
+**In `<servers>` einfügen:**
+```xml
+<server>
+  <id>mvn-cibseven-enterprise</id>
+  <username>KUNDENNUMMER</username>
+  <password>PASSWORT</password>
+</server>
+```
+
+**In `<profiles>` einfügen:**
+```xml
+<profile>
+  <id>cibseven-ee</id>
+  <repositories>
+    <repository>
+      <id>mvn-cibseven-enterprise</id>
+      <name>CIB seven Enterprise repository</name>
+      <url>https://artifacts.cibseven.org/repository/enterprise-group/</url>
+    </repository>
+  </repositories>
+</profile>
+```
+
+**In `<activeProfiles>` einfügen:**
+```xml
+<activeProfile>cibseven-ee</activeProfile>
+```
+
 ## IDE: IntelliJ IDEA
 
 Wir empfehlen [IntelliJ IDEA](https://www.jetbrains.com/idea/) als Entwicklungsumgebung. Die **Community Edition** ist kostenlos und für dieses Projekt ausreichend. Allerdings fehlen sehr komfortable Features zum Entwickeln mit Spring und Quarkus. Daher sollte die **Ultimate Edition** verwendet werden. 
