@@ -6,6 +6,34 @@ sidebar_position: 3
 
 [CIB seven](https://cibseven.org/en/) ist eine Open-Source-Prozess-Engine auf Basis von Camunda 7 und führt BPMN-Prozesse aus. Der Entwicklungsworkflow ist in zwei Phasen unterteilt: lokal entwickeln und testen, dann sauber releasen.
 
+```mermaid
+flowchart LR
+    Modeler(["Camunda Modeler"])
+
+    subgraph A["Prozesse entwickeln"]
+        EngineA["CIB seven\nlokal"]
+    end
+
+    subgraph B["Prozesse releasen"]
+        direction TB
+        Resources["src/main/resources/"]
+        Build["Maven Build + Docker Image"]
+        EngineB["CIB seven\nzentral"]
+        Resources -->|".bpmn einbinden"| Build -->|"startet mit Image"| EngineB
+    end
+
+    Modeler -->|"deploy"| A
+    Modeler -->|"kopieren"| B
+
+    classDef engine fill:#b0a0d0,stroke:#704080,color:#201040,font-weight:bold
+    classDef tool fill:#ffd0e0,stroke:#704080,color:#201040,font-weight:bold
+    classDef artifact fill:#e8e0f0,stroke:#9d73af,color:#201040
+
+    class EngineA,EngineB engine
+    class Modeler tool
+    class Resources,Build artifact
+```
+
 ---
 
 ## Prozesse entwickeln
@@ -39,8 +67,7 @@ Prozesse werden mit dem [Camunda Modeler](https://camunda.com/download/modeler/)
 
 ## Prozesse releasen
 
-Wenn ein Prozess lokal stabil ist, wird die fertige `.bpmn`-Datei in die zentrale Process Engine eingespielt. Alle Prozesse laufen gemeinsam in einer gemeinsam genutzten CIB-seven-Instanz. 
-Als Seed für diese zentrale Process Engine steht [d135-1r43/cibseven-template](https://github.com/d135-1r43/cibseven-template) als **Template-Repository** bereit.
+Wenn ein Prozess lokal stabil ist, wird die fertige `.bpmn`-Datei in die zentrale Process Engine eingespielt. Alle Prozesse laufen gemeinsam in einer gemeinsam genutzten CIB-seven-Instanz. Als Seed für diese zentrale Process Engine steht [d135-1r43/cibseven-template](https://github.com/d135-1r43/cibseven-template) als **Template-Repository** bereit. Wie das Docker-Image gebaut und deployed wird, beschreibt die [Deployment-Seite](./deployment).
 
 1. Die fertige `.bpmn`-Datei nach `src/main/resources/` kopieren.
 2. Den Service lokal bauen und testen:
