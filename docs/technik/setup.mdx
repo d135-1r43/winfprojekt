@@ -96,10 +96,13 @@ docker run hello-world
     ```
   </TabItem>
   <TabItem value="win" label="Windows">
+    1. Das Binary ZIP von [maven.apache.org/download.cgi](https://maven.apache.org/download.cgi) herunterladen und z. B. nach `C:\Program Files\Maven` entpacken.
+    2. Systemumgebungsvariable `MAVEN_HOME` auf diesen Ordner setzen.
+    3. `%MAVEN_HOME%\bin` zur Umgebungsvariable `Path` hinzufügen.
+    4. Ein neues Terminal öffnen und prüfen:
     ```powershell
-    winget install Apache.Maven
+    mvn -version
     ```
-    Danach ein neues Terminal öffnen. Alternativ den manuellen Installationsweg über [maven.apache.org](https://maven.apache.org/download.cgi) mit anschließendem Setzen der Umgebungsvariablen `MAVEN_HOME` und `PATH`.
   </TabItem>
 </Tabs>
 
