@@ -21,6 +21,8 @@ npm run dev
 
 ## Authentifizierung mit Keycloak (OIDC)
 
+Eine gute Einführung zum Thema bietet der Artikel [Building a Secure Authentication System with Keycloak, React and Flask](https://darkaico.medium.com/building-a-secure-authentication-system-with-keycloak-react-and-flask-35aeee04e37a).
+
 Die App nutzt [keycloak-js](https://www.npmjs.com/package/keycloak-js), den offiziellen JavaScript-Adapter von Keycloak.
 
 ```bash
