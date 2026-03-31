@@ -97,7 +97,7 @@ sequenceDiagram
     MS_A->>React: Antwort
 ```
 
-In Quarkus wird das mit der Extension `rest-client-oidc-token-propagation` umgesetzt:
+In Quarkus wird das mit der Extension `rest-client-oidc-token-propagation` umgesetzt (siehe [Quarkus-Dokumentation](https://quarkus.io/guides/security-openid-connect-client)):
 
 ```bash
 quarkus extension add rest-client-oidc-token-propagation
