@@ -128,6 +128,11 @@ Danach zieht Portainer das neue Image und startet den Container neu. Der Schritt
 
 ## Stack in Portainer einrichten
 
+:::info Zugangsdaten
+Die URL und die Zugangsdaten für die Portainer-Instanz sind beim Dozenten zu erfragen.
+:::
+
+
 Ein neuer Service wird in Portainer als **Repository-Stack** angelegt. Portainer liest die `docker-compose.yml` direkt aus dem Git-Repository; es muss keine Datei manuell hochgeladen werden.
 
 ![Portainer – Stack aus Repository erstellen](/img/screenshots/portainer.png)
