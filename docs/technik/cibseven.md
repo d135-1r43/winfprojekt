@@ -67,7 +67,7 @@ Prozesse werden mit dem [Camunda Modeler](https://camunda.com/download/modeler/)
 
 ## Prozesse releasen
 
-Wenn ein Prozess lokal stabil ist, wird die fertige `.bpmn`-Datei in die zentrale Process Engine eingespielt. Alle Prozesse laufen gemeinsam in einer gemeinsam genutzten CIB-seven-Instanz. Als Seed für diese zentrale Process Engine steht [d135-1r43/cibseven-template](https://github.com/d135-1r43/cibseven-template) als **Template-Repository** bereit. Wie das Docker-Image gebaut und deployed wird, beschreibt die [Deployment-Seite](./deployment).
+Wenn ein Prozess lokal stabil ist, wird die fertige `.bpmn`-Datei in die zentrale Process Engine eingespielt. Alle Prozesse laufen gemeinsam in einer gemeinsam genutzten CIB-seven-Instanz. Als Seed für diese zentrale Process Engine steht [d135-1r43/cibseven-template](https://github.com/d135-1r43/cibseven-template) als **Template-Repository** bereit; die Keycloak-Anbindung ist darin bereits vorkonfiguriert (siehe [OAuth2/OIDC](./oauth2-oidc)). Wie das Docker-Image gebaut und deployed wird, beschreibt die [Deployment-Seite](./deployment).
 
 1. Die fertige `.bpmn`-Datei nach `src/main/resources/` kopieren.
 2. Den Service lokal bauen und testen:
