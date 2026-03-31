@@ -53,6 +53,14 @@ quarkus.oidc.application-type=service
 
 Sensible Werte wie Passwörter und URLs werden als Umgebungsvariablen übergeben und nicht in die Codebasis eingecheckt.
 
+### Datenbankschema und Migrationen
+
+Solange es möglich ist, wird auf Flyway-Migrationen verzichtet. Stattdessen übernimmt Hibernate mit `database.generation=update` das Anpassen des Schemas automatisch. Das reduziert den Verwaltungsaufwand erheblich und reicht für den Projektzeitraum aus, solange keine inkompatiblen Schemaänderungen nötig sind.
+
+:::warning
+`database.generation=update` eignet sich nicht für Produktivsysteme mit wertvollen Daten. Sobald Spalten umbenannt, Typen geändert oder Daten migriert werden müssen, ist Flyway der richtige Weg.
+:::
+
 ## Versionierung und Deployment
 
 Jeder Service wird eigenständig versioniert nach [Semantic Versioning](./semver). Ein Git-Tag mit `v`-Präfix löst die CI/CD-Pipeline aus, die ein Docker-Image baut und in die GitHub Container Registry veröffentlicht. Wie das Image dann auf dem Server landet, beschreibt die [Deployment-Seite](./deployment).
