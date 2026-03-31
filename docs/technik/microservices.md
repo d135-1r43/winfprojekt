@@ -55,7 +55,7 @@ Sensible Werte wie Passwörter und URLs werden als Umgebungsvariablen übergeben
 
 ### Datenbankschema und Migrationen
 
-Solange es möglich ist, wird auf Flyway-Migrationen verzichtet. Stattdessen übernimmt Hibernate mit `database.generation=update` das Anpassen des Schemas automatisch. Das reduziert den Verwaltungsaufwand erheblich und reicht für den Projektzeitraum aus, solange keine inkompatiblen Schemaänderungen nötig sind.
+Solange es möglich ist, wird auf Flyway-Migrationen verzichtet. Stattdessen übernimmt Hibernate mit `database.generation=update` das Anpassen des Schemas automatisch. Das reduziert den Verwaltungsaufwand erheblich und reicht für den frühen Projektzeitraum aus, solange keine inkompatiblen Schemaänderungen nötig sind.
 
 :::warning
 `database.generation=update` eignet sich nicht für Produktivsysteme mit wertvollen Daten. Sobald Spalten umbenannt, Typen geändert oder Daten migriert werden müssen, ist Flyway der richtige Weg.
