@@ -5,7 +5,7 @@ import type * as Preset from '@docusaurus/preset-classic';
 // This runs in Node.js - Don't use client-side code here (browser APIs, JSX...)
 
 const config: Config = {
-  title: 'WInf Projekt Markus Herhoffer',
+  title: 'WInf Projekt',
   tagline: 'Dokumentation für Studierende BA/MA der Technischen Hochschule Ingolstadt',
   favicon: 'img/code-parakeet.svg',
 

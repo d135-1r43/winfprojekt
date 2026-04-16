@@ -38,6 +38,7 @@ export default function Home(): ReactNode {
             {siteConfig.title}
           </Heading>
           <p className="hero__subtitle">{siteConfig.tagline}</p>
+          <p className={styles.heroAuthor}>von Markus Herhoffer</p>
         </div>
       </header>
       <main className={styles.main}>
