@@ -36,6 +36,34 @@ Im Projektkontext überwiegen die Vorteile: Änderungen, die mehrere Services be
 
 Jeder Service lebt in einem eigenen Unterordner mit eigenem `Dockerfile`, `docker-compose.yml` und GitHub Action. Der Ordner `portainer/` enthält die Compose-Dateien, die Portainer direkt aus dem Repository liest; wie das Deployment funktioniert ist auf der [Deployment-Seite](./deployment) beschrieben.
 
+## Zugang zum Repository
+
+Die Authentifizierung gegenüber GitHub erfolgt ausschließlich per **SSH-Key** — HTTPS-Zugriff wird nicht verwendet.
+
+### SSH-Key einrichten
+
+1. **SSH-Key-Paar erzeugen** (falls noch keines vorhanden):
+   ```bash
+   ssh-keygen -t ed25519 -C "deine@email.de"
+   ```
+2. **Öffentlichen Key bei GitHub hinterlegen:** GitHub → *Settings → SSH and GPG keys → New SSH key* → Inhalt von `~/.ssh/id_ed25519.pub` einfügen.
+3. **Repository klonen** mit der SSH-URL (nicht HTTPS):
+   ```bash
+   git clone git@github.com:<org>/<repo>.git
+   ```
+
+Wer das Repository bereits per HTTPS geklont hat, kann die Remote-URL nachträglich umstellen:
+```bash
+git remote set-url origin git@github.com:<org>/<repo>.git
+```
+
+### Weiterführende Dokumentation
+
+- [Über SSH bei GitHub](https://docs.github.com/de/authentication/connecting-to-github-with-ssh/about-ssh)
+- [Neuen SSH-Key erstellen und dem SSH-Agent hinzufügen](https://docs.github.com/de/authentication/connecting-to-github-with-ssh/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent)
+- [SSH-Key zum GitHub-Konto hinzufügen](https://docs.github.com/de/authentication/connecting-to-github-with-ssh/adding-a-new-ssh-key-to-your-github-account)
+- [SSH-Verbindung testen](https://docs.github.com/de/authentication/connecting-to-github-with-ssh/testing-your-ssh-connection)
+
 ## Pull Requests
 
 Neue Features und Bugfixes werden nicht direkt auf `main` gepusht, sondern über **Pull Requests** eingebracht. Wie Branches erstellt, aktuell gehalten und per Merge oder Rebase integriert werden, ist in der [Methodik-Seite zu Branches und Pull Requests](../methodik/branches-und-prs) beschrieben.
