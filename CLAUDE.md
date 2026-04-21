@@ -5,11 +5,11 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Commands
 
 ```bash
-yarn start        # Start local dev server with hot reload
-yarn build        # Build static site to /build directory
-yarn serve        # Serve the pre-built static site
-yarn typecheck    # Run TypeScript type checking
-yarn deploy       # Deploy to GitHub Pages
+npm start         # Start local dev server with hot reload
+npm run build     # Build static site to /build directory
+npm run serve     # Serve the pre-built static site
+npm run typecheck # Run TypeScript type checking
+npm run deploy    # Deploy to GitHub Pages
 ```
 
 No dedicated lint or test commands are configured.
