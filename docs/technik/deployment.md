@@ -128,7 +128,7 @@ Danach zieht Portainer das neue Image und startet den Container neu. Der Schritt
 
 ## Stack in Portainer einrichten
 
-:::info Zugangsdaten
+:::info[Zugangsdaten]
 Die URL und die Zugangsdaten für die Portainer-Instanz sind beim Dozenten zu erfragen.
 :::
 

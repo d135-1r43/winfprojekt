@@ -34,7 +34,7 @@ graph TD
     class UI,MS developed
 ```
 
-:::note Legende
+:::note[Legende]
 Grün hinterlegt: wird im Projekt entwickelt. Bei CIB seven werden nur die BPMN-Prozesse entwickelt, nicht die Engine selbst.
 :::
 
