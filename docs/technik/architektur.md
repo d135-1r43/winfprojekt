@@ -11,7 +11,7 @@ Das System besteht aus mehreren spezialisierten Komponenten, die als Container b
 ```mermaid
 graph TD
     Browser(["Browser / Client"])
-    NGINX["NGINX Proxy Manager\nReverse Proxy"]
+    NGINX["Nginx Proxy Manager\nReverse Proxy"]
     UI["React\nSingle Page App"]
     MS["Microservices\nQuarkus"]
     CIB["CIB seven\nProcess Engine\n(nur Prozesse)"]
@@ -40,11 +40,13 @@ Grün hinterlegt: wird im Projekt entwickelt. Bei CIB seven werden nur die BPMN-
 
 ## Komponenten
 
-### [NGINX Proxy Manager](https://nginxproxymanager.com/) Reverse Proxy
+### [Nginx Proxy Manager](https://nginxproxymanager.com/) Reverse Proxy
 
-Der NGINX Proxy Manager ist der einzige öffentlich erreichbare Endpunkt. Er nimmt alle eingehenden HTTPS-Anfragen entgegen und leitet sie anhand von Subdomain-Regeln an den zuständigen Container weiter. Dadurch sind die internen Dienste nicht direkt exponiert. Die Konfiguration der Proxy-Hosts, SSL-Zertifikate (Let's Encrypt) und Weiterleitungen erfolgt über eine Weboberfläche, ohne manuelle nginx-Konfigurationsdateien.
+Nginx Proxy Manager ist der einzige öffentlich erreichbare Endpunkt. Er nimmt alle eingehenden HTTPS-Anfragen entgegen und leitet sie anhand von Subdomain-Regeln an den zuständigen Container weiter. Dadurch sind die internen Dienste nicht direkt exponiert. Die Konfiguration der Proxy-Hosts, SSL-Zertifikate (Let's Encrypt) und Weiterleitungen erfolgt über eine Weboberfläche, ohne manuelle nginx-Konfigurationsdateien.
 
-![NGINX Proxy Manager – Proxy-Hosts Übersicht](/img/screenshots/nginx-proxy-manager.png)
+![Nginx Proxy Manager – Proxy-Hosts Übersicht](/img/screenshots/nginx-proxy-manager.png)
+
+Mehr zur Konfiguration, zum Docker-Netzwerk und zum Anlegen von Proxy-Hosts auf der [Nginx Proxy Manager-Seite](./reverse-proxy).
 
 ### [React](https://react.dev/) Frontend
 
