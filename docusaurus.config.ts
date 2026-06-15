@@ -21,6 +21,23 @@ const config: Config = {
 
   onBrokenLinks: 'throw',
 
+  headTags: [
+    // Privacy-friendly analytics by Plausible
+    {
+      tagName: 'script',
+      attributes: {
+        async: 'true',
+        src: 'https://plausible.herhoffer.net/js/pa-gPANtW_etKDJeIbsdDvBf.js',
+      },
+    },
+    {
+      tagName: 'script',
+      attributes: {},
+      innerHTML:
+        'window.plausible=window.plausible||function(){(plausible.q=plausible.q||[]).push(arguments)},plausible.init=plausible.init||function(i){plausible.o=i||{}};plausible.init()',
+    },
+  ],
+
   i18n: {
     defaultLocale: 'de',
     locales: ['de'],
