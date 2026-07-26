@@ -30,3 +30,5 @@ This is a [Docusaurus 3.9](https://docusaurus.io/) static site with TypeScript c
 **Styling:** CSS Modules (`.module.css`) for component-scoped styles; global overrides in `src/css/custom.css`.
 
 **Sidebar:** Auto-generated from `docs/` filesystem in `sidebars.ts`. Manual configuration is supported but not currently used.
+
+**Admonitions:** Titles must use the MDX v3 bracket form `:::tip[Titel]`. The legacy Docusaurus 2 form `:::tip Titel` is not parsed and renders as literal text including the `:::` markers — it fails silently, so the build stays green. Always verify with `npm run build` and check for `theme-admonition-*` classes in the generated HTML.
