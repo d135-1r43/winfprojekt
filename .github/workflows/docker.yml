@@ -11,7 +11,31 @@ on:
       - main
 
 jobs:
+  check:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 26
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      # Mermaid rendert im Browser, nicht beim Build. Ein Syntaxfehler
+      # bliebe sonst bis zur fertigen Seite unbemerkt.
+      - name: Check Mermaid diagrams
+        run: npm run check:mermaid
+
   build:
+    needs: check
     runs-on: ubuntu-latest
     permissions:
       contents: read
