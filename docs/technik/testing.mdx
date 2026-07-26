@@ -1,0 +1,440 @@
+---
+sidebar_position: 7.5
+---
+
+# Testing
+
+Die [CI/CD-Pipeline](./github#github-actions) führt bei jedem Push und jedem Pull Request Tests aus. Diese Seite beschreibt, was dort eigentlich laufen soll: wie ihr [Quarkus-Services](./microservices) und das [React-Frontend](./frontend) absichert, und welche Werkzeuge das Projekt dafür vorsieht.
+
+Der Nutzen ist im Monorepo größer als in einem Einzelprojekt. Mehrere Teams arbeiten auf derselben Codebasis, und ein Test ist die einzige Aussage über euren Code, die auch dann noch gilt, wenn jemand anderes ihn anfasst.
+
+## Die Testpyramide
+
+Nicht jeder Test ist gleich viel wert. Die Faustregel: viele schnelle Tests unten, wenige langsame oben.
+
+export function TestPyramid() {
+  const rows = [
+    {label: 'E2E', sub: 'Klickpfad im Browser', y: 30, w: 160, fill: '#704080', text: '#ffffff'},
+    {label: 'Integration', sub: '@QuarkusTest, echte DB, echtes HTTP', y: 95, w: 230, fill: '#b0a0d0', text: '#201040'},
+    {label: 'Unit', sub: 'reine Logik, kein Framework, Millisekunden', y: 160, w: 350, fill: '#ece5f3', text: '#503060'},
+  ];
+  return (
+    <figure style={{margin: '2rem auto', maxWidth: '520px'}}>
+      <svg viewBox="0 0 380 235" role="img" aria-label="Testpyramide: viele Unit-Tests, weniger Integrationstests, wenige E2E-Tests" style={{width: '100%', height: 'auto', display: 'block'}}>
+        {rows.map((r) => (
+          <g key={r.label}>
+            <rect x={(380 - r.w) / 2} y={r.y} width={r.w} height="58" rx="4" fill={r.fill} stroke="#9080b0" strokeWidth="1.5" />
+            <text x="190" y={r.y + 25} textAnchor="middle" fill={r.text} fontSize="17" fontWeight="700">{r.label}</text>
+            <text x="190" y={r.y + 44} textAnchor="middle" fill={r.text} fontSize="10.5">{r.sub}</text>
+          </g>
+        ))}
+      </svg>
+    </figure>
+  );
+}
+
+<TestPyramid />
+
+| Ebene | Was getestet wird | Werkzeug | Laufzeit |
+|---|---|---|---|
+| **Unit** | Eine Klasse, eine Methode, reine Rechenlogik | JUnit 5, plain Java | Millisekunden |
+| **Integration** | Ein Service mit echtem HTTP, echter Datenbank, echtem Token | `@QuarkusTest`, RestAssured | Sekunden |
+| **E2E** | Klickpfad durch die ganze Anwendung | Playwright oder manuell | Minuten |
+
+Für euer Projekt gilt: **Unit- und Integrationstests sind Pflicht, E2E ist Kür.** Automatisierte E2E-Tests über mehrere Services, Keycloak und die Process Engine hinweg sind aufwendig zu bauen und brechen ständig. Der Aufwand lohnt sich im Semesterprojekt selten.
+
+## Backend: Quarkus
+
+### Was schon da ist
+
+Ein über [code.quarkus.io](https://code.quarkus.io/) erzeugtes Projekt bringt die Testabhängigkeiten bereits mit:
+
+```xml title="pom.xml"
+<dependency>
+  <groupId>io.quarkus</groupId>
+  <artifactId>quarkus-junit5</artifactId>
+  <scope>test</scope>
+</dependency>
+<dependency>
+  <groupId>io.rest-assured</groupId>
+  <artifactId>rest-assured</artifactId>
+  <scope>test</scope>
+</dependency>
+```
+
+Ihr müsst also nichts installieren, sondern nur Tests schreiben. Die vollständige Referenz steht im [Quarkus Testing Guide](https://quarkus.io/guides/getting-started-testing).
+
+### Unit-Test: reine Logik
+
+Alles, was ohne Datenbank und ohne HTTP auskommt, wird als normaler JUnit-Test geschrieben. Kein `@QuarkusTest`, weil das die ganze Anwendung hochfährt und den Test unnötig verlangsamt.
+
+```java title="src/test/java/de/thi/rechnung/RabattRechnerTest.java"
+class RabattRechnerTest {
+
+    @Test
+    void gewaehrtKeinenRabattUnterHundertEuro() {
+        assertEquals(new BigDecimal("99.00"),
+                RabattRechner.berechne(new BigDecimal("99.00")));
+    }
+
+    @Test
+    void gewaehrtZehnProzentAbHundertEuro() {
+        assertEquals(new BigDecimal("90.00"),
+                RabattRechner.berechne(new BigDecimal("100.00")));
+    }
+}
+```
+
+### Integrationstest mit `@QuarkusTest`
+
+`@QuarkusTest` startet die Anwendung und schickt echte HTTP-Requests dagegen. Die Assertions schreibt ihr mit [RestAssured](https://rest-assured.io/), das in einem lesbaren `given().when().then()`-Stil funktioniert:
+
+```java title="src/test/java/de/thi/rechnung/RechnungResourceTest.java"
+import io.quarkus.test.junit.QuarkusTest;
+import org.junit.jupiter.api.Test;
+
+import static io.restassured.RestAssured.given;
+import static org.hamcrest.CoreMatchers.is;
+
+@QuarkusTest
+class RechnungResourceTest {
+
+    @Test
+    void liefertLeereListeWennKeineRechnungenExistieren() {
+        given()
+          .when().get("/rechnungen")
+          .then()
+             .statusCode(200)
+             .body("size()", is(0));
+    }
+
+    @Test
+    void legtRechnungAnUndGibtSieZurueck() {
+        given()
+          .contentType("application/json")
+          .body("""
+                {"kunde": "THI", "betrag": 120.00}
+                """)
+          .when().post("/rechnungen")
+          .then()
+             .statusCode(201)
+             .body("kunde", is("THI"));
+    }
+}
+```
+
+### Dev Services: Datenbank und Keycloak ohne Konfiguration
+
+Hier liegt der wichtigste Punkt für dieses Projekt. Quarkus startet im Test- und Dev-Modus **automatisch Container** für PostgreSQL und Keycloak, sobald die zugehörige URL nicht konfiguriert ist. Das nennt sich [Dev Services](https://quarkus.io/guides/dev-services) und benutzt intern [Testcontainers](https://java.testcontainers.org/). Ihr müsst weder eine Testdatenbank aufsetzen noch eine Keycloak-Instanz für Tests pflegen.
+
+Damit das greift, dürfen die echten Verbindungsdaten **nicht für alle Profile** gelten. Die Konfiguration aus dem [Microservices-Kapitel](./microservices#konfiguration) braucht dafür einen `%prod.`-Präfix:
+
+```properties title="src/main/resources/application.properties"
+# Nur in Produktion: echte Verbindungsdaten aus Umgebungsvariablen
+%prod.quarkus.datasource.jdbc.url=jdbc:postgresql://${DB_HOST}:5432/${DB_NAME}
+%prod.quarkus.datasource.username=${DB_USER}
+%prod.quarkus.datasource.password=${DB_PASSWORD}
+%prod.quarkus.oidc.auth-server-url=${KEYCLOAK_URL}/realms/${KEYCLOAK_REALM}
+%prod.quarkus.oidc.client-id=${KEYCLOAK_CLIENT_ID}
+
+# Gilt in allen Profilen
+quarkus.datasource.db-kind=postgresql
+quarkus.oidc.application-type=service
+
+# Schema automatisch aktualisieren
+quarkus.hibernate-orm.database.generation=update
+
+# Im Test das Schema jedes Mal frisch aufbauen
+%test.quarkus.hibernate-orm.database.generation=drop-and-create
+```
+
+In Dev und Test ist damit keine Datasource-URL gesetzt, Quarkus startet einen PostgreSQL-Container und verdrahtet ihn selbst. In Produktion greifen die Umgebungsvariablen wie bisher.
+
+:::warning[Docker muss laufen]
+Dev Services braucht eine laufende Container-Runtime. Ohne Docker oder Podman scheitern die Tests mit einer Fehlermeldung über einen nicht erreichbaren Docker-Daemon. Die Einrichtung beschreibt die [Setup-Seite](./setup#docker).
+:::
+
+:::tip[`drop-and-create` nur im Test]
+`%test.quarkus.hibernate-orm.database.generation=drop-and-create` sorgt dafür, dass jeder Testlauf mit leerem Schema startet. Tests, die auf Datenresten des vorherigen Laufs basieren, sind die häufigste Ursache für Tests, die mal grün und mal rot sind.
+:::
+
+### Geschützte Endpunkte testen
+
+Eure Endpunkte sind über [OIDC](./oauth2-oidc) abgesichert und verlangen ein gültiges Bearer-Token. Für Tests braucht ihr deshalb kein echtes Keycloak-Login, sondern mockt die Identität mit `@TestSecurity`:
+
+```xml title="pom.xml"
+<dependency>
+  <groupId>io.quarkus</groupId>
+  <artifactId>quarkus-test-security</artifactId>
+  <scope>test</scope>
+</dependency>
+<dependency>
+  <groupId>io.quarkus</groupId>
+  <artifactId>quarkus-test-security-oidc</artifactId>
+  <scope>test</scope>
+</dependency>
+```
+
+```java
+import io.quarkus.test.security.TestSecurity;
+import io.quarkus.test.security.oidc.Claim;
+import io.quarkus.test.security.oidc.OidcSecurity;
+
+@QuarkusTest
+class RechnungResourceSecurityTest {
+
+    @Test
+    void weistAnfrageOhneTokenAb() {
+        given()
+          .when().get("/rechnungen")
+          .then().statusCode(401);
+    }
+
+    @Test
+    @TestSecurity(user = "studi", roles = "leser")
+    void erlaubtLesenFuerRolleLeser() {
+        given()
+          .when().get("/rechnungen")
+          .then().statusCode(200);
+    }
+
+    @Test
+    @TestSecurity(user = "studi", roles = "leser")
+    void verbietetSchreibenFuerRolleLeser() {
+        given()
+          .contentType("application/json").body("{}")
+          .when().post("/rechnungen")
+          .then().statusCode(403);
+    }
+
+    @Test
+    @TestSecurity(user = "chef", roles = "admin")
+    @OidcSecurity(claims = @Claim(key = "email", value = "chef@thi.de"))
+    void stelltClaimsAusDemTokenBereit() {
+        given()
+          .when().get("/rechnungen/mein-profil")
+          .then().statusCode(200).body("email", is("chef@thi.de"));
+    }
+}
+```
+
+Testet dabei **beide Richtungen**. Ein Test, der nur prüft, dass ein Admin darf, übersieht genau den Fall, der im Betrieb wehtut: dass ein Nutzer ohne Rolle ebenfalls darf.
+
+Wer gegen echte, von Keycloak signierte Tokens testen möchte, kann stattdessen Keycloak Dev Services mit `OidcTestClient` verwenden. Der Weg samt benötigter Abhängigkeit ist im Guide [OIDC Bearer Token Authentication](https://quarkus.io/guides/security-oidc-bearer-token-authentication) beschrieben. Für den Regelfall reicht `@TestSecurity` und ist deutlich schneller.
+
+### Manuell testen mit Swagger UI
+
+Automatisierte Tests sagen euch, ob etwas kaputt ist. Beim Entwickeln eines neuen Endpunkts wollt ihr aber oft erst einmal ausprobieren, was er zurückgibt. Dafür braucht ihr weder Postman noch handgeschriebene `curl`-Aufrufe mit kopierten Tokens: Die Extension [`quarkus-smallrye-openapi`](https://quarkus.io/extensions/io.quarkus/quarkus-smallrye-openapi/) erzeugt aus euren Endpunkten automatisch eine OpenAPI-Beschreibung und liefert eine [Swagger UI](https://quarkus.io/guides/openapi-swaggerui) mit, in der ihr jeden Endpunkt direkt im Browser aufrufen könnt.
+
+```bash
+./mvnw quarkus:add-extension -Dextensions='quarkus-smallrye-openapi'
+```
+
+Im Dev-Modus ist die Oberfläche ohne weitere Konfiguration aktiv:
+
+| Adresse | Inhalt |
+|---|---|
+| `http://localhost:8080/q/swagger-ui` | Swagger UI zum Ausprobieren der Endpunkte |
+| `http://localhost:8080/q/openapi` | Die generierte OpenAPI-Beschreibung als YAML |
+
+Die OpenAPI-Beschreibung ist nebenbei die ehrlichste Schnittstellendokumentation, die ihr bekommen könnt, weil sie aus dem Code selbst erzeugt wird und nicht veralten kann. Wer im Frontend-Team eure API anbinden muss, braucht damit nicht mehr nachzufragen.
+
+#### Login in den Keycloak Dev Service
+
+Eure Endpunkte sind über [OIDC](./oauth2-oidc) abgesichert, ein Aufruf ohne Token liefert also nur `401`. Genau dafür gibt es die Dev UI, die sich ein echtes Token vom Keycloak Dev Service holt und an die Swagger UI weiterreicht. Ihr müsst kein Token von Hand kopieren.
+
+1. `./mvnw quarkus:dev` starten. Der Keycloak Dev Service startet automatisch mit, sofern `auth-server-url` wie [oben beschrieben](#dev-services-datenbank-und-keycloak-ohne-konfiguration) auf `%prod.` beschränkt ist.
+2. Im Browser `http://localhost:8080/q/dev-ui/extensions` öffnen und dort die Karte **OpenID Connect** auswählen.
+3. Über den Login-Link zu Keycloak wechseln und sich mit einem der vorkonfigurierten Nutzer anmelden.
+4. Zurück in der Dev UI könnt ihr die Swagger UI aufrufen. Das erworbene Token wird an die Aufrufe angehängt, geschützte Endpunkte antworten jetzt mit `200`.
+
+Der Keycloak Dev Service legt dabei zwei Nutzer an, deren Passwort dem Benutzernamen entspricht:
+
+| Nutzer | Passwort | Rollen |
+|---|---|---|
+| `alice` | `alice` | `admin`, `user` |
+| `bob` | `bob` | `user` |
+
+Damit lässt sich der Rollenunterschied direkt ausprobieren: Meldet euch als `bob` an und ruft einen Endpunkt auf, der `admin` verlangt. Kommt kein `403` zurück, stimmt eure Absicherung nicht.
+
+Eigene Rollen konfiguriert ihr bei Bedarf in der `application.properties`:
+
+```properties
+quarkus.oidc.devservices.roles.alice=admin,buchhaltung
+quarkus.oidc.devservices.roles.bob=leser
+```
+
+Die Details zu den Dev Services und der Dev UI stehen im Guide [Dev Services and Dev UI for OpenID Connect](https://quarkus.io/guides/security-openid-connect-dev-services).
+
+:::warning[Swagger UI gehört nicht in Produktion]
+Quarkus liefert die Swagger UI standardmäßig nur im Dev-Modus aus. Lasst das so. Eine öffentlich erreichbare Swagger UI legt eure gesamte API-Struktur offen und lädt zum Ausprobieren ein.
+:::
+
+:::note[Manuell ersetzt nicht automatisiert]
+Swagger UI ist zum Erkunden und Debuggen da. Was ihr dort erfolgreich ausprobiert habt, gehört anschließend als `@QuarkusTest` in die Testsuite, sonst merkt niemand, wenn es in zwei Wochen nicht mehr funktioniert.
+:::
+
+### Testcontainers direkt verwenden
+
+Dev Services deckt PostgreSQL, Keycloak und viele weitere Dienste ab. Braucht ihr einen Container, den Quarkus nicht kennt, steuert ihr [Testcontainers](https://java.testcontainers.org/) direkt an. Die [JUnit-5-Integration](https://java.testcontainers.org/test_framework_integration/junit_5/) stellt dafür zwei Annotationen bereit:
+
+```xml title="pom.xml"
+<dependency>
+  <groupId>org.testcontainers</groupId>
+  <artifactId>junit-jupiter</artifactId>
+  <scope>test</scope>
+</dependency>
+<dependency>
+  <groupId>org.testcontainers</groupId>
+  <artifactId>postgresql</artifactId>
+  <scope>test</scope>
+</dependency>
+```
+
+```java
+import org.testcontainers.containers.PostgreSQLContainer;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
+
+@Testcontainers
+class ImportJobTest {
+
+    @Container
+    static PostgreSQLContainer<?> postgres =
+            new PostgreSQLContainer<>("postgres:17-alpine");
+
+    @Test
+    void importiertDatensaetze() {
+        String jdbcUrl = postgres.getJdbcUrl();
+        // ...
+    }
+}
+```
+
+`static` ist hier entscheidend: Ein statisches Feld startet den Container einmal für die ganze Testklasse. Ohne `static` startet er vor **jeder** Testmethode neu, was die Laufzeit vervielfacht. Das [PostgreSQL-Modul](https://java.testcontainers.org/modules/databases/postgres/) und alle weiteren sind in der offiziellen Doku dokumentiert.
+
+:::note[Erst Dev Services, dann Testcontainers]
+Solange Quarkus einen Dienst über Dev Services abdeckt, ist das der einfachere Weg. Handgeschriebene Testcontainers-Setups sind mehr Code und erledigen dieselbe Aufgabe.
+:::
+
+### Namenskonvention
+
+Maven unterscheidet anhand des Klassennamens, wann ein Test läuft:
+
+| Suffix | Plugin | Läuft bei | Zweck |
+|---|---|---|---|
+| `...Test` | Surefire | `mvn test` und `mvn verify` | Unit- und `@QuarkusTest`-Tests |
+| `...IT` | Failsafe | nur `mvn verify` | `@QuarkusIntegrationTest` gegen das gebaute Artefakt |
+
+Mit `@QuarkusIntegrationTest` lassen sich dieselben Tests gegen das fertig gepackte Artefakt oder das Docker-Image laufen lassen, indem eine `IT`-Klasse von der Testklasse erbt:
+
+```java
+@QuarkusIntegrationTest
+class RechnungResourceIT extends RechnungResourceTest {
+    // erbt alle Tests, führt sie aber gegen das gebaute Artefakt aus
+}
+```
+
+Das ist der Test, der Fehler findet, die nur im gebauten Image auftreten. Er ist langsam, deshalb gehört er in `mvn verify` und nicht in die schnelle Schleife beim Entwickeln.
+
+### Continuous Testing
+
+Quarkus kann Tests im Hintergrund laufen lassen, während ihr programmiert. Im Dev-Modus mit `mvn quarkus:dev` startet ihr das mit `r`. Nach jedem Speichern laufen nur die Tests neu, die vom geänderten Code betroffen sind.
+
+## Frontend: Vitest und Testing Library
+
+Das Frontend nutzt [Vite](https://vite.dev/), dazu passt [Vitest](https://vitest.dev/) als Testrunner. Für Komponenten kommt die [React Testing Library](https://testing-library.com/docs/react-testing-library/intro/) dazu.
+
+```bash
+npm install -D vitest jsdom @testing-library/react @testing-library/user-event @testing-library/jest-dom
+```
+
+```ts title="vite.config.ts"
+/// <reference types="vitest/config" />
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
+
+export default defineConfig({
+  plugins: [react()],
+  test: {
+    environment: 'jsdom',
+    globals: true,
+    setupFiles: './src/setupTests.ts',
+  },
+});
+```
+
+```ts title="src/setupTests.ts"
+import '@testing-library/jest-dom/vitest';
+```
+
+```json title="package.json"
+"scripts": {
+  "test": "vitest",
+  "test:run": "vitest run"
+}
+```
+
+`npm test` läuft im Watch-Modus beim Entwickeln, `npm run test:run` einmalig für die CI.
+
+### Ein Komponententest
+
+```tsx title="src/RechnungsListe.test.tsx"
+import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import RechnungsListe from './RechnungsListe';
+
+it('zeigt eine Meldung, wenn keine Rechnungen vorliegen', () => {
+  render(<RechnungsListe rechnungen={[]} />);
+
+  expect(screen.getByText('Keine Rechnungen vorhanden')).toBeInTheDocument();
+});
+
+it('ruft onLoeschen mit der ID der gewaehlten Rechnung auf', async () => {
+  const onLoeschen = vi.fn();
+  render(
+    <RechnungsListe rechnungen={[{ id: 42, kunde: 'THI' }]} onLoeschen={onLoeschen} />
+  );
+
+  await userEvent.click(screen.getByRole('button', { name: 'Rechnung 42 löschen' }));
+
+  expect(onLoeschen).toHaveBeenCalledWith(42);
+});
+```
+
+### Testet, was der Nutzer sieht
+
+Das Leitprinzip der Testing Library: Sucht Elemente so, wie ein Nutzer sie finden würde. `getByRole` mit dem sichtbaren Namen ist fast immer die richtige Wahl, `getByTestId` die letzte Ausweichmöglichkeit. Die [empfohlene Reihenfolge der Queries](https://testing-library.com/docs/queries/about/#priority) steht in der offiziellen Doku.
+
+Der Nebeneffekt ist wertvoll: Ein Test, der über `getByRole('button', { name: ... })` sucht, schlägt fehl, wenn der Button keinen zugänglichen Namen hat. Ihr testet damit gleichzeitig die Barrierefreiheit.
+
+:::warning[Keine echten Netzwerkaufrufe im Test]
+Komponenten, die `fetch` aufrufen, dürfen im Test nicht wirklich ins Netz gehen. Ersetzt den Aufruf mit `vi.stubGlobal('fetch', vi.fn())` oder mockt die Modulgrenze mit `vi.mock`. Tests, die von einem laufenden Backend abhängen, sind in der CI wertlos.
+:::
+
+## In der CI
+
+Die [GitHub Action](./github#github-actions) läuft auf `main` und auf Pull Requests. Damit ein roter Test den Merge verhindert, müssen die Testschritte **vor** dem Docker-Build stehen:
+
+```yaml
+      - name: Backend-Tests
+        run: mvn --batch-mode verify
+
+      - name: Frontend-Tests
+        run: npm ci && npm run test:run
+```
+
+Auf GitHub-Runnern ist Docker vorinstalliert, Dev Services und Testcontainers funktionieren dort ohne Zusatzkonfiguration.
+
+## Was einen guten Test ausmacht
+
+- **Ein Verhalten pro Test.** Der Testname beschreibt das erwartete Verhalten, nicht die Methode. `weistAnfrageOhneTokenAb` sagt mehr als `testGet`.
+- **Arrange, Act, Assert.** Erst Ausgangslage herstellen, dann die eine Aktion ausführen, dann prüfen. Drei sichtbare Blöcke.
+- **Testet Verhalten, nicht Implementierung.** Prüft die HTTP-Antwort und den Zustand danach, nicht welche private Methode aufgerufen wurde. Sonst bricht jeder Test beim ersten Refactoring.
+- **Deterministisch.** Keine `Thread.sleep`, keine Abhängigkeit von der Ausführungsreihenfolge, keine echten externen Dienste. Ein Test, der sporadisch rot ist, wird ignoriert und ist damit wertlos.
+- **Auch der Fehlerfall gehört getestet.** Ungültige Eingaben, fehlende Berechtigung, leere Liste. Dort stecken die Bugs, nicht im Happy Path.
+- **Jagt keine Prozentzahl.** Eine hohe Testabdeckung ist kein Ziel an sich. Testet die Stellen, an denen ein Fehler wirklich wehtut: Berechnungen, Berechtigungen, Zustandsübergänge.
+
+:::tip[Der erste Test für jeden Bug]
+Wenn ihr einen Fehler findet, schreibt zuerst einen Test, der ihn reproduziert und rot ist. Dann repariert ihr den Code, bis er grün wird. So habt ihr den Beweis, dass ihr den richtigen Fehler behoben habt, und eine Absicherung, dass er nicht zurückkommt.
+:::

@@ -36,22 +36,33 @@ Ein klassischer Service im Projekt braucht die folgenden fünf Extensions:
 Die wichtigsten Einstellungen in `src/main/resources/application.properties`:
 
 ```properties
-# Datenbankverbindung
-quarkus.datasource.db-kind=postgresql
-quarkus.datasource.username=${DB_USER}
-quarkus.datasource.password=${DB_PASSWORD}
-quarkus.datasource.jdbc.url=jdbc:postgresql://${DB_HOST}:5432/${DB_NAME}
+# Nur in Produktion: echte Verbindungsdaten aus Umgebungsvariablen
+%prod.quarkus.datasource.jdbc.url=jdbc:postgresql://${DB_HOST}:5432/${DB_NAME}
+%prod.quarkus.datasource.username=${DB_USER}
+%prod.quarkus.datasource.password=${DB_PASSWORD}
+%prod.quarkus.oidc.auth-server-url=${KEYCLOAK_URL}/realms/${KEYCLOAK_REALM}
+%prod.quarkus.oidc.client-id=${KEYCLOAK_CLIENT_ID}
 
-# Schema automatisch aktualisieren (nur Entwicklung)
+# Gilt in allen Profilen
+quarkus.datasource.db-kind=postgresql
+quarkus.oidc.application-type=service
+
+# Schema automatisch aktualisieren
 quarkus.hibernate-orm.database.generation=update
 
-# Keycloak
-quarkus.oidc.auth-server-url=${KEYCLOAK_URL}/realms/${KEYCLOAK_REALM}
-quarkus.oidc.client-id=${KEYCLOAK_CLIENT_ID}
-quarkus.oidc.application-type=service
+# Im Test das Schema jedes Mal frisch aufbauen
+%test.quarkus.hibernate-orm.database.generation=drop-and-create
 ```
 
 Sensible Werte wie Passwörter und URLs werden als Umgebungsvariablen übergeben und nicht in die Codebasis eingecheckt.
+
+### Warum der `%prod.`-Präfix?
+
+Quarkus kennt die Profile `dev`, `test` und `prod`. Ein Präfix wie `%prod.` bedeutet, dass die Einstellung **nur** im jeweiligen Profil gilt. Das ist hier kein Detail, sondern Voraussetzung dafür, dass die Entwicklung überhaupt bequem funktioniert.
+
+Sind Datenbank-URL und `auth-server-url` nämlich nicht gesetzt, startet Quarkus in Dev und Test über [Dev Services](https://quarkus.io/guides/dev-services) automatisch einen PostgreSQL- und einen Keycloak-Container. Ihr braucht dann weder eine lokale Datenbank noch eine eigene Keycloak-Instanz zum Entwickeln, und Tests laufen ohne Zusatzkonfiguration. Sobald ihr die Werte für alle Profile setzt, greift dieser Mechanismus nicht mehr.
+
+Wie ihr das zum Testen nutzt und wie der Login in den Keycloak Dev Service funktioniert, beschreibt die [Testing-Seite](./testing#dev-services-datenbank-und-keycloak-ohne-konfiguration).
 
 ### Datenbankschema und Migrationen
 
