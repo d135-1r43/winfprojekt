@@ -1,0 +1,114 @@
+---
+sidebar_position: 6
+---
+
+# Pitchdeck
+
+Ein **Pitchdeck** ist eine kurze Präsentation, mit der ihr eine Geschäftsidee vorstellt, klassischerweise vor Investoren, im Projektkontext vor dem Dozenten, einem Fachpublikum oder einem fiktiven Auftraggeber. Es ersetzt keinen Businessplan, sondern erzeugt Interesse: Nach dem Pitch soll das Publikum verstanden haben, **welches Problem** ihr löst, **für wen**, und **warum ausgerechnet ihr**.
+
+Die Faustregel dafür stammt von Guy Kawasaki, die **10/20/30-Regel**:
+
+- **10 Folien**: mehr kann sich niemand merken
+- **20 Minuten**: auch wenn ihr einen 60-Minuten-Slot habt
+- **30 Punkt Schriftgröße**: zwingt euch, Text wegzulassen
+
+## Die klassische Struktur
+
+Die folgende Reihenfolge hat sich als Standard etabliert (Sequoia Capital, Y Combinator, Kawasaki unterscheiden sich nur in Details). Sie ist eine **Erzählung**: Problem → Lösung → Beweis, dass daraus ein Geschäft wird.
+
+| # | Folie | Kernfrage | Was drauf gehört |
+|---|---|---|---|
+| 1 | **Titel & Vision** | Wer seid ihr, in einem Satz? | Name, Logo, One-Liner ("Wir sind X für Y") |
+| 2 | **Problem** | Wer leidet woran? | Konkreter Schmerz einer konkreten Zielgruppe, möglichst mit Beleg |
+| 3 | **Lösung** | Wie löst ihr es? | Euer Ansatz in einem Bild oder drei Punkten, noch keine Feature-Liste |
+| 4 | **Warum jetzt?** | Warum hat das nicht schon jemand gemacht? | Technologischer, regulatorischer oder gesellschaftlicher Wandel |
+| 5 | **Marktgröße** | Wie groß kann das werden? | TAM / SAM / SOM (siehe unten), nachvollziehbar hergeleitet |
+| 6 | **Produkt** | Wie fühlt es sich an? | Screenshots, Demo, Nutzerreise; der emotionale Höhepunkt |
+| 7 | **Geschäftsmodell** | Womit verdient ihr Geld? | Preismodell, Umsatz pro Kunde, Kostenstruktur |
+| 8 | **Wettbewerb** | Warum ihr und nicht die? | Ehrliche Einordnung + euer klarer Unterschied |
+| 9 | **Go-to-Market** | Wie kommt ihr an Kunden? | Erste Kanäle, Vertriebslogik, Kosten pro Kunde |
+| 10 | **Team** | Warum könnt gerade ihr das? | Relevante Kompetenzen, nicht vollständige Lebensläufe |
+| 11 | **Traction** | Was habt ihr schon erreicht? | Nutzer, Pilotkunden, Prototyp, Meilensteine |
+| 12 | **Ask** | Was wollt ihr? | Konkrete Bitte (Budget, Partner, Freigabe) und wofür |
+
+Folien 11 und 12 sind die häufigsten Ergänzungen zu Kawasakis Zehn. Wenn ihr auf zehn kommen müsst: **Traction** in die Team-Folie integrieren, **Warum jetzt?** in die Problem-Folie.
+
+:::tip[Reihenfolge ist nicht verhandelbar, Gewichtung schon]
+Das Publikum erwartet diesen Ablauf und hört entsprechend zu. Wie viel Zeit ihr auf eine Folie verwendet, hängt aber von eurer Geschichte ab. Bei einem technisch schwierigen Produkt darf die Lösung länger dauern, bei einem umkämpften Markt der Wettbewerb.
+:::
+
+## Marktgröße: TAM, SAM und SOM
+
+Folie 5 ist die, an der die meisten Pitches scheitern. Entweder wird eine unrealistisch große Zahl behauptet („der Markt ist 40 Mrd. €, wir brauchen nur 1 %"), oder es existiert gar keine Herleitung. Das Standardmodell dafür sind drei ineinanderliegende Märkte:
+
+export function MarketSizingDiagram() {
+  return (
+    <figure style={{margin: '2rem auto', maxWidth: '480px'}}>
+      <svg
+        viewBox="0 0 420 380"
+        role="img"
+        aria-label="Konzentrische Kreise: TAM umschließt SAM, SAM umschließt SOM"
+        style={{width: '100%', height: 'auto', display: 'block'}}
+      >
+        <circle cx="210" cy="190" r="170" fill="#ece5f3" stroke="#b0a0d0" strokeWidth="2" />
+        <circle cx="210" cy="225" r="125" fill="#b0a0d0" stroke="#9080b0" strokeWidth="2" />
+        <circle cx="210" cy="272" r="76" fill="#704080" stroke="#503060" strokeWidth="2" />
+
+        <text x="210" y="58" textAnchor="middle" fill="#503060" fontSize="30" fontWeight="700">TAM</text>
+        <text x="210" y="80" textAnchor="middle" fill="#503060" fontSize="14">Gesamtmarkt</text>
+
+        <text x="210" y="140" textAnchor="middle" fill="#201040" fontSize="26" fontWeight="700">SAM</text>
+        <text x="210" y="160" textAnchor="middle" fill="#201040" fontSize="13">erreichbarer Markt</text>
+
+        <text x="210" y="268" textAnchor="middle" fill="#ffffff" fontSize="22" fontWeight="700">SOM</text>
+        <text x="210" y="288" textAnchor="middle" fill="#ffd0e0" fontSize="12">realistischer</text>
+        <text x="210" y="304" textAnchor="middle" fill="#ffd0e0" fontSize="12">Marktanteil</text>
+      </svg>
+    </figure>
+  );
+}
+
+<MarketSizingDiagram />
+
+| Ebene | Ausgeschrieben | Bedeutung | Beispiel: Terminbuchung für Arztpraxen |
+|---|---|---|---|
+| **TAM** | *Total Addressable Market* | Der gesamte Markt, wenn ihr **jeden** denkbaren Kunden weltweit gewinnt | Alle Praxisverwaltungs-Software weltweit |
+| **SAM** | *Serviceable Available Market* | Der Teil, den ihr mit **eurem Produkt in eurer Region** überhaupt bedienen könnt | Terminbuchung für Praxen in Deutschland |
+| **SOM** | *Serviceable Obtainable Market* | Der Anteil, den ihr in den nächsten Jahren **realistisch** gewinnt | 3 % der bayerischen Hausarztpraxen in 3 Jahren |
+
+### Wie ihr die Zahlen herleitet
+
+Es gibt zwei Wege, und ihr solltet **beide** rechnen. Wenn sie in derselben Größenordnung landen, ist eure Schätzung plausibel:
+
+**Top-down** geht von einer Marktstudie aus und schneidet Segmente heraus:
+
+> Markt für Praxissoftware in Deutschland (Studie): 800 Mio. € → davon Terminmanagement ca. 15 % → **SAM ≈ 120 Mio. €**
+
+**Bottom-up** rechnet von der einzelnen Kundenbeziehung hoch. Das ist der überzeugendere Weg:
+
+> 55.000 Hausarztpraxen in Deutschland × 1.800 € Jahreslizenz = **SAM ≈ 99 Mio. €**
+> davon 3 % in 3 Jahren = **SOM ≈ 3 Mio. € ARR**
+
+:::warning[Der „1 % vom Riesenmarkt"-Fehler]
+"Der Markt ist 40 Mrd. € groß, wir brauchen nur 1 %" ist das klassische Warnsignal. Es sagt nichts darüber aus, **wie** ihr diese Kunden gewinnt. Umgekehrt argumentieren: Wie viele Kunden schafft ihr pro Monat, was zahlen sie, was ergibt das nach drei Jahren? Diese Zahl ist kleiner, aber verteidigbar.
+:::
+
+## Häufige Fehler
+
+- **Zu viel Text.** Die Folie ist die Illustration, ihr seid die Erzählung. Wer die Folie vorliest, ist überflüssig.
+- **Lösung vor Problem.** Wer nicht verstanden hat, wem was wehtut, hört bei der Lösung nicht zu.
+- **"Wir haben keinen Wettbewerb."** Das heißt entweder, es gibt keinen Markt, oder ihr habt nicht recherchiert. Der Status quo (Excel, Telefon, Papier) ist immer ein Wettbewerber.
+- **Feature-Aufzählung statt Nutzen.** Nicht "OAuth2-Login, REST-API, Docker-Deployment", sondern was der Kunde dadurch kann.
+- **Zahlen ohne Quelle.** Jede Marktzahl braucht eine nachvollziehbare Herleitung oder eine Quellenangabe auf der Folie.
+- **Kein Ask.** Ein Pitch ohne konkrete Forderung am Ende endet in Höflichkeit statt in einer Entscheidung.
+
+## Für euer Projekt
+
+Auch wenn ihr keine Firma gründet: Die Struktur zwingt euch, euer Projekt aus Nutzersicht zu erklären statt aus Architektursicht. Für die Abschlusspräsentation lohnt sich eine angepasste Fassung:
+
+- **Problem, Lösung, Produkt, Team** bleiben unverändert
+- **Marktgröße** wird zu „Wer würde das nutzen, und wie viele sind das?"
+- **Traction** wird zu eurem Projektstand: Was läuft, was ist getestet, was fehlt
+- **Ask** wird zum Ausblick: Was bräuchte es, um daraus ein echtes Produkt zu machen
+
+Die Demo (Folie 6) ist dabei euer stärkstes Argument. Plant sie ein, probt sie, und haltet Screenshots als Fallback bereit. Live-Demos scheitern zuverlässig genau dann, wenn Publikum zusieht.
