@@ -20,7 +20,6 @@ This is a [Docusaurus 3.9](https://docusaurus.io/) static site with TypeScript c
 
 **Content directories:**
 - `docs/` - Documentation pages; sidebar is auto-generated from directory structure. Subdirectories become categories (ordered/labeled via `_category_.json`).
-- `blog/` - Blog posts; named `YYYY-MM-DD-title.md`. Authors and tags defined in `blog/authors.yml` and `blog/tags.yml`.
 - `src/pages/` - Top-level site pages (React `.tsx` or `.md`); each file becomes a route.
 - `src/components/` - Shared React components.
 - `static/` - Static assets served at the root.
