@@ -9,10 +9,13 @@ npm start         # Start local dev server with hot reload
 npm run build     # Build static site to /build directory
 npm run serve     # Serve the pre-built static site
 npm run typecheck # Run TypeScript type checking
-npm run deploy    # Deploy to GitHub Pages
 ```
 
 No dedicated lint or test commands are configured.
+
+## Deployment
+
+Pushing to `main` is all that is required. `.github/workflows/docker.yml` builds a Docker image and pushes it to GHCR; Watchtower pulls the new image on the server and restarts the container. There is no manual deploy step — do not run `npm run deploy`.
 
 ## Architecture
 
