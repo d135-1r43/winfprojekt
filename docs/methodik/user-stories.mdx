@@ -1,0 +1,251 @@
+---
+sidebar_position: 2.5
+---
+
+# User Stories
+
+Eine User Story beschreibt eine Anforderung aus Sicht derer, die das Produkt später benutzen. Sie ist bewusst kurz und ersetzt kein Lastenheft. Ron Jeffries hat das mit den **drei C** zusammengefasst:
+
+| C | Auf Deutsch | Was dahintersteckt |
+|---|---|---|
+| **Card** | Die Karte | Der kurze Text, der in ein Ticket passt |
+| **Conversation** | Das Gespräch | Die Klärung im Team, für die die Karte nur der Anlass ist |
+| **Confirmation** | Die Bestätigung | Die Akzeptanzkriterien, an denen ihr „fertig" messt |
+
+Der häufigste Fehler ist, nur das erste C zu machen. Eine Story, die niemand besprochen hat, ist eine Vermutung. In diesem Projekt ist der [Dozent Product Owner](./scrum#rahmenbedingungen), das Gespräch findet also im wöchentlichen Betreuungstermin statt.
+
+## Die Form
+
+```text
+Als <Rolle>
+möchte ich <Funktion>,
+um <Nutzen> zu erreichen.
+```
+
+Ein Beispiel, das auf dieser Seite durchgehend weiterverwendet wird:
+
+> **Als** Mitarbeiterin
+> **möchte ich** einen Urlaubsantrag mit Start- und Enddatum stellen,
+> **um** meine Abwesenheit rechtzeitig genehmigen zu lassen.
+
+Die drei Teile haben unterschiedliche Aufgaben:
+
+| Teil | Frage | Warum er wichtig ist |
+|---|---|---|
+| **Als \<Rolle\>** | Wer? | Legt fest, aus wessen Sicht ihr entwickelt. „Als Nutzer" ist fast immer zu unscharf: Mitarbeiterin, Vorgesetzter und Personalabteilung wollen Verschiedenes. |
+| **möchte ich \<Funktion\>** | Was? | Beschreibt das Ziel, nicht die technische Lösung. |
+| **um \<Nutzen\>** | Wozu? | Der wichtigste Teil. Er begründet, warum die Story überhaupt Geld und Zeit wert ist. |
+
+### Der Nutzen ist der Prüfstein
+
+Wenn sich das „um … zu" nicht ohne Wiederholung des „möchte ich" formulieren lässt, stimmt etwas nicht. Vergleicht:
+
+| Bewertung | Formulierung |
+|---|---|
+| ❌ Dreht sich im Kreis | Als Nutzer möchte ich einen Speichern-Button, **um speichern zu können**. |
+| ✅ Nennt ein echtes Problem | Als Mitarbeiterin möchte ich meinen Antrag zwischenspeichern, **um ihn nach einer Unterbrechung nicht neu ausfüllen zu müssen**. |
+
+Die erste Fassung sagt nichts darüber aus, ob die Funktion überhaupt gebraucht wird. Bei der zweiten lässt sich diskutieren, ob Zwischenspeichern die beste Lösung ist, oder ob ein kürzeres Formular dasselbe Problem einfacher löst.
+
+:::tip[Rollen einmal sammeln]
+Legt zu Projektbeginn fest, welche Rollen es gibt, und benutzt danach immer dieselben Bezeichnungen. Das verhindert, dass „Nutzer", „Anwender" und „Mitarbeiter" in verschiedenen Tickets dasselbe oder eben doch etwas anderes meinen.
+:::
+
+## Akzeptanzkriterien
+
+Die Story sagt, **was** jemand erreichen will. Die Akzeptanzkriterien sagen, **woran ihr erkennt, dass es funktioniert**. Ohne sie ist am Sprintende strittig, ob ein Ticket fertig ist, und genau daran scheitern Teams regelmäßig.
+
+Es gibt zwei gängige Schreibweisen. Nehmt die, die zur jeweiligen Story passt.
+
+### Als Checkliste
+
+Gut für einfache Stories mit mehreren kleinen Bedingungen:
+
+- [ ] Der Antrag lässt sich mit Startdatum, Enddatum und optionaler Bemerkung anlegen
+- [ ] Das Startdatum darf nicht in der Vergangenheit liegen
+- [ ] Das Enddatum darf nicht vor dem Startdatum liegen
+- [ ] Nach dem Absenden erhält die vorgesetzte Person eine Aufgabe zur Genehmigung
+- [ ] Die Antragstellerin sieht den Status: offen, genehmigt oder abgelehnt
+- [ ] Überschneidet sich der Antrag mit einem bestehenden, wird er mit Hinweis abgelehnt
+
+### Als Gegeben-Wenn-Dann
+
+Gut, wenn das Verhalten von einer Vorbedingung abhängt. Das Schema stammt aus Gherkin und lässt sich später fast eins zu eins in einen Test übersetzen:
+
+```gherkin
+Gegeben  ich bin als Mitarbeiterin angemeldet
+Und      ich habe noch 12 Urlaubstage übrig
+Wenn     ich einen Antrag über 5 Tage stelle
+Dann     wird der Antrag gespeichert
+Und      meine vorgesetzte Person erhält eine Aufgabe zur Genehmigung
+```
+
+Der Fehlerfall gehört genauso dazu:
+
+```gherkin
+Gegeben  ich habe noch 2 Urlaubstage übrig
+Wenn     ich einen Antrag über 5 Tage stelle
+Dann     wird der Antrag abgelehnt
+Und      ich sehe den Hinweis "Nicht genügend Urlaubstage"
+```
+
+### Regeln für gute Kriterien
+
+- **Überprüfbar.** Jemand ohne Vorwissen muss entscheiden können, ob das Kriterium erfüllt ist. „Die Oberfläche ist benutzerfreundlich" ist kein Kriterium.
+- **Aus Nutzersicht.** Beschreibt beobachtbares Verhalten, nicht die Implementierung. „Die Tabelle `urlaubsantrag` hat eine Spalte `status`" gehört nicht hierher.
+- **Ohne Lösungsvorgabe.** Wie es umgesetzt wird, entscheidet das Team. Sonst nehmt ihr euch die Möglichkeit, einen einfacheren Weg zu finden.
+- **Mit Fehlerfällen.** Ungültige Eingaben, fehlende Berechtigung, leere Ergebnisse. Dort stecken die Bugs, nicht im Happy Path.
+- **Wenige.** Braucht eine Story mehr als etwa sieben Kriterien, ist sie zu groß und gehört geteilt.
+
+Dieselben Kriterien sind später die Vorlage für die [automatisierten Tests](../technik/testing). Wer die Akzeptanzkriterien sauber formuliert, hat die Testfälle schon geschrieben.
+
+## Rahmenbedingungen
+
+Nicht alles, was für eine Funktion gilt, ist ein Akzeptanzkriterium. Es gibt Anforderungen, die für **jede** Story gelten, und solche, die zwar zu einer Story gehören, aber kein Verhalten beschreiben. Diese Unterscheidung hilft:
+
+| | Gilt für | Beispiel | Wo es hingehört |
+|---|---|---|---|
+| **Akzeptanzkriterium** | Genau diese Story | „Das Enddatum darf nicht vor dem Startdatum liegen" | An die Story |
+| **Rahmenbedingung** | Diese Story, aber ohne Verhalten zu beschreiben | „Die Antragsliste lädt auch bei 500 Anträgen in unter zwei Sekunden" | An die Story, getrennt notiert |
+| **Definition of Done** | Alle Stories | „Der Code ist reviewt und gemergt" | Einmal fürs Team |
+
+Typische Rahmenbedingungen in diesem Projekt:
+
+- **Authentifizierung.** Jeder Endpunkt ist über [Keycloak](../technik/oauth2-oidc) abgesichert, und Rollen werden serverseitig geprüft. Es reicht nicht, einen Button im Frontend auszublenden.
+- **Antwortzeiten.** Legt fest, was ihr zusagt, und ab welcher Datenmenge das gilt.
+- **Datenschutz.** Personenbezogene Daten wie Abwesenheiten unterliegen der DSGVO. Klärt Aufbewahrungsfristen und wer was sehen darf, bevor ihr die Tabelle anlegt.
+- **Barrierefreiheit.** Mindestens: alles per Tastatur bedienbar, Formularfelder haben Labels.
+- **Browser und Geräte.** Welche Browser unterstützt ihr, und muss es auf dem Smartphone funktionieren?
+
+:::warning[Rahmenbedingungen früh klären, nicht am Ende]
+Nichtfunktionale Anforderungen nachträglich einzubauen ist teuer. Eine Berechtigungsprüfung, die erst im letzten Sprint dazukommt, zieht sich durch jeden Endpunkt und jede Oberfläche. Klärt Authentifizierung, Datenschutz und Antwortzeiten, bevor ihr die erste Story dieser Art umsetzt.
+:::
+
+## Stories richtig schneiden
+
+Die häufigste Ursache für Stories, die am Sprintende nicht fertig sind: Sie wurden nach technischen Schichten geschnitten statt nach Nutzen.
+
+export function SlicingDiagram() {
+  const layers = [
+    {label: 'Frontend', y: 52},
+    {label: 'REST-API', y: 92},
+    {label: 'Datenbank', y: 132},
+  ];
+  const panel = (x, title, marker, markerColor) => (
+    <g key={title}>
+      <text x={x + 100} y={30} textAnchor="middle" fill="#503060" fontSize="12" fontWeight="700">{title}</text>
+      <text x={x + 100} y={190} textAnchor="middle" fill={markerColor} fontSize="13" fontWeight="700">{marker}</text>
+    </g>
+  );
+  return (
+    <figure style={{margin: '2rem auto', maxWidth: '560px'}}>
+      <svg viewBox="0 0 460 205" role="img" aria-label="Vergleich: horizontal nach Schichten geschnittene Stories gegenüber einer vertikal durch alle Schichten geschnittenen Story" style={{width: '100%', height: 'auto', display: 'block'}}>
+        {layers.map((l, i) => (
+          <g key={`h-${l.label}`}>
+            <rect x="15" y={l.y} width="200" height="32" rx="3" fill={['#704080', '#b0a0d0', '#ece5f3'][i]} stroke="#9080b0" strokeWidth="1.5" />
+            <text x="115" y={l.y + 21} textAnchor="middle" fill={i === 0 ? '#ffffff' : '#201040'} fontSize="11" fontWeight="600">{l.label}</text>
+          </g>
+        ))}
+        {layers.map((l) => (
+          <g key={`v-${l.label}`}>
+            <rect x="245" y={l.y} width="200" height="32" rx="3" fill="#ece5f3" stroke="#9080b0" strokeWidth="1.5" />
+            <text x="310" y={l.y + 21} textAnchor="middle" fill="#503060" fontSize="11" fontWeight="600">{l.label}</text>
+          </g>
+        ))}
+        <rect x="360" y="46" width="70" height="124" rx="4" fill="#704080" fillOpacity="0.9" stroke="#503060" strokeWidth="2" />
+        <text x="395" y="112" textAnchor="middle" fill="#ffffff" fontSize="11" fontWeight="700">Story</text>
+        {panel(15, 'Horizontal: 3 Stories', '✗ nichts ist nutzbar', '#a03050')}
+        {panel(245, 'Vertikal: 1 Story', '✓ sofort nutzbar', '#4a7020')}
+      </svg>
+    </figure>
+  );
+}
+
+<SlicingDiagram />
+
+Links sind drei Stories entstanden, von denen einzeln keine einen Nutzen liefert. Erst wenn alle drei fertig sind, kann jemand einen Urlaubsantrag stellen. Bleibt eine liegen, war der ganze Sprint umsonst. Rechts geht eine dünne Scheibe durch alle Schichten: weniger Funktionen, aber die funktionieren vollständig und lassen sich im [Sprint Review](./scrum#retrospektive) vorführen.
+
+### Techniken zum Teilen
+
+Ist eine Story zu groß, teilt sie nach einem dieser Muster:
+
+| Muster | Beispiel |
+|---|---|
+| **Nach Workflow-Schritt** | Erst Antrag stellen, später Antrag genehmigen, noch später Antrag stornieren |
+| **Nach Geschäftsregel** | Erst ohne Prüfung des Resturlaubs, später mit |
+| **Nach Datenvariante** | Erst ganze Tage, später halbe Tage |
+| **Happy Path zuerst** | Erst der Normalfall, dann die Sonderfälle als eigene Story |
+| **Manuell vor automatisch** | Erst eine Liste zum Abarbeiten, später die automatische Benachrichtigung |
+
+Was ihr **nicht** tun solltet: nach „Frontend" und „Backend" teilen, oder eine Story „Datenbankmodell anlegen" schneiden. Das sind Aufgaben innerhalb einer Story, keine eigenen Stories.
+
+## INVEST
+
+Eine Merkhilfe von Bill Wake, um eine Story vor der Planung zu prüfen:
+
+| Buchstabe | Bedeutung | Frage |
+|---|---|---|
+| **I**ndependent | Unabhängig | Lässt sie sich ohne eine andere Story umsetzen? |
+| **N**egotiable | Verhandelbar | Ist das Was beschrieben und das Wie offen? |
+| **V**aluable | Wertvoll | Merkt jemand außerhalb des Teams, dass sie fertig ist? |
+| **E**stimable | Schätzbar | Weiß das Team genug, um [Story Points](./storypoints) zu vergeben? |
+| **S**mall | Klein | Passt sie sicher in einen [Sprint](./scrum#sprints)? |
+| **T**estable | Testbar | Gibt es überprüfbare Akzeptanzkriterien? |
+
+Scheitert eine Story an **E**, fehlt Wissen: Setzt einen Spike an. Scheitert sie an **S**, teilt sie nach den Mustern oben.
+
+## Definition of Ready und Definition of Done
+
+Zwei Checklisten, die ihr einmal im Team vereinbart und danach auf jede Story anwendet. Sie ersparen die immer gleichen Diskussionen.
+
+**Definition of Ready.** Erst wenn das alles zutrifft, darf eine Story in die Sprintplanung:
+
+- Die Story ist in der Als-möchte-ich-um-Form formuliert
+- Akzeptanzkriterien liegen vor
+- Abhängigkeiten sind bekannt und aufgelöst
+- Das Team hat sie [geschätzt](./storypoints)
+- Offene Fragen sind mit dem Product Owner geklärt
+
+**Definition of Done.** Erst wenn das alles zutrifft, ist eine Story fertig:
+
+- Alle Akzeptanzkriterien sind erfüllt
+- [Tests](../technik/testing) sind geschrieben und laufen grün
+- Der [Pull Request](./branches-und-prs) ist reviewt und gemergt
+- Die CI-Pipeline ist grün
+- Die Änderung ist auf der Testumgebung nachvollziehbar
+
+:::tip[„Fast fertig" gibt es nicht]
+Eine Story ist fertig oder nicht fertig. Ein Ticket, das zu 90 Prozent fertig ist, zählt im Sprint Review als nicht erledigt und wandert vollständig in den nächsten Sprint. Das fühlt sich hart an, ist aber die einzige Zahl, aus der ihr eure Geschwindigkeit ablesen könnt.
+:::
+
+## Was keine User Story ist
+
+Nicht jede Arbeit passt in die Storyform. Zwingt sie nicht hinein, sondern benennt sie als das, was sie ist:
+
+| Art | Was es ist | Umgang |
+|---|---|---|
+| **Bug** | Etwas Vorhandenes funktioniert nicht wie vereinbart | Eigenes Ticket mit Reproduktionsschritten, erwartetem und tatsächlichem Verhalten |
+| **Spike** | Zeitlich begrenzte Untersuchung, um eine Frage zu beantworten | Feste Zeitbox, Ergebnis ist Wissen, nicht Code |
+| **Chore** | Notwendige Arbeit ohne direkten Nutzerwert, etwa ein Bibliotheks-Update | Eigenes Ticket, wird eingeplant wie alles andere |
+| **Task** | Ein Arbeitsschritt innerhalb einer Story | Unteraufgabe der Story, kein eigenes Backlog-Element |
+
+## Häufige Fehler
+
+- **Die Lösung steht schon in der Story.** „Als Nutzer möchte ich ein Dropdown mit den Abteilungen" legt die Oberfläche fest, bevor jemand über das Problem gesprochen hat.
+- **Rolle ist immer „Nutzer".** Dann fehlt die Perspektive, und niemand merkt, dass Antragstellerin und Genehmigende verschiedene Dinge brauchen.
+- **Keine Akzeptanzkriterien.** Am Sprintende folgt die Diskussion, ob das jetzt fertig ist.
+- **Story zu groß.** Passt sie nicht in einen Sprint, ist sie kein Arbeitspaket, sondern ein Epic.
+- **Technische Story ohne Nutzen.** „Als Entwickler möchte ich eine Datenbanktabelle" ist eine Aufgabe, keine Story.
+- **Story im Sprint aufblähen.** Kommen mitten im Sprint neue Kriterien dazu, wird die Schätzung wertlos. Neues Kriterium bedeutet neues Ticket.
+
+## Im Projekt umsetzen
+
+Das Backlog liegt in [GitHub Projects](./scrum#sprints). Jede Story ist ein Issue:
+
+- **Titel:** die Story in einem Satz, in der Als-möchte-ich-um-Form
+- **Beschreibung:** Akzeptanzkriterien als Checkliste, damit GitHub den Fortschritt anzeigt, darunter die Rahmenbedingungen
+- **Labels:** Rolle oder Themenbereich, sowie die Art des Tickets, also Story, Bug, Spike oder Chore
+- **Schätzung:** [Story Points](./storypoints) als eigenes Feld im Project
+- **Branch:** wird aus dem Issue heraus erzeugt, damit [Branch und Pull Request](./branches-und-prs) mit dem Ticket verknüpft sind
+
+Schreibt in die Commit-Nachricht oder die PR-Beschreibung `Closes #42`. GitHub schließt das Issue dann automatisch beim Merge, und im Sprint Review stimmt die Zählung.
