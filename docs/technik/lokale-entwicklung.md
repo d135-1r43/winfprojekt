@@ -78,7 +78,25 @@ Ohne laufende Container-Runtime scheitert der Start mit einer Meldung über eine
 
 Arbeitet ihr an mehreren Services gleichzeitig, würde naiv gedacht jeder seinen eigenen Keycloak starten. Das passiert nicht: Keycloak Dev Services erkennt einen bereits laufenden Container am Label `quarkus-dev-service-keycloak` und **teilt ihn standardmäßig** zwischen allen lokal laufenden Quarkus-Anwendungen.
 
-Drei parallel laufende Services bedeuten also einen Keycloak, nicht drei. Ihr müsst dafür nichts konfigurieren. Abschalten ließe sich das Verhalten über `quarkus.keycloak.devservices.shared=false`, aber das wollt ihr in diesem Projekt nicht.
+Drei parallel laufende Services bedeuten also einen Keycloak, nicht drei:
+
+```mermaid
+flowchart TD
+    S1["Urlaubsservice\nquarkus:dev"]
+    S2["Rechnungsservice\nquarkus:dev"]
+    S3["Stammdatenservice\nquarkus:dev"]
+
+    KC["Ein Keycloak-Container\nLabel: quarkus-dev-service-keycloak"]
+
+    S1 --> KC
+    S2 --> KC
+    S3 --> KC
+
+    classDef geteilt fill:#704080,stroke:#503060,color:#ffffff,font-weight:bold
+    class KC geteilt
+```
+
+Der zuerst gestartete Service bringt den Container hoch, alle weiteren finden ihn über das Label und hängen sich an. Ihr müsst dafür nichts konfigurieren. Abschalten ließe sich das Verhalten über `quarkus.keycloak.devservices.shared=false`, aber das wollt ihr in diesem Projekt nicht.
 
 ### Euer eigenes Realm lokal verwenden
 
@@ -195,7 +213,25 @@ export default defineConfig({
 });
 ```
 
-Im Anwendungscode ruft ihr dann `/api/urlaubsantraege` auf. Für den Browser kommt alles von derselben Adresse, CORS entfällt. In Produktion zeigt `VITE_API_URL` weiterhin auf die echte Subdomain hinter dem [Reverse Proxy](./reverse-proxy).
+Im Anwendungscode ruft ihr dann `/api/urlaubsantraege` auf:
+
+```mermaid
+flowchart LR
+    B(["Browser\nkennt nur localhost:5173"])
+    V["Vite Dev Server\nlocalhost:5173"]
+    A["React App"]
+    Q["Quarkus Service\nlocalhost:8080"]
+
+    B -->|"GET /"| V
+    B -->|"GET /api/urlaubsantraege"| V
+    V --> A
+    V -->|"Proxy, serverseitig"| Q
+
+    classDef betont fill:#704080,stroke:#503060,color:#ffffff,font-weight:bold
+    class V betont
+```
+
+Der entscheidende Punkt ist die linke Seite: Der Browser spricht ausschließlich mit Port 5173. Die Weiterleitung auf 8080 passiert im Vite-Server, also serverseitig und außerhalb der Reichweite der Same-Origin-Regel. Für den Browser kommt alles von derselben Adresse, CORS entfällt. In Produktion zeigt `VITE_API_URL` weiterhin auf die echte Subdomain hinter dem [Reverse Proxy](./reverse-proxy).
 
 ## Was Dev Services nicht abdeckt
 

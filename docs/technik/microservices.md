@@ -51,6 +51,35 @@ Das ist keine gekürzte Fassung, sondern die vollständige Konfiguration. Alles 
 | `quarkus.oidc.application-type` | `service` ist die Voreinstellung und genau das, was ein Bearer-Token-Service braucht |
 | Datenbank- und Keycloak-URL | Kommen in Produktion aus Umgebungsvariablen, siehe unten. In Dev und Test übernimmt [Dev Services](./lokale-entwicklung#dev-services-datenbank-und-keycloak-ohne-installation) |
 
+Dasselbe Artefakt läuft damit in beiden Umgebungen, ohne dass ihr etwas umschaltet. Woher die Verbindungsdaten kommen, entscheidet allein die Umgebung:
+
+```mermaid
+flowchart TD
+    P["application.properties\nkeine Datenbank- oder Keycloak-URL"]
+
+    subgraph DEV["Dev und Test: nichts konfiguriert"]
+        DS["Dev Services\nstartet Container selbst"]
+        PGD["PostgreSQL\nContainer"]
+        KCD["Keycloak\nContainer"]
+        DS --> PGD
+        DS --> KCD
+    end
+
+    subgraph PROD["Produktion: Umgebungsvariablen"]
+        ENV["QUARKUS_DATASOURCE_JDBC_URL\nQUARKUS_OIDC_AUTH_SERVER_URL"]
+        PGP["PostgreSQL\nauf dem Server"]
+        KCP["Keycloak\nkeycloak.winfprojekt.de"]
+        ENV --> PGP
+        ENV --> KCP
+    end
+
+    P --> DS
+    P --> ENV
+
+    classDef quelle fill:#704080,stroke:#503060,color:#ffffff,font-weight:bold
+    class P quelle
+```
+
 ### Konfiguration in Produktion
 
 Quarkus liest jede Einstellung auch aus einer Umgebungsvariablen. Die Umrechnung ist mechanisch: Jedes Zeichen, das weder alphanumerisch noch ein Unterstrich ist, wird zum Unterstrich, danach wird alles großgeschrieben. Für unsere Properties heißt das schlicht, dass Punkte und Bindestriche zu Unterstrichen werden.
