@@ -33,36 +33,52 @@ Ein klassischer Service im Projekt braucht die folgenden fünf Extensions:
 
 ## Konfiguration
 
-Die wichtigsten Einstellungen in `src/main/resources/application.properties`:
+Die `src/main/resources/application.properties` bleibt bewusst fast leer:
 
-```properties
-# Nur in Produktion: echte Verbindungsdaten aus Umgebungsvariablen
-%prod.quarkus.datasource.jdbc.url=jdbc:postgresql://${DB_HOST}:5432/${DB_NAME}
-%prod.quarkus.datasource.username=${DB_USER}
-%prod.quarkus.datasource.password=${DB_PASSWORD}
-%prod.quarkus.oidc.auth-server-url=${KEYCLOAK_URL}/realms/${KEYCLOAK_REALM}
-%prod.quarkus.oidc.client-id=${KEYCLOAK_CLIENT_ID}
-
-# Gilt in allen Profilen
-quarkus.datasource.db-kind=postgresql
-quarkus.oidc.application-type=service
-
-# Schema automatisch aktualisieren
+```properties title="src/main/resources/application.properties"
+# Hibernate verwaltet das Schema
 quarkus.hibernate-orm.database.generation=update
 
-# Im Test das Schema jedes Mal frisch aufbauen
+# Im Test mit leerem Schema starten
 %test.quarkus.hibernate-orm.database.generation=drop-and-create
 ```
 
-Sensible Werte wie Passwörter und URLs werden als Umgebungsvariablen übergeben und nicht in die Codebasis eingecheckt.
+Das ist keine gekürzte Fassung, sondern die vollständige Konfiguration. Alles Weitere ergibt sich aus den Voreinstellungen:
 
-### Warum der `%prod.`-Präfix?
+| Was nicht dasteht | Warum es nicht nötig ist |
+|---|---|
+| `quarkus.datasource.db-kind` | Wird aus der Treiber-Extension abgeleitet. Nur bei **mehreren** Datenbank-Extensions im Projekt muss die Art angegeben werden |
+| `quarkus.oidc.application-type` | `service` ist die Voreinstellung und genau das, was ein Bearer-Token-Service braucht |
+| Datenbank- und Keycloak-URL | Kommen in Produktion aus Umgebungsvariablen, siehe unten. In Dev und Test übernimmt [Dev Services](./lokale-entwicklung#dev-services-datenbank-und-keycloak-ohne-installation) |
 
-Quarkus kennt die Profile `dev`, `test` und `prod`. Ein Präfix wie `%prod.` bedeutet, dass die Einstellung **nur** im jeweiligen Profil gilt. Das ist hier kein Detail, sondern Voraussetzung dafür, dass die Entwicklung überhaupt bequem funktioniert.
+### Konfiguration in Produktion
 
-Sind Datenbank-URL und `auth-server-url` nämlich nicht gesetzt, startet Quarkus in Dev und Test über [Dev Services](https://quarkus.io/guides/dev-services) automatisch einen PostgreSQL- und einen Keycloak-Container. Ihr braucht dann weder eine lokale Datenbank noch eine eigene Keycloak-Instanz zum Entwickeln, und Tests laufen ohne Zusatzkonfiguration. Sobald ihr die Werte für alle Profile setzt, greift dieser Mechanismus nicht mehr.
+Quarkus liest jede Einstellung auch aus einer Umgebungsvariablen. Die Umrechnung ist mechanisch: Jedes Zeichen, das weder alphanumerisch noch ein Unterstrich ist, wird zum Unterstrich, danach wird alles großgeschrieben. Für unsere Properties heißt das schlicht, dass Punkte und Bindestriche zu Unterstrichen werden.
 
-Wie ihr das zum Testen nutzt und wie der Login in den Keycloak Dev Service funktioniert, beschreibt die [Testing-Seite](./testing#dev-services-datenbank-und-keycloak-ohne-konfiguration).
+```text
+quarkus.datasource.jdbc.url   →   QUARKUS_DATASOURCE_JDBC_URL
+quarkus.oidc.auth-server-url  →   QUARKUS_OIDC_AUTH_SERVER_URL
+```
+
+Die verbindliche Regel steht im Quarkus-Guide unter [Configuration Reference, Abschnitt Environment variables](https://quarkus.io/guides/config-reference#environment-variables).
+
+Ihr müsst die Werte deshalb **gar nicht** in die `application.properties` schreiben, auch nicht als Platzhalter. Es genügt, die passenden Variablen im [Deployment](./deployment) am Container zu setzen:
+
+| Umgebungsvariable | Beispielwert |
+|---|---|
+| `QUARKUS_DATASOURCE_JDBC_URL` | `jdbc:postgresql://db:5432/urlaub` |
+| `QUARKUS_DATASOURCE_USERNAME` | `urlaub` |
+| `QUARKUS_DATASOURCE_PASSWORD` | aus dem Secret |
+| `QUARKUS_OIDC_AUTH_SERVER_URL` | `https://keycloak.winfprojekt.de/realms/winfprojekt` |
+| `QUARKUS_OIDC_CLIENT_ID` | `urlaubsservice` |
+
+Der Gewinn ist doppelt: Passwörter und URLs landen nie im Repository, und weil in der Datei nichts steht, startet Quarkus in Dev und Test automatisch die passenden Container. Dieselbe Konvention gilt für **jede** Quarkus-Einstellung. Wollt ihr in Produktion den Port ändern, setzt ihr `QUARKUS_HTTP_PORT`, ohne eine Zeile Code anzufassen.
+
+:::warning[Keine eigenen Variablennamen erfinden]
+Schreibt nicht `quarkus.datasource.password=${DB_PASSWORD}` in die Datei, um dann `DB_PASSWORD` zu setzen. Das ist ein Zwischenschritt, den Quarkus nicht braucht, und er kostet euch die Dev Services, weil die Einstellung damit in allen Profilen als gesetzt gilt.
+:::
+
+Was ihr davon im Alltag habt, von der geteilten Keycloak-Instanz bis zum Blick in die Datenbank, beschreibt die Seite [Lokal entwickeln](./lokale-entwicklung). Wie ihr Dev Services in Tests nutzt, steht auf der [Testing-Seite](./testing).
 
 ### Datenbankschema und Migrationen
 

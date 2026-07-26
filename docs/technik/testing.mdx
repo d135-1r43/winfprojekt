@@ -125,37 +125,21 @@ class RechnungResourceTest {
 
 ### Dev Services: Datenbank und Keycloak ohne Konfiguration
 
-Hier liegt der wichtigste Punkt für dieses Projekt. Quarkus startet im Test- und Dev-Modus **automatisch Container** für PostgreSQL und Keycloak, sobald die zugehörige URL nicht konfiguriert ist. Das nennt sich [Dev Services](https://quarkus.io/guides/dev-services) und benutzt intern [Testcontainers](https://java.testcontainers.org/). Ihr müsst weder eine Testdatenbank aufsetzen noch eine Keycloak-Instanz für Tests pflegen.
+Ihr braucht weder eine Testdatenbank noch eine Keycloak-Instanz für Tests. [Dev Services](https://quarkus.io/guides/dev-services) startet beides automatisch als Container, sobald die zugehörige URL nicht konfiguriert ist, und benutzt dafür intern [Testcontainers](https://java.testcontainers.org/). Voraussetzung ist nur, dass in der `application.properties` keine Datenbank- und keine Keycloak-URL steht. Genau deshalb bleibt sie im Projekt minimal, und die echten Werte kommen in Produktion über [Umgebungsvariablen](./microservices#konfiguration-in-produktion). Was Dev Services sonst noch für euch erledigt, steht auf der Seite [Lokal entwickeln](./lokale-entwicklung#dev-services-datenbank-und-keycloak-ohne-installation).
 
-Damit das greift, dürfen die echten Verbindungsdaten **nicht für alle Profile** gelten. Die Konfiguration aus dem [Microservices-Kapitel](./microservices#konfiguration) braucht dafür einen `%prod.`-Präfix:
+Für Tests kommt eine Zeile dazu:
 
 ```properties title="src/main/resources/application.properties"
-# Nur in Produktion: echte Verbindungsdaten aus Umgebungsvariablen
-%prod.quarkus.datasource.jdbc.url=jdbc:postgresql://${DB_HOST}:5432/${DB_NAME}
-%prod.quarkus.datasource.username=${DB_USER}
-%prod.quarkus.datasource.password=${DB_PASSWORD}
-%prod.quarkus.oidc.auth-server-url=${KEYCLOAK_URL}/realms/${KEYCLOAK_REALM}
-%prod.quarkus.oidc.client-id=${KEYCLOAK_CLIENT_ID}
-
-# Gilt in allen Profilen
-quarkus.datasource.db-kind=postgresql
-quarkus.oidc.application-type=service
-
-# Schema automatisch aktualisieren
-quarkus.hibernate-orm.database.generation=update
-
 # Im Test das Schema jedes Mal frisch aufbauen
 %test.quarkus.hibernate-orm.database.generation=drop-and-create
 ```
-
-In Dev und Test ist damit keine Datasource-URL gesetzt, Quarkus startet einen PostgreSQL-Container und verdrahtet ihn selbst. In Produktion greifen die Umgebungsvariablen wie bisher.
 
 :::warning[Docker muss laufen]
 Dev Services braucht eine laufende Container-Runtime. Ohne Docker oder Podman scheitern die Tests mit einer Fehlermeldung über einen nicht erreichbaren Docker-Daemon. Die Einrichtung beschreibt die [Setup-Seite](./setup#docker).
 :::
 
 :::tip[`drop-and-create` nur im Test]
-`%test.quarkus.hibernate-orm.database.generation=drop-and-create` sorgt dafür, dass jeder Testlauf mit leerem Schema startet. Tests, die auf Datenresten des vorherigen Laufs basieren, sind die häufigste Ursache für Tests, die mal grün und mal rot sind.
+Jeder Testlauf startet damit mit leerem Schema. Tests, die auf Datenresten des vorherigen Laufs basieren, sind die häufigste Ursache für Tests, die mal grün und mal rot sind.
 :::
 
 ### Geschützte Endpunkte testen
@@ -243,7 +227,7 @@ Die OpenAPI-Beschreibung ist nebenbei die ehrlichste Schnittstellendokumentation
 
 Eure Endpunkte sind über [OIDC](./oauth2-oidc) abgesichert, ein Aufruf ohne Token liefert also nur `401`. Genau dafür gibt es die Dev UI, die sich ein echtes Token vom Keycloak Dev Service holt und an die Swagger UI weiterreicht. Ihr müsst kein Token von Hand kopieren.
 
-1. `./mvnw quarkus:dev` starten. Der Keycloak Dev Service startet automatisch mit, sofern `auth-server-url` wie [oben beschrieben](#dev-services-datenbank-und-keycloak-ohne-konfiguration) auf `%prod.` beschränkt ist.
+1. `./mvnw quarkus:dev` starten. Der Keycloak Dev Service startet automatisch mit, solange in der `application.properties` wie [oben beschrieben](#dev-services-datenbank-und-keycloak-ohne-konfiguration) keine `auth-server-url` gesetzt ist.
 2. Im Browser `http://localhost:8080/q/dev-ui/extensions` öffnen und dort die Karte **OpenID Connect** auswählen.
 3. Über den Login-Link zu Keycloak wechseln und sich mit einem der vorkonfigurierten Nutzer anmelden.
 4. Zurück in der Dev UI könnt ihr die Swagger UI aufrufen. Das erworbene Token wird an die Aufrufe angehängt, geschützte Endpunkte antworten jetzt mit `200`.
