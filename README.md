@@ -1,5 +1,9 @@
 # WInf Projekt – Dokumentation
 
+<p align="center">
+  <img src="static/img/development-software-09-teamwork-videoconferencing.png" alt="Team bei der Zusammenarbeit" width="420">
+</p>
+
 Projektdokumentation für Studierende der Technischen Hochschule Ingolstadt, bereitgestellt von [Markus Herhoffer](https://herhoffer.net). Erreichbar unter **[winfprojekt.de](https://winfprojekt.de)**.
 
 Die Seite ist mit [Docusaurus](https://docusaurus.io/) gebaut. Korrekturen und Ergänzungen sind willkommen — einfach einen Pull Request öffnen.
