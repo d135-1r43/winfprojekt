@@ -30,7 +30,7 @@
     "@docusaurus/module-type-aliases": "3.10.2",
     "@docusaurus/tsconfig": "3.10.2",
     "@docusaurus/types": "3.10.2",
-    "jsdom": "^30.1.0",
+    "jsdom": "^30.1.1",
     "typescript": "~7.0.2"
   },
   "browserslist": {
