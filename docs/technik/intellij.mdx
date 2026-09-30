@@ -1,0 +1,175 @@
+---
+sidebar_position: 2.2
+sidebar_label: IntelliJ richtig nutzen
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+# IntelliJ richtig nutzen
+
+IntelliJ ist nur dann mehr als ein Texteditor mit Syntax-Highlighting, wenn es versteht, was es vor sich hat. Dafür braucht es drei Dinge, die in der Praxis regelmäßig fehlen:
+
+1. **Das Maven-Projekt ist geladen.** Sonst kennt IntelliJ weder Abhängigkeiten noch Quellordner noch JDK.
+2. **Das Quarkus-Plugin ist aktiv und wird benutzt.** Sonst startet ihr den Service umständlich und verschenkt Autovervollständigung und Navigation.
+3. **Ihr benutzt den Debugger.** Sonst sucht ihr Fehler mit `System.out.println`, und das dauert ein Vielfaches.
+
+Die Screenshots auf dieser Seite stammen aus dem Open-Source-Projekt [pruefstein](https://github.com/explore-de/pruefstein), einem Quarkus-Monorepo mit ähnlichem Aufbau wie unserem.
+
+## Maven-Projekt laden
+
+IntelliJ öffnet zunächst nur einen [Ordner](./git-checkout). Dass darin ein Maven-Projekt steckt, muss es erst erkennen und **importieren**: die `pom.xml` lesen, die Abhängigkeiten herunterladen, die Quellordner markieren und das JDK zuordnen. Erst danach funktionieren Autovervollständigung, Refactorings, Navigation, Tests und das Starten aus der IDE.
+
+### Woran ihr erkennt, dass es fehlt
+
+| Mit geladenem Maven-Projekt | Ohne |
+|---|---|
+| Modulname **fett** mit Artefakt-ID in Klammern, z. B. **web [pruefstein-web]** | Ordner sieht aus wie jeder andere |
+| `src/main/java` ist **blau** (Sources), `src/test/java` **grün** (Test Sources) | Graue Ordner, IntelliJ hält den Code für Textdateien |
+| `target/` ist ausgegraut bzw. orange hinterlegt (Excluded) | `target/` wird mit durchsucht und indiziert |
+| Klassen, Imports und Annotationen werden aufgelöst | Alles rot unterstrichen, *Cannot resolve symbol* |
+| Grüne Start-Pfeile neben `main`-Methoden und Tests | Keine Start-Pfeile |
+| Das **Maven**-Werkzeugfenster (rechter Rand, Symbol *m*) listet das Projekt | Maven-Fenster ist leer oder fehlt |
+
+<img
+  src={require('@site/static/img/screenshots/intellij-maven-projektbaum.png').default}
+  alt="Projektbaum mit geladenen Maven-Modulen: fette Modulnamen mit Artefakt-ID in Klammern, target-Ordner als excluded markiert"
+  style={{maxWidth: '420px', display: 'block', margin: '0 auto 1rem'}}
+/>
+
+Im Screenshot sind alle Module als Maven-Module erkannt: `pruefstein [pruefstein-parent]`, `agent [pruefstein-agent]` und `web [pruefstein-web]`. Die `target`-Ordner sind als *excluded* markiert. Genau so muss es bei euch auch aussehen.
+
+### So ladet ihr es
+
+Beim Öffnen eines Ordners mit `pom.xml` zeigt IntelliJ unten rechts die Meldung **Maven build scripts found** mit dem Link **Load**. Wer die Meldung wegklickt, hat kein Maven-Projekt. Nachholen lässt es sich auf drei Wegen:
+
+- **Rechtsklick auf die `pom.xml` → *Add as Maven Project***. Der schnellste Weg.
+- Im **Maven-Werkzeugfenster** (rechter Rand, Symbol *m*) auf **+** klicken und die `pom.xml` auswählen.
+- Mit <kbd>⇧</kbd><kbd>⇧</kbd> (*Search Everywhere*) nach **Add Maven Projects** suchen.
+
+:::warning[Monorepo: jeder Service einzeln]
+In unserem Monorepo hat jeder Service seine eigene `pom.xml`. Gibt es im Wurzelordner keine gemeinsame Eltern-`pom.xml`, die alle Services als `<modules>` aufführt, importiert IntelliJ sie nicht automatisch. Öffnet dann den **Wurzelordner** des Repositories und fügt jeden Service, an dem ihr arbeitet, über seine `pom.xml` als Maven-Projekt hinzu. Im Maven-Werkzeugfenster steht anschließend pro Service ein Eintrag.
+:::
+
+### Nach Änderungen an der `pom.xml` neu laden
+
+Fügt ihr eine Abhängigkeit hinzu (z. B. über `quarkus ext add`), weiß IntelliJ davon zunächst nichts. Im Editor der `pom.xml` erscheint oben rechts ein kleines schwebendes **m**-Symbol mit Pfeil: Draufklicken lädt das Projekt neu. Alternativ im Maven-Werkzeugfenster auf **Reload All Maven Projects** (die kreisförmigen Pfeile) klicken.
+
+Solange ihr das nicht tut, sind die neuen Klassen im Editor rot, obwohl `./mvnw quarkus:dev` im Terminal problemlos baut. Das ist der häufigste Grund für „bei mir kompiliert es, aber IntelliJ zeigt Fehler“.
+
+### JDK prüfen
+
+Unter **File → Project Structure → Project** muss als *SDK* ein **JDK 21** eingetragen sein (siehe [Setup](./setup#java-21)). Steht dort *No SDK*, ist ebenfalls alles rot, auch bei korrekt geladenem Maven-Projekt.
+
+## Das Quarkus-Plugin
+
+Die **Ultimate Edition** bringt das Plugin **Quarkus** von JetBrains bereits mit. Es muss nicht installiert werden, sollte aber aktiv sein: **Settings → Plugins → Installed**, nach *Quarkus* suchen, Häkchen gesetzt.
+
+:::note[Community Edition]
+In der Community Edition fehlt das JetBrains-Plugin. Als Ersatz gibt es im Marketplace das Plugin **Quarkus Tools** von Red Hat, das Autovervollständigung für die `application.properties` und eine eigene Run-Configuration mitbringt. Die Ultimate Edition ist für Studierende [kostenlos](./setup#ide-intellij-idea) und die bessere Wahl.
+:::
+
+### Was das Plugin bringt
+
+| Funktion | Nutzen |
+|---|---|
+| **Run-Configuration vom Typ *Quarkus*** | Startet den Dev Mode per Klick, inklusive Live Reload, und hängt beim Debuggen den Debugger automatisch an |
+| **Autovervollständigung in der `application.properties`** | Alle Konfigurationsschlüssel der verwendeten Extensions, mit Dokumentation und Prüfung auf Tippfehler |
+| **CDI-Unterstützung** | Symbole am Rand zeigen, welche Bean an einer `@Inject`-Stelle tatsächlich injiziert wird; ein Klick springt hin |
+| **Endpoints-Werkzeugfenster** | Listet alle REST-Endpunkte des Projekts mit Pfad und HTTP-Methode |
+
+### Den Service aus IntelliJ starten
+
+Statt im Terminal `./mvnw quarkus:dev` einzutippen, legt ihr einmalig eine Run-Configuration an:
+
+1. **Run → Edit Configurations…**
+2. **+** → **Quarkus**
+3. Bei *Module* euren Service auswählen, einen sprechenden Namen vergeben, **OK**
+
+Häufig legt IntelliJ die Konfiguration nach dem Maven-Import sogar selbst an. Sie erscheint dann oben rechts in der Werkzeugleiste neben dem grünen Start-Knopf ▶ und dem Käfer-Symbol 🐞 für *Debug*.
+
+Das Ergebnis ist exakt derselbe Dev Mode wie im Terminal: Live Reload, Dev Services, Dev UI und die Tastenkürzel aus [Lokal entwickeln](./lokale-entwicklung#dev-mode-und-live-reload) funktionieren genauso, die Konsole erscheint im **Run**-Fenster. Der Unterschied zeigt sich erst beim Debuggen.
+
+## Der Debugger
+
+Der Debugger hält euren laufenden Service an einer Stelle an, die ihr festlegt, und zeigt euch dort den kompletten Zustand: jede Variable, jedes Feld, den Aufrufstapel. Von da aus geht ihr Zeile für Zeile weiter und seht, wo die Werte vom Erwarteten abweichen. Das ersetzt Dutzende `println`-Runden, die jeweils einen neuen Request und das Durchsuchen der Konsole erfordern.
+
+### Starten
+
+Wählt die Quarkus-Run-Configuration aus und klickt auf das **Käfer-Symbol** statt auf ▶ (oder **Run → Debug…**). IntelliJ startet den Dev Mode und verbindet den Debugger automatisch. Live Reload funktioniert weiterhin: Ihr könnt Code ändern, speichern und im selben Debug-Lauf weitermachen.
+
+:::tip[Schon im Terminal gestartet?]
+Der Dev Mode öffnet auch ohne IntelliJ einen Debug-Port, standardmäßig **5005**. Läuft `./mvnw quarkus:dev` bereits im Terminal, müsst ihr nicht neu starten: **Run → Attach to Process…** zeigt die laufende Quarkus-Anwendung an, auswählen, fertig. Alternativ eine Run-Configuration vom Typ **Remote JVM Debug** mit `localhost:5005` anlegen.
+:::
+
+### Breakpoint setzen und auslösen
+
+1. In der Klasse, die ihr untersuchen wollt, etwa in einer REST-Resource, **links neben die Zeilennummer klicken**. Ein roter Punkt erscheint: der Breakpoint.
+2. Den Code auslösen, also den Endpunkt aufrufen: per Browser, über die Swagger UI, mit `curl` oder aus dem Frontend.
+3. IntelliJ springt in den Vordergrund, die Zeile ist blau hinterlegt, und das **Debug**-Fenster öffnet sich unten.
+
+Der Request wartet so lange, bis ihr weitermacht. Browser und Frontend hängen in dieser Zeit, das ist gewollt.
+
+### Im Debug-Fenster
+
+| Bereich | Was ihr seht |
+|---|---|
+| **Frames** | Den Aufrufstapel: welche Methode hat welche aufgerufen. Ein Klick auf einen Eintrag zeigt dessen Variablen. |
+| **Variables** | Alle lokalen Variablen, Parameter und `this` mit ihren aktuellen Werten, aufklappbar bis in jedes Feld |
+| **Inline-Werte** | Direkt im Editor neben dem Code blendet IntelliJ die aktuellen Werte grau ein |
+
+Die wichtigsten Aktionen:
+
+<Tabs groupId="os">
+  <TabItem value="mac" label="macOS">
+    | Aktion | Taste | Wirkung |
+    |---|---|---|
+    | Step Over | <kbd>F8</kbd> | Nächste Zeile, Methodenaufrufe werden ausgeführt, aber nicht betreten |
+    | Step Into | <kbd>F7</kbd> | In den Methodenaufruf dieser Zeile hineinspringen |
+    | Step Out | <kbd>⇧</kbd> + <kbd>F8</kbd> | Aktuelle Methode zu Ende laufen lassen, zurück zum Aufrufer |
+    | Resume | <kbd>⌥</kbd> + <kbd>⌘</kbd> + <kbd>R</kbd> | Weiterlaufen bis zum nächsten Breakpoint |
+    | Evaluate Expression | <kbd>⌥</kbd> + <kbd>F8</kbd> | Beliebigen Java-Ausdruck im aktuellen Zustand auswerten |
+  </TabItem>
+  <TabItem value="win" label="Windows">
+    | Aktion | Taste | Wirkung |
+    |---|---|---|
+    | Step Over | <kbd>F8</kbd> | Nächste Zeile, Methodenaufrufe werden ausgeführt, aber nicht betreten |
+    | Step Into | <kbd>F7</kbd> | In den Methodenaufruf dieser Zeile hineinspringen |
+    | Step Out | <kbd>Shift</kbd> + <kbd>F8</kbd> | Aktuelle Methode zu Ende laufen lassen, zurück zum Aufrufer |
+    | Resume | <kbd>F9</kbd> | Weiterlaufen bis zum nächsten Breakpoint |
+    | Evaluate Expression | <kbd>Alt</kbd> + <kbd>F8</kbd> | Beliebigen Java-Ausdruck im aktuellen Zustand auswerten |
+  </TabItem>
+</Tabs>
+
+**Evaluate Expression** ist das unterschätzteste Werkzeug: Ihr könnt dort z. B. `repository.count()` oder `request.getName().isBlank()` eintippen und seht sofort das Ergebnis, ohne den Code zu ändern.
+
+### Bedingte Breakpoints
+
+Wird eine Stelle bei jedem Request oder in einer Schleife tausendfach durchlaufen, interessiert euch meist nur ein bestimmter Fall. **Rechtsklick auf den roten Punkt** öffnet die Eigenschaften des Breakpoints. Unter *Condition* tragt ihr einen Java-Ausdruck ein, etwa `id == 42` oder `name.startsWith("Test")`. Der Debugger hält dann nur an, wenn die Bedingung zutrifft.
+
+Im selben Dialog lässt sich *Suspend* abschalten und stattdessen *Evaluate and log* aktivieren. Damit wird der Breakpoint zum `println`, das ihr nicht in den Code schreiben und später wieder entfernen müsst.
+
+### Tests debuggen
+
+Auch ein `@QuarkusTest` lässt sich debuggen: Rechtsklick auf den grünen Start-Pfeil neben der Testmethode → **Debug**. Breakpoints im Test und im Produktionscode greifen beide. Das ist oft der schnellste Weg, einen Fehler reproduzierbar anzusehen (siehe [Testing](./testing)).
+
+## Checkliste
+
+- [ ] Wurzelordner des Repositories geöffnet, nicht ein einzelner Service
+- [ ] Jeder Service, an dem ihr arbeitet, erscheint im **Maven**-Werkzeugfenster
+- [ ] `src/main/java` ist blau, keine roten Imports
+- [ ] Project SDK ist JDK 21
+- [ ] Plugin **Quarkus** ist aktiv
+- [ ] Eine Run-Configuration vom Typ **Quarkus** pro Service
+- [ ] Service wird mit dem Käfer-Symbol gestartet, nicht mit ▶
+
+## Weiterlesen
+
+Diese Seite deckt nur das Nötigste ab. IntelliJ kann deutlich mehr, und JetBrains dokumentiert das ausführlich und gut. Nehmt euch die Zeit, die folgenden Kapitel zu lesen. Die Stunde ist schnell wieder eingespart:
+
+- [IntelliJ IDEA Dokumentation](https://www.jetbrains.com/help/idea/): Einstieg in die gesamte Hilfe
+- [Maven](https://www.jetbrains.com/help/idea/maven-support.html): Import, Reload, Werkzeugfenster, Run-Configurations für Maven-Goals
+- [Quarkus](https://www.jetbrains.com/help/idea/quarkus.html): was das Plugin alles unterstützt
+- [Debugging your first Java application](https://www.jetbrains.com/help/idea/debugging-your-first-java-application.html): Tutorial zum Debugger, Schritt für Schritt
+- [Debug code](https://www.jetbrains.com/help/idea/debugging-code.html): Referenz zu Breakpoints, Stepping, Watches und Evaluate Expression
+- [Keyboard shortcuts](https://www.jetbrains.com/help/idea/mastering-keyboard-shortcuts.html): wer die Tastenkürzel beherrscht, arbeitet spürbar schneller
