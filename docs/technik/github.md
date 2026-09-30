@@ -57,6 +57,10 @@ Wer das Repository bereits per HTTPS geklont hat, kann die Remote-URL nachträgl
 git remote set-url origin git@github.com:<org>/<repo>.git
 ```
 
+:::tip[Wohin klonen?]
+Ein Klon ist nur ein Ordner auf eurer Festplatte, und das Projekt sollte dort genau einmal existieren. Wo er hingehört und warum IntelliJ das leicht verschleiert, erklärt die Seite [Der Checkout ist nur ein Ordner](./git-checkout).
+:::
+
 ### Weiterführende Dokumentation
 
 - [Über SSH bei GitHub](https://docs.github.com/de/authentication/connecting-to-github-with-ssh/about-ssh)
