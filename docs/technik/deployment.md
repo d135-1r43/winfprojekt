@@ -62,10 +62,10 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Set up JDK 21
+      - name: Set up JDK 25
         uses: actions/setup-java@v4
         with:
-          java-version: '21'
+          java-version: '25'
           distribution: 'temurin'
           cache: maven
 
@@ -102,7 +102,7 @@ jobs:
 Das dazugehörige `Dockerfile` nutzt den Maven-Build-Output aus dem vorherigen Schritt:
 
 ```dockerfile
-FROM registry.access.redhat.com/ubi9/openjdk-21:latest
+FROM registry.access.redhat.com/ubi9/openjdk-25:latest
 COPY target/quarkus-app/lib/ /deployments/lib/
 COPY target/quarkus-app/*.jar /deployments/
 COPY target/quarkus-app/app/ /deployments/app/
