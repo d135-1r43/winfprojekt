@@ -23,7 +23,8 @@ graph TD
     NGINX --> CIB
     NGINX --> Keycloak
 
-    UI -->|REST| MS
+    UI -->|REST: Fachdaten| MS
+    UI -->|REST: Prozesse / Tasks| CIB
     UI -->|Login / Token| Keycloak
 
     MS <-->|REST / Events| CIB
@@ -50,7 +51,7 @@ Mehr zur Konfiguration, zum Docker-Netzwerk und zum Anlegen von Proxy-Hosts auf 
 
 ### [React](https://react.dev/) Frontend
 
-Die Benutzeroberfläche ist eine Single Page Application auf Basis von React. Sie kommuniziert ausschließlich über die REST-APIs der Microservices mit dem Backend. Die Authentifizierung läuft über Keycloak: Nach dem Login speichert die App das JWT und schickt es bei jedem API-Aufruf als Bearer-Token mit. Details zur Authentifizierung beschreibt die [OAuth2/OIDC-Seite](./oauth2-oidc).
+Die Benutzeroberfläche ist eine Single Page Application auf Basis von React. Sie spricht zwei Backends über REST an: Fachdaten, etwa eine Liste von Entitäten, holt sie von den Microservices. Sobald sie mit einem Prozess interagiert, etwa um die offenen Tasks des eingeloggten Nutzers anzuzeigen oder einen Prozess zu starten, geht sie direkt an die REST API von CIB seven. Die Authentifizierung läuft über Keycloak: Nach dem Login speichert die App das JWT und schickt es bei jedem API-Aufruf als Bearer-Token mit. Details zur Authentifizierung beschreibt die [OAuth2/OIDC-Seite](./oauth2-oidc).
 
 ### [Keycloak](https://www.keycloak.org/) OIDC Provider
 
@@ -60,7 +61,7 @@ Keycloak übernimmt die zentrale Authentifizierung und Autorisierung nach dem Op
 
 ### [CIB seven](https://cibseven.org/en/) Process Engine
 
-CIB seven ist ein Fork von Camunda 7 und stellt die BPMN-Prozess-Engine bereit. Geschäftsprozesse werden als BPMN-Diagramme modelliert und von CIB seven ausgeführt. Die Microservices können Prozessinstanzen starten, Tasks abarbeiten und Prozessvariablen lesen und schreiben. Mehr dazu auf der [CIB seven-Seite](./cibseven).
+CIB seven ist ein Fork von Camunda 7 und stellt die BPMN-Prozess-Engine bereit. Geschäftsprozesse werden als BPMN-Diagramme modelliert und von CIB seven ausgeführt. Die Microservices können Prozessinstanzen starten, Tasks abarbeiten und Prozessvariablen lesen und schreiben. Das Frontend nutzt dieselbe REST API für alles, was den Prozess betrifft, zum Beispiel die Liste der offenen Tasks. Mehr dazu auf der [CIB seven-Seite](./cibseven).
 
 ### Microservices ([Quarkus](https://quarkus.io/))
 

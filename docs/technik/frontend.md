@@ -6,6 +6,10 @@ sidebar_position: 4
 
 Die Benutzeroberfläche ist eine Single Page Application (SPA) auf Basis von [React](https://react.dev/). Sie kommuniziert über REST mit den [Microservices](./microservices) und der [CIB seven Process Engine](./cibseven) und authentifiziert sich über [Keycloak](./oauth2-oidc).
 
+:::tip[Microservice oder CIB seven?]
+Faustregel: Geht es um Fachdaten, zum Beispiel eine Liste von Entitäten, fragt das Frontend den zuständigen Microservice. Geht es um den Prozess, zum Beispiel „Welche Tasks sind bei mir offen?“ oder „Antrag einreichen und Prozess starten“, spricht das Frontend direkt mit der REST API von CIB seven.
+:::
+
 ## Neue React App anlegen
 
 Eine neue App wird mit einem Framework-Starter erstellt. Die offizielle Empfehlung der React-Dokumentation steht unter [react.dev/learn/creating-a-react-app](https://react.dev/learn/creating-a-react-app).
@@ -82,6 +86,7 @@ VITE_API_URL=https://mein-service.winfprojekt.de
 VITE_KEYCLOAK_URL=https://keycloak.winfprojekt.de
 VITE_KEYCLOAK_REALM=winfprojekt
 VITE_KEYCLOAK_CLIENT_ID=mein-frontend
+VITE_CIBSEVEN_URL=https://cibseven.winfprojekt.de
 ```
 
 ## Mit CIB seven kommunizieren

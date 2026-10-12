@@ -72,7 +72,7 @@ Wenn ein Prozess lokal stabil ist, wird er in die zentrale Process Engine einges
 Alle Prozesse laufen gemeinsam in einer gemeinsam genutzten CIB-seven-Instanz. Als Seed für diese zentrale Process Engine steht [d135-1r43/cibseven-template](https://github.com/d135-1r43/cibseven-template) als **Template-Repository** bereit; die Keycloak-Anbindung ist darin bereits vorkonfiguriert (siehe [OAuth2/OIDC](./oauth2-oidc)). Wie das Docker-Image gebaut und deployed wird, beschreibt die [Deployment-Seite](./deployment).
 
 :::info[Kein Webinterface auf dem Server]
-Die lokale CIB-seven-Instanz bringt Weboberflächen mit (Tasklist, Cockpit, Admin). Die zentrale Instanz auf dem Server ist bewusst anders konfiguriert: Sie stellt ausschließlich die **REST API** bereit (`/engine-rest`). Es gibt dort kein Webinterface – alle Interaktionen laufen über die Microservices.
+Die lokale CIB-seven-Instanz bringt Weboberflächen mit (Tasklist, Cockpit, Admin). Die zentrale Instanz auf dem Server ist bewusst anders konfiguriert: Sie stellt ausschließlich die **REST API** bereit (`/engine-rest`). Es gibt dort kein Webinterface: Prozessinteraktionen wie offene Tasks abrufen oder Prozesse starten laufen über das eigene [React-Frontend](./frontend#mit-cib-seven-kommunizieren) und die Microservices, die beide die REST API direkt ansprechen.
 :::
 
 1. Die fertige `.bpmn`-Datei nach `src/main/resources/` kopieren.
