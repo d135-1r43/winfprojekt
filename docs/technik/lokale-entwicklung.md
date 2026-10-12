@@ -82,9 +82,9 @@ Drei parallel laufende Services bedeuten also einen Keycloak, nicht drei:
 
 ```mermaid
 flowchart TD
-    S1["Urlaubsservice\nquarkus:dev"]
-    S2["Rechnungsservice\nquarkus:dev"]
-    S3["Stammdatenservice\nquarkus:dev"]
+    S1["Service 1\nquarkus:dev"]
+    S2["Service 2\nquarkus:dev"]
+    S3["Service 3\nquarkus:dev"]
 
     KC["Ein Keycloak-Container\nLabel: quarkus-dev-service-keycloak"]
 
@@ -108,9 +108,43 @@ Die Lösung ist eine Realm-Datei im Repository:
 quarkus.keycloak.devservices.realm-path=winfprojekt-realm.json
 ```
 
-Liegt die Datei unter `src/main/resources/`, importiert der Dev Service sie beim Start. Damit entwickelt das ganze Team gegen dieselben Rollen, Clients und Testnutzer wie auf dem Server, und die Definition liegt versioniert im Git statt in der Erinnerung einer einzelnen Person.
+Der Dateiname folgt dem Realm, das ihr auch im [Frontend](./frontend) konfiguriert. Liegt die Datei unter `src/main/resources/`, importiert der Dev Service sie beim Start. Damit entwickelt das ganze Team gegen dieselben Rollen, Clients und Testnutzer wie auf dem Server, und die Definition liegt versioniert im Git statt in der Erinnerung einer einzelnen Person.
 
-Ein Realm exportiert ihr aus der Keycloak-Adminkonsole unter **Realm settings**, Menü **Action**, **Partial export**. Nehmt Clients und Rollen mit, aber keine echten Nutzerdaten.
+So kommt ihr an die Datei:
+
+1. In der [Keycloak](./keycloak)-Adminkonsole das Realm auswählen
+2. **Realm settings**, Menü **Action**, **Partial export**
+3. **Include groups and roles** und **Include clients** aktivieren
+4. Die heruntergeladene Datei nach `src/main/resources/` legen und einchecken
+
+Die Struktur sieht dann im Kern so aus, gekürzt auf das Wesentliche:
+
+```json title="src/main/resources/winfprojekt-realm.json"
+{
+  "realm": "winfprojekt",
+  "enabled": true,
+  "roles": {
+    "realm": [
+      { "name": "eure-rolle" },
+      { "name": "eure-andere-rolle" }
+    ]
+  },
+  "clients": [
+    { "clientId": "mein-service", "publicClient": false, "serviceAccountsEnabled": true },
+    { "clientId": "mein-frontend", "publicClient": true, "redirectUris": ["*"] }
+  ],
+  "users": [
+    {
+      "username": "testnutzer",
+      "enabled": true,
+      "credentials": [{ "type": "password", "value": "test" }],
+      "realmRoles": ["eure-rolle"]
+    }
+  ]
+}
+```
+
+Rollen-, Client- und Nutzernamen ersetzt ihr durch die eurigen. Wichtig sind die drei Blöcke: `roles` bestimmt, was es an Berechtigungen gibt, `clients` muss dieselben IDs enthalten, die eure Services und das Frontend verwenden, und `users` liefert euch Anmeldungen zum Ausprobieren.
 
 :::warning[Keine echten Zugangsdaten in die Realm-Datei]
 Die Datei landet im öffentlichen Repository. Sie darf ausschließlich Testnutzer mit offensichtlichen Testpasswörtern enthalten, niemals Passwörter oder Client Secrets aus der Produktivumgebung.
@@ -184,13 +218,7 @@ Alle Services belegen standardmäßig Port 8080, was beim zweiten Start scheiter
 %dev.quarkus.http.port=8081
 ```
 
-Haltet die Zuordnung im Team fest, damit alle dieselbe Vorstellung davon haben, was wo läuft:
-
-| Service | Port |
-|---|---|
-| Urlaubsservice | 8080 |
-| Rechnungsservice | 8081 |
-| Stammdatenservice | 8082 |
+Der erste Service bleibt üblicherweise auf der Voreinstellung 8080, jeder weitere zählt hoch. Haltet die Zuordnung schriftlich fest, etwa in der README des [Monorepos](./github), damit alle dieselbe Vorstellung davon haben, was wo läuft. Sonst belegt jeder Port nach Gefühl und ihr sucht regelmäßig, welcher Prozess gerade 8081 blockiert.
 
 ## Frontend gegen lokales Backend
 

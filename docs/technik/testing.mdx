@@ -241,12 +241,14 @@ Der Keycloak Dev Service legt dabei zwei Nutzer an, deren Passwort dem Benutzern
 
 Damit lässt sich der Rollenunterschied direkt ausprobieren: Meldet euch als `bob` an und ruft einen Endpunkt auf, der `admin` verlangt. Kommt kein `403` zurück, stimmt eure Absicherung nicht.
 
-Eigene Rollen konfiguriert ihr bei Bedarf in der `application.properties`:
+Braucht ihr nur andere Rollennamen, genügt eine Zeile pro Nutzer in der `application.properties`, wobei ihr `eure-rolle` durch eure tatsächlichen Rollen ersetzt:
 
 ```properties
-quarkus.oidc.devservices.roles.alice=admin,buchhaltung
-quarkus.oidc.devservices.roles.bob=leser
+quarkus.oidc.devservices.roles.alice=eure-rolle,eure-andere-rolle
+quarkus.oidc.devservices.roles.bob=eure-rolle
 ```
+
+Sobald ihr auch eigene Clients braucht, ist eine [Realm-Datei](./lokale-entwicklung#euer-eigenes-realm-lokal-verwenden) der bessere Weg.
 
 Die Details zu den Dev Services und der Dev UI stehen im Guide [Dev Services and Dev UI for OpenID Connect](https://quarkus.io/guides/security-openid-connect-dev-services).
 
