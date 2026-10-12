@@ -1,0 +1,386 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Systemarchitektur",
+    "output": "archify/systemarchitektur/systemarchitektur.html",
+    "quality_profile": "showcase",
+    "repository": {
+      "url": "https://github.com/d135-1r43/winfprojekt",
+      "revision": "ebed51ad7e4a690065111d015d693f07d0f2f5c0"
+    }
+  },
+  "components": [
+    {
+      "id": "browser",
+      "type": "external",
+      "label": "Browser / Client",
+      "sublabel": "Nutzer:innen",
+      "pos": [
+        560,
+        40
+      ],
+      "size": [
+        200,
+        60
+      ],
+      "sources": [
+        {
+          "path": "docs/technik/architektur.md",
+          "line": 13,
+          "label": "Client"
+        }
+      ]
+    },
+    {
+      "id": "proxy",
+      "type": "cloud",
+      "label": "Nginx Proxy Manager",
+      "sublabel": "Reverse Proxy · TLS · Subdomains",
+      "pos": [
+        530,
+        160
+      ],
+      "size": [
+        260,
+        72
+      ],
+      "sources": [
+        {
+          "path": "docs/technik/architektur.md",
+          "line": 43,
+          "end_line": 49,
+          "label": "Reverse Proxy"
+        },
+        {
+          "path": "docs/technik/reverse-proxy.md",
+          "line": 38,
+          "end_line": 44,
+          "label": "Docker-Netzwerk"
+        }
+      ]
+    },
+    {
+      "id": "spa",
+      "type": "frontend",
+      "label": "React SPA",
+      "sublabel": "Single Page App",
+      "pos": [
+        550,
+        290
+      ],
+      "size": [
+        220,
+        84
+      ],
+      "sources": [
+        {
+          "path": "docs/technik/architektur.md",
+          "line": 51,
+          "end_line": 53,
+          "label": "React Frontend"
+        },
+        {
+          "path": "docs/technik/frontend.md",
+          "line": 86,
+          "end_line": 109,
+          "label": "SPA ruft CIB seven"
+        }
+      ]
+    },
+    {
+      "id": "engine",
+      "type": "backend",
+      "label": "CIB seven",
+      "sublabel": "BPMN Engine · Orchestrator",
+      "pos": [
+        550,
+        470
+      ],
+      "size": [
+        220,
+        84
+      ],
+      "sources": [
+        {
+          "path": "docs/technik/architektur.md",
+          "line": 61,
+          "end_line": 63,
+          "label": "Process Engine"
+        },
+        {
+          "path": "docs/technik/cibseven.md",
+          "line": 72,
+          "end_line": 75,
+          "label": "zentrale Instanz"
+        }
+      ]
+    },
+    {
+      "id": "svc-a",
+      "type": "backend",
+      "label": "Microservice A",
+      "sublabel": "Quarkus · REST-API",
+      "pos": [
+        230,
+        470
+      ],
+      "size": [
+        200,
+        84
+      ],
+      "sources": [
+        {
+          "path": "docs/technik/architektur.md",
+          "line": 65,
+          "end_line": 67,
+          "label": "Microservices"
+        }
+      ]
+    },
+    {
+      "id": "svc-b",
+      "type": "backend",
+      "label": "Microservice B",
+      "sublabel": "Quarkus · REST-API",
+      "pos": [
+        890,
+        470
+      ],
+      "size": [
+        200,
+        84
+      ],
+      "sources": [
+        {
+          "path": "docs/technik/architektur.md",
+          "line": 65,
+          "end_line": 67,
+          "label": "Microservices"
+        }
+      ]
+    },
+    {
+      "id": "db-a",
+      "type": "database",
+      "label": "PostgreSQL",
+      "sublabel": "Daten von A",
+      "pos": [
+        30,
+        482
+      ],
+      "size": [
+        140,
+        60
+      ],
+      "sources": [
+        {
+          "path": "docs/technik/microservices.md",
+          "line": 21,
+          "end_line": 29,
+          "label": "Persistenz-Stack"
+        }
+      ]
+    },
+    {
+      "id": "db-b",
+      "type": "database",
+      "label": "PostgreSQL",
+      "sublabel": "Daten von B",
+      "pos": [
+        1150,
+        482
+      ],
+      "size": [
+        140,
+        60
+      ],
+      "sources": [
+        {
+          "path": "docs/technik/microservices.md",
+          "line": 21,
+          "end_line": 29,
+          "label": "Persistenz-Stack"
+        }
+      ]
+    },
+    {
+      "id": "idp",
+      "type": "security",
+      "label": "Keycloak",
+      "sublabel": "OIDC Provider · stellt JWTs aus",
+      "pos": [
+        540,
+        650
+      ],
+      "size": [
+        240,
+        72
+      ],
+      "sources": [
+        {
+          "path": "docs/technik/architektur.md",
+          "line": 55,
+          "end_line": 59,
+          "label": "OIDC Provider"
+        }
+      ]
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "Server · Docker-Container, betrieben mit Portainer",
+      "wraps": [
+        "proxy",
+        "spa",
+        "engine",
+        "svc-a",
+        "svc-b",
+        "db-a",
+        "db-b",
+        "idp"
+      ]
+    }
+  ],
+  "connections": [
+    {
+      "id": "browser-https",
+      "from": "browser",
+      "to": "proxy",
+      "label": "HTTPS",
+      "variant": "emphasis"
+    },
+    {
+      "id": "proxy-spa",
+      "from": "proxy",
+      "to": "spa",
+      "label": "Subdomain-Routing"
+    },
+    {
+      "id": "spa-engine",
+      "from": "spa",
+      "to": "engine",
+      "label": "Prozesse / Tasks · REST",
+      "variant": "emphasis",
+      "fromSide": "bottom",
+      "toSide": "top"
+    },
+    {
+      "id": "spa-a",
+      "from": "spa",
+      "to": "svc-a",
+      "label": "Fachdaten · REST",
+      "fromSide": "left",
+      "toSide": "top"
+    },
+    {
+      "id": "spa-b",
+      "from": "spa",
+      "to": "svc-b",
+      "label": "Fachdaten · REST",
+      "fromSide": "right",
+      "toSide": "top"
+    },
+    {
+      "id": "engine-a",
+      "from": "engine",
+      "to": "svc-a",
+      "label": "REST / Events",
+      "variant": "emphasis",
+      "fromSide": "left",
+      "toSide": "right"
+    },
+    {
+      "id": "engine-b",
+      "from": "engine",
+      "to": "svc-b",
+      "label": "REST / Events",
+      "variant": "emphasis",
+      "fromSide": "right",
+      "toSide": "left"
+    },
+    {
+      "id": "a-db",
+      "from": "svc-a",
+      "to": "db-a",
+      "label": "JDBC",
+      "fromSide": "left",
+      "toSide": "right"
+    },
+    {
+      "id": "b-db",
+      "from": "svc-b",
+      "to": "db-b",
+      "label": "JDBC",
+      "fromSide": "right",
+      "toSide": "left"
+    },
+    {
+      "id": "engine-token",
+      "from": "engine",
+      "to": "idp",
+      "label": "Token-Validierung",
+      "variant": "security",
+      "fromSide": "bottom",
+      "toSide": "top"
+    },
+    {
+      "id": "a-token",
+      "from": "svc-a",
+      "to": "idp",
+      "label": "Token-Validierung",
+      "variant": "security",
+      "fromSide": "bottom",
+      "toSide": "left"
+    },
+    {
+      "id": "b-token",
+      "from": "svc-b",
+      "to": "idp",
+      "label": "Token-Validierung",
+      "variant": "security",
+      "fromSide": "bottom",
+      "toSide": "right"
+    },
+    {
+      "id": "spa-login",
+      "from": "spa",
+      "to": "idp",
+      "label": "Login / Token",
+      "variant": "security",
+      "fromSide": "right",
+      "toSide": "top"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "Zugang",
+      "items": [
+        "Nur Nginx Proxy Manager ist öffentlich erreichbar",
+        "Alle Aufrufe aus dem Browser (SPA, REST, Login) laufen über ihn",
+        "Weiterleitung per Subdomain an den jeweiligen Container"
+      ]
+    },
+    {
+      "dot": "violet",
+      "title": "Orchestrierung",
+      "items": [
+        "CIB seven führt die BPMN-Prozesse aus und steuert die Services",
+        "SPA: Fachdaten (z. B. Liste von Entitäten) vom Microservice, Prozessinteraktion (z. B. offene Tasks) direkt bei CIB seven",
+        "Microservices starten Prozessinstanzen, arbeiten Tasks ab, lesen und schreiben Variablen",
+        "Jeder Microservice hat seine eigene Datenbank; A und B stehen exemplarisch für beliebig viele"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "Sicherheit",
+      "items": [
+        "Login über Keycloak (OpenID Connect)",
+        "SPA schickt das JWT als Bearer-Token mit",
+        "Microservices und CIB seven validieren Tokens gegen Keycloak"
+      ]
+    }
+  ]
+}

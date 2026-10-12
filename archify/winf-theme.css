@@ -1,0 +1,94 @@
+/*
+ * WInf-Projekt-Farbschema für Archify-Diagramme, abgeleitet aus src/css/custom.css
+ *
+ * Primary Purple  #704080   Navbar/Dark Plum  #503060
+ * Light Lavender  #b0a0d0   Deep Indigo       #201040
+ * Muted Violet    #9080b0   Olive Green       #80a040
+ * Soft Pink       #ffd0e0   Peach             #ffc0a0
+ *
+ * Wird von apply-theme.mjs nach dem Archify-Template eingefügt und
+ * überschreibt dessen Variablen für das klassische Preset.
+ */
+
+:root,
+[data-theme="dark"] {
+  --bg: #150b2e;
+  --grid: #241446;
+  --canvas-dot: #2e1c55;
+  --text: #f3eefb;
+  --text-muted: #b0a0d0;
+  --text-dim: #6e5e94;
+  --text-faint: #9a8abd;
+
+  --panel: rgba(32, 16, 64, 0.72);
+  --panel-border: #3a2864;
+  --lane-fill: rgba(32, 16, 64, 0.3);
+  --lane-stroke: #3a2864;
+
+  --arrow: #8070a8;
+  --arrow-emphasis: #d0b8f0;
+  --mask: #1a0e38;
+
+  --frontend-fill: rgba(112, 64, 128, 0.35);
+  --frontend-stroke: #d0a8e8;
+  --backend-fill: rgba(128, 160, 64, 0.2);
+  --backend-stroke: #a8c868;
+  --database-fill: rgba(144, 128, 176, 0.25);
+  --database-stroke: #b0a0d0;
+  --cloud-fill: rgba(255, 192, 160, 0.14);
+  --cloud-stroke: #ffc0a0;
+  --security-fill: rgba(255, 208, 224, 0.14);
+  --security-stroke: #ffb0c8;
+  --messagebus-fill: rgba(144, 128, 176, 0.2);
+  --messagebus-stroke: #9080b0;
+  --external-fill: rgba(80, 48, 96, 0.45);
+  --external-stroke: #c8bce0;
+
+  --toolbar-bg: rgba(32, 16, 64, 0.85);
+  --toolbar-border: #3a2864;
+  --toolbar-text: #ede8f7;
+  --toolbar-hover: rgba(32, 16, 64, 0.95);
+  --toolbar-menu-bg: #201040;
+}
+
+[data-theme="light"] {
+  --bg: #f7f4fa;
+  --grid: #ece6f2;
+  --canvas-dot: #ddd3e8;
+  --text: #201040;
+  --text-muted: #503060;
+  --text-dim: #9080b0;
+  --text-faint: #7a6a96;
+
+  --panel: #ffffff;
+  --panel-border: #e6deef;
+  --lane-fill: rgba(247, 244, 250, 0.65);
+  --lane-stroke: #d6cbe4;
+
+  --arrow: #9080b0;
+  --arrow-emphasis: #704080;
+  --mask: #ffffff;
+
+  --frontend-fill: rgba(112, 64, 128, 0.1);
+  --frontend-stroke: #704080;
+  --backend-fill: rgba(128, 160, 64, 0.16);
+  --backend-stroke: #5f7d2a;
+  --database-fill: rgba(176, 160, 208, 0.25);
+  --database-stroke: #4a3a8a;
+  --cloud-fill: rgba(255, 192, 160, 0.35);
+  --cloud-stroke: #c0663a;
+  --security-fill: rgba(255, 208, 224, 0.55);
+  --security-stroke: #b03a6a;
+  --messagebus-fill: rgba(144, 128, 176, 0.18);
+  --messagebus-stroke: #9080b0;
+  --external-fill: rgba(80, 48, 96, 0.08);
+  --external-stroke: #503060;
+
+  --toolbar-bg: rgba(255, 255, 255, 0.92);
+  --toolbar-border: #ddd3e8;
+  --toolbar-text: #503060;
+  --toolbar-hover: #ffffff;
+  --toolbar-menu-bg: #ffffff;
+}
+
+.c-region { fill: rgba(255, 192, 160, 0.06); }

@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "receiptId": "37831bb9-f024-4c67-b36c-3fc3da8b974a",
+  "status": "current",
+  "command": "deliver",
+  "type": "architecture",
+  "input": "/Users/markus/git/winfprojekt/archify/systemarchitektur/candidate.json",
+  "output": "/Users/markus/git/winfprojekt/archify/systemarchitektur/systemarchitektur.html",
+  "specification": {
+    "sha256": "8c039448dcb5c732cc036a1f25c69be5181c2b4fb39fc787f90a21fa0417e337",
+    "bytes": 8123
+  },
+  "artifact": {
+    "sha256": "e929d52dd3fbf3bf856e9cf4f98baaa6947f96366f17d614fa00477d46b33627",
+    "bytes": 771283
+  }
+}
