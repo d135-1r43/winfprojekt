@@ -39,6 +39,24 @@ graph TD
 Grün hinterlegt: wird im Projekt entwickelt. Bei CIB seven werden nur die BPMN-Prozesse entwickelt, nicht die Engine selbst.
 :::
 
+## Warum diese Bausteine?
+
+Jeder Baustein beantwortet eine konkrete Anforderung. Am Beispiel eines Urlaubsantrags: Eine Mitarbeiterin beantragt Urlaub, die Teamleitung genehmigt, danach sinkt der Resturlaub.
+
+| Anforderung | Baustein |
+|---|---|
+| Mitarbeitende bedienen das System im Browser | React SPA |
+| Anträge und Resturlaub werden dauerhaft gespeichert | Microservices mit je eigener PostgreSQL-Datenbank |
+| Der Antrag durchläuft einen festen Ablauf mit Genehmigung | CIB seven führt den Ablauf als BPMN-Prozess aus |
+| Nur die Teamleitung darf genehmigen | Keycloak stellt Tokens mit Rollen aus |
+| Alles ist sicher unter einer Adresse erreichbar | Nginx Proxy Manager mit TLS und Subdomains |
+| Neue Versionen kommen kontrolliert auf den Server | GitHub Actions baut Images, Portainer rollt sie aus |
+
+Zwei Grundsätze halten die Bausteine auseinander:
+
+- **Jeder Microservice besitzt seine Daten.** Ein Urlaubs-Service liest nie direkt die Tabellen eines Mitarbeiter-Service, sondern fragt dessen REST-API. So kann jeder Service sein Schema ändern, ohne andere zu brechen, und wird eigenständig versioniert.
+- **Der Ablauf gehört in die Process Engine, die Fachdaten in die Services.** CIB seven weiß, wo ein Antrag im Prozess steht und bei wem er liegt. Was ein Antrag ist (Zeitraum, Person), weiß nur der zuständige Service. Im Prozess stehen deshalb meist nur IDs, siehe [Daten in BPMN Prozessen](../methodik/bpmn-daten).
+
 ## Komponenten
 
 ### [Nginx Proxy Manager](https://nginxproxymanager.com/) Reverse Proxy
@@ -66,3 +84,38 @@ CIB seven ist ein Fork von Camunda 7 und stellt die BPMN-Prozess-Engine bereit. 
 ### Microservices ([Quarkus](https://quarkus.io/))
 
 Die fachliche Logik ist auf spezialisierte Microservices aufgeteilt, die jeweils mit Quarkus implementiert sind. Quarkus bietet kurze Startup-Zeiten und geringen Speicherbedarf, was den Container-Betrieb vereinfacht. Die Microservices kommunizieren mit der Process Engine über deren REST-API und sichern ihre eigenen Endpunkte mit den von Keycloak ausgestellten Tokens ab. Mehr dazu auf der [Microservices-Seite](./microservices).
+
+## Ein Durchlauf am Beispiel
+
+So spielen die Bausteine bei einem Urlaubsantrag zusammen. Alle Aufrufe aus dem Browser laufen über den Nginx Proxy Manager; er ist im Diagramm weggelassen, weil er nur weiterleitet. Jeder Service und CIB seven prüfen das mitgeschickte JWT selbst, wie auf der [OAuth2/OIDC-Seite](./oauth2-oidc#api-aufruf-mit-token-validierung) beschrieben.
+
+```mermaid
+sequenceDiagram
+    actor MA as Mitarbeiterin
+    actor TL as Teamleitung
+    participant UI as React SPA
+    participant KC as Keycloak
+    participant US as Urlaubs-Service
+    participant CIB as CIB seven
+    participant MS as Mitarbeiter-Service
+
+    MA->>UI: Öffnet die App
+    UI->>KC: Login (Authorization Code + PKCE)
+    KC-->>UI: Access Token
+    MA->>UI: Füllt den Antrag aus
+    UI->>US: POST /antraege
+    US-->>UI: Antrag mit ID 42
+    UI->>CIB: Prozess starten, antragId = 42
+    Note over CIB: User Task "Antrag prüfen" wartet
+
+    TL->>UI: Öffnet die App
+    UI->>CIB: Offene Tasks der Teamleitung
+    CIB-->>UI: "Antrag prüfen" (antragId = 42)
+    UI->>US: GET /antraege/42
+    US-->>UI: Zeitraum, Person
+    TL->>UI: Genehmigt
+    UI->>CIB: Task abschließen, genehmigt = true
+    CIB->>MS: Service Task: Resturlaub buchen
+```
+
+Das Muster dahinter ist die [Faustregel aus dem Frontend](./frontend): Fachdaten wie den Antrag selbst holt die SPA vom Microservice, alles, was den Prozess betrifft (starten, offene Tasks, abschließen), geht direkt an CIB seven. Den Service Task führt die Engine selbst aus und orchestriert damit die Microservices.

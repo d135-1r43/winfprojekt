@@ -57,8 +57,8 @@ sequenceDiagram
     participant CIB as CIB seven
     participant Keycloak
 
-    React->>Keycloak: Holt JWKS (öffentliche Schlüssel, gecacht)
-    Keycloak->>React: Public Keys
+    MS->>Keycloak: Holt JWKS (öffentliche Schlüssel, gecacht)
+    Keycloak->>MS: Public Keys
 
     Nutzer->>React: Löst Aktion aus
     React->>MS: GET /api/ressource (Authorization: Bearer <JWT>)
