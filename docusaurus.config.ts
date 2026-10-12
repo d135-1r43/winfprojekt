@@ -1,8 +1,43 @@
 import {themes as prismThemes} from 'prism-react-renderer';
 import type {Config} from '@docusaurus/types';
 import type * as Preset from '@docusaurus/preset-classic';
+import type {Plugin} from '@docusaurus/types';
+import {cp, readdir, readFile, writeFile} from 'node:fs/promises';
+import path from 'node:path';
 
 // This runs in Node.js - Don't use client-side code here (browser APIs, JSX...)
+
+// Übernimmt die Präsentationen aus /slides nach build/slides.
+// Im Repo verweisen sie auf ../static/img, damit sie auch direkt geöffnet
+// funktionieren; im Build liegen die Bilder unter /img.
+function slidesPlugin(): Plugin {
+  return {
+    name: 'slides',
+    // npm start: Folien unverändert ausliefern, ../static/img dafür mit bedienen
+    configureWebpack(_config, isServer) {
+      if (isServer) return {};
+      return {
+        devServer: {
+          static: [
+            {directory: path.resolve('slides'), publicPath: '/slides', watch: true},
+            {directory: path.resolve('static'), publicPath: '/static', watch: false},
+          ],
+        },
+      };
+    },
+    async postBuild({siteDir, outDir}) {
+      const source = path.join(siteDir, 'slides');
+      const target = path.join(outDir, 'slides');
+      await cp(source, target, {recursive: true});
+      for (const file of await readdir(target, {recursive: true})) {
+        if (!file.endsWith('.html')) continue;
+        const html = path.join(target, file);
+        const content = await readFile(html, 'utf8');
+        await writeFile(html, content.replaceAll('../static/img/', '../img/'));
+      }
+    },
+  };
+}
 
 const config: Config = {
   title: 'WInf Projekt',
@@ -59,6 +94,8 @@ const config: Config = {
       },
     ],
   ],
+
+  plugins: [slidesPlugin],
 
   presets: [
     [

@@ -2,42 +2,23 @@
 sidebar_position: 1
 ---
 
+import ArchitekturDiagramm from '@site/src/components/ArchitekturDiagramm';
+
 # Systemarchitektur
 
 Das System besteht aus mehreren spezialisierten Komponenten, die als Container betrieben und über einen zentralen Reverse Proxy erreichbar gemacht werden.
 
 ## Übersicht
 
-```mermaid
-graph TD
-    Browser(["Browser / Client"])
-    NGINX["Nginx Proxy Manager\nReverse Proxy"]
-    UI["React\nSingle Page App"]
-    MS["Microservices\nQuarkus"]
-    CIB["CIB seven\nProcess Engine\n(nur Prozesse)"]
-    Keycloak["Keycloak\nOIDC Provider"]
-
-    Browser -->|HTTPS| NGINX
-    NGINX --> UI
-    NGINX --> MS
-    NGINX --> CIB
-    NGINX --> Keycloak
-
-    UI -->|REST: Fachdaten| MS
-    UI -->|REST: Prozesse / Tasks| CIB
-    UI -->|Login / Token| Keycloak
-
-    MS <-->|REST / Events| CIB
-    MS -->|Token-Validierung| Keycloak
-    CIB -->|Token-Validierung| Keycloak
-
-    classDef developed fill:#80a040,stroke:#5a7030,color:#ffffff,font-weight:bold
-    class UI,MS developed
-```
-
-:::note[Legende]
-Grün hinterlegt: wird im Projekt entwickelt. Bei CIB seven werden nur die BPMN-Prozesse entwickelt, nicht die Engine selbst.
+:::tip[Präsentation]
+Die Architektur Schritt für Schritt aufgebaut, am Beispiel eines Urlaubsantrags: [Präsentation zur Systemarchitektur öffnen](pathname:///slides/architektur.html). Steuerung mit den Pfeiltasten, `f` für Vollbild.
 :::
+
+<ArchitekturDiagramm />
+
+Das Diagramm zeigt zwei Microservices stellvertretend für beliebig viele. Selbst entwickelt werden die React SPA, die Microservices und die BPMN-Prozesse. Nginx Proxy Manager, Keycloak, die Datenbanken und die Engine von CIB seven werden nur betrieben.
+
+Alle Aufrufe aus dem Browser laufen über den Nginx Proxy Manager, auch die an Microservices, CIB seven und Keycloak. Das Diagramm zeigt deshalb nur eine Kante vom Proxy zur SPA. Wer mit dem Mauszeiger auf einen Baustein zeigt, sieht eine kurze Erklärung.
 
 ## Warum diese Bausteine?
 

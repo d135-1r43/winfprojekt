@@ -1,0 +1,98 @@
+/* Farben wie im Bauplan von slides/architektur.html */
+.figure {
+  --ad-bg: #f3edf8;
+  --ad-border: #e4daee;
+  --ad-ink: #201040;
+  --ad-mute: #7a6a96;
+  --ad-label-text: #503060;
+  --ad-arrow: #9080b0;
+  --ad-main: #704080;
+  --ad-sec: #b03a6a;
+  --ad-zone: #c0663a;
+  --ad-zone-fill: rgba(255, 192, 160, 0.07);
+  --ad-front-fill: #f1e9f5;  --ad-front: #704080;
+  --ad-back-fill: #eff4e4;   --ad-back: #5f7d2a;
+  --ad-db-fill: #ece7f6;     --ad-db: #4a3a8a;
+  --ad-proxy-fill: #ffeadf;  --ad-proxy: #c0663a;
+  --ad-sec-fill: #ffeef4;
+  --ad-ext-fill: #ffffff;    --ad-ext: #503060;
+
+  margin: 1.5rem 0 2rem;
+  padding: 1.25rem 1rem;
+  border: 1px solid var(--ad-border);
+  border-radius: 16px;
+  background-color: var(--ad-bg);
+  background-image: radial-gradient(rgba(144, 128, 176, 0.3) 1px, transparent 1.2px);
+  background-size: 18px 18px;
+}
+
+:global([data-theme='dark']) .figure {
+  --ad-bg: #201040;
+  --ad-border: #3a2864;
+  --ad-ink: #f3eefb;
+  --ad-mute: #b0a0d0;
+  --ad-label-text: #c8bce0;
+  --ad-arrow: #9080b0;
+  --ad-main: #d0b8f0;
+  --ad-sec: #ffb0c8;
+  --ad-zone: #ffc0a0;
+  --ad-zone-fill: rgba(255, 192, 160, 0.05);
+  --ad-front-fill: #3a2350;  --ad-front: #d0a8e8;
+  --ad-back-fill: #262e1e;   --ad-back: #a8c868;
+  --ad-db-fill: #2c2350;     --ad-db: #b0a0d0;
+  --ad-proxy-fill: #3a2830;  --ad-proxy: #ffc0a0;
+  --ad-sec-fill: #3a2040;
+  --ad-ext-fill: #2a1850;    --ad-ext: #c8bce0;
+}
+
+.svg {
+  display: block;
+  width: 100%;
+  max-width: 720px;
+  height: auto;
+  margin: 0 auto;
+}
+
+.node rect { stroke-width: 2; transition: filter 0.2s; }
+.node text {
+  font-family: var(--ifm-font-family-base);
+  font-weight: 700;
+  font-size: 20px;
+  fill: var(--ad-ink);
+  text-anchor: middle;
+  dominant-baseline: middle;
+}
+.node text.sub {
+  font-family: var(--ifm-font-family-monospace);
+  font-weight: 400;
+  font-size: 13.5px;
+  fill: var(--ad-mute);
+}
+.node:hover rect, .node:focus-visible rect { filter: drop-shadow(0 4px 10px rgba(112, 64, 128, 0.35)); }
+.node:focus { outline: none; }
+
+.front rect { fill: var(--ad-front-fill); stroke: var(--ad-front); }
+.back rect  { fill: var(--ad-back-fill);  stroke: var(--ad-back); }
+.db rect    { fill: var(--ad-db-fill);    stroke: var(--ad-db); }
+.proxy rect { fill: var(--ad-proxy-fill); stroke: var(--ad-proxy); }
+.sec rect   { fill: var(--ad-sec-fill);   stroke: var(--ad-sec); }
+.ext rect   { fill: var(--ad-ext-fill);   stroke: var(--ad-ext); }
+
+.edge { fill: none; stroke: var(--ad-arrow); stroke-width: 2.2; stroke-linejoin: round; }
+.edge.main { stroke: var(--ad-main); stroke-width: 2.8; }
+.edge.sec { stroke: var(--ad-sec); stroke-dasharray: 6 5; }
+.mArrow { fill: var(--ad-arrow); }
+.mMain { fill: var(--ad-main); }
+.mSec { fill: var(--ad-sec); }
+
+.elabel rect { fill: var(--ad-bg); }
+.elabel text {
+  font-family: var(--ifm-font-family-monospace);
+  font-size: 14px;
+  fill: var(--ad-label-text);
+  text-anchor: middle;
+  dominant-baseline: middle;
+}
+
+.zone rect { fill: var(--ad-zone-fill); stroke: var(--ad-zone); stroke-dasharray: 8 6; stroke-width: 1.5; }
+.zone text { font-family: var(--ifm-font-family-monospace); font-size: 13px; fill: var(--ad-zone); }
