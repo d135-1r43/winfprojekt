@@ -1,0 +1,1073 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Systemarchitektur · WInf-Projekt</title>
+<link rel="icon" href="../static/img/code-parakeet.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+/*
+ * Farben aus src/css/custom.css (Illustrationsserie development-software-*)
+ */
+:root {
+  --indigo: #201040;
+  --indigo-deep: #150b2e;
+  --plum: #503060;
+  --purple: #704080;
+  --lavender: #b0a0d0;
+  --violet: #9080b0;
+  --olive: #80a040;
+  --olive-dark: #5f7d2a;
+  --pink: #ffd0e0;
+  --peach: #ffc0a0;
+  --peach-dark: #c0663a;
+  --rose: #b03a6a;
+
+  --paper: #fbf8fd;
+  --paper-2: #f3edf8;
+  --line: #e4daee;
+  --ink: #201040;
+  --ink-soft: #503060;
+  --ink-mute: #7a6a96;
+
+  --display: "Bricolage Grotesque", system-ui, sans-serif;
+  --body: "Atkinson Hyperlegible", system-ui, sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, monospace;
+
+  --ease: cubic-bezier(.2, .8, .2, 1);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; }
+body {
+  background: var(--indigo-deep);
+  color: var(--ink);
+  font-family: var(--body);
+  overflow: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ---------- Bühne: 1600×900, skaliert auf das Fenster ---------- */
+#viewport { position: fixed; inset: 0; display: grid; place-items: center; }
+#stage {
+  position: relative;
+  width: 1600px; height: 900px;
+  transform-origin: center center;
+  background: var(--paper);
+  overflow: hidden;
+  border-radius: 6px;
+  box-shadow: 0 30px 80px rgba(0, 0, 0, .45);
+}
+
+.slide {
+  position: absolute; inset: 0;
+  padding: 84px 100px 96px;
+  opacity: 0; visibility: hidden;
+  transform: translateY(14px);
+  transition: opacity .45s var(--ease), transform .55s var(--ease), visibility 0s .45s;
+}
+.slide.active {
+  opacity: 1; visibility: visible; transform: none;
+  transition: opacity .45s var(--ease), transform .55s var(--ease), visibility 0s;
+}
+.slide.with-plan .body { width: 730px; }
+.slide.with-wide .body { width: 470px; }
+
+/* ---------- Typografie ---------- */
+.eyebrow {
+  font-family: var(--mono); font-size: 17px; letter-spacing: .08em;
+  text-transform: uppercase; color: var(--purple);
+  display: flex; align-items: center; gap: 12px; margin-bottom: 22px;
+}
+.eyebrow .hex { width: 14px; height: 16px; background: var(--olive); clip-path: polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%); }
+h1, h2, h3 { font-family: var(--display); font-weight: 800; letter-spacing: -.025em; line-height: 1.02; }
+h2 { font-size: 62px; margin-bottom: 30px; font-variation-settings: "opsz" 96; }
+h3 { font-size: 26px; font-weight: 600; letter-spacing: -.01em; margin-bottom: 10px; }
+p, li { font-size: 25px; line-height: 1.45; color: var(--ink-soft); }
+p + p { margin-top: 16px; }
+strong { color: var(--ink); font-weight: 700; }
+em.mark { font-style: normal; background: linear-gradient(transparent 58%, var(--pink) 58%); color: var(--ink); padding: 0 2px; }
+code, .mono { font-family: var(--mono); font-size: .86em; }
+p code, li code, td code { background: var(--paper-2); border: 1px solid var(--line); border-radius: 5px; padding: 1px 6px; color: var(--plum); }
+.lead { font-size: 29px; line-height: 1.4; color: var(--ink-soft); max-width: 900px; }
+
+ul.points { list-style: none; display: grid; gap: 14px; }
+ul.points li { padding-left: 34px; position: relative; }
+ul.points li::before {
+  content: ""; position: absolute; left: 4px; top: .5em; width: 13px; height: 15px;
+  background: var(--lavender); clip-path: polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%);
+}
+
+/* ---------- Fragmente ---------- */
+.f { opacity: 0; transform: translateY(10px); transition: opacity .4s var(--ease), transform .5s var(--ease); }
+.f.on { opacity: 1; transform: none; }
+
+/* ---------- Code ---------- */
+pre {
+  font-family: var(--mono); font-size: 18.5px; line-height: 1.6;
+  background: var(--indigo); color: #e9e2f5;
+  border-radius: 14px; padding: 22px 26px; overflow-x: auto;
+  box-shadow: inset 0 0 0 1px rgba(176, 160, 208, .18);
+  position: relative;
+}
+pre .file { display: block; color: var(--violet); font-size: 14px; letter-spacing: .06em; margin-bottom: 10px; text-transform: uppercase; }
+pre .k { color: var(--pink); }
+pre .s { color: #c8e090; }
+pre .a { color: var(--peach); }
+pre .c { color: var(--violet); font-style: italic; }
+pre .n { color: var(--lavender); }
+pre .hl { background: rgba(255, 192, 160, .16); border-radius: 4px; box-shadow: 0 0 0 3px rgba(255, 192, 160, .16); }
+
+/* ---------- Kapitel-Folien ---------- */
+.slide.chapter { background: var(--indigo); color: #fff; padding: 0; }
+.chapter .wrap { position: absolute; left: 120px; right: 120px; top: 50%; transform: translateY(-50%); }
+.chapter .num {
+  font-family: var(--display); font-weight: 800; font-size: 300px; line-height: .8;
+  color: transparent; -webkit-text-stroke: 2px rgba(176, 160, 208, .45);
+  position: absolute; right: 100px; bottom: 110px; letter-spacing: -.04em;
+  font-variation-settings: "opsz" 96;
+}
+.chapter .eyebrow { color: var(--lavender); }
+.chapter h2 { color: #fff; font-size: 96px; max-width: 1050px; margin-bottom: 36px; }
+.chapter p { color: var(--lavender); font-size: 30px; max-width: 900px; }
+.chapter p strong { color: var(--pink); }
+.chapter .answer { margin-top: 26px; font-size: 30px; color: #fff; display: flex; align-items: baseline; gap: 16px; }
+.chapter .answer .arrow { color: var(--peach); font-family: var(--mono); }
+
+/* ---------- Titel ---------- */
+.slide.title { background: var(--indigo); padding: 0; }
+.title .text { position: absolute; left: 110px; top: 150px; width: 820px; }
+.title h1 { font-size: 132px; color: #fff; letter-spacing: -.04em; margin-bottom: 34px; font-variation-settings: "opsz" 96; }
+.title h1 span { color: var(--pink); }
+.title .eyebrow { color: var(--lavender); }
+.title p { color: var(--lavender); font-size: 30px; max-width: 640px; }
+.title .meta { position: absolute; left: 110px; bottom: 80px; font-family: var(--mono); font-size: 16px; color: var(--violet); letter-spacing: .04em; }
+.title .meta kbd { font-family: var(--mono); border: 1px solid var(--plum); border-radius: 5px; padding: 2px 8px; color: var(--lavender); }
+.title .art {
+  position: absolute; right: 40px; top: 120px; width: 780px; height: 660px;
+  background: radial-gradient(closest-side, rgba(176, 160, 208, .22), transparent 70%);
+  display: grid; place-items: center;
+}
+.title .art img { width: 760px; filter: drop-shadow(0 20px 40px rgba(0, 0, 0, .35)); animation: float 7s ease-in-out infinite; }
+@keyframes float { 50% { transform: translateY(-12px) rotate(-.6deg); } }
+
+/* ---------- Karten, Tabellen ---------- */
+.cols { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; }
+.card {
+  background: #fff; border: 1px solid var(--line); border-radius: 16px; padding: 24px 26px;
+  transition: transform .35s var(--ease), box-shadow .35s var(--ease), border-color .35s;
+}
+.card:hover { transform: translateY(-3px); box-shadow: 0 14px 30px rgba(80, 48, 96, .12); border-color: var(--lavender); }
+.card .tag { font-family: var(--mono); font-size: 14px; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-mute); margin-bottom: 10px; display: block; }
+.card p { font-size: 22px; }
+.card.bad { border-color: #f1c6d6; background: #fff8fb; }
+.card.bad .tag { color: var(--rose); }
+.card.good { border-color: #cfdcb3; background: #fbfdf6; }
+.card.good .tag { color: var(--olive-dark); }
+
+table.map { width: 100%; border-collapse: collapse; font-size: 24px; }
+table.map th { font-family: var(--mono); font-size: 14px; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-mute); text-align: left; font-weight: 400; padding: 0 14px 12px; border-bottom: 2px solid var(--ink); }
+table.map td { padding: 15px 14px; border-bottom: 1px solid var(--line); color: var(--ink-soft); vertical-align: middle; }
+table.map td:first-child { color: var(--ink); width: 52%; }
+table.map tr.f td { transition: background .3s; }
+table.map tr.f.on:hover td { background: var(--paper-2); }
+.chip {
+  display: inline-flex; align-items: center; gap: 10px; font-weight: 700; color: var(--ink);
+  font-size: 22px;
+}
+.chip i { width: 14px; height: 14px; border-radius: 4px; border: 2px solid currentColor; display: inline-block; }
+.c-front { color: var(--purple); } .c-back { color: var(--olive-dark); } .c-db { color: #4a3a8a; }
+.c-proxy { color: var(--peach-dark); } .c-sec { color: var(--rose); } .c-ext { color: var(--plum); }
+.chip.c-front i { background: rgba(112, 64, 128, .12); } .chip.c-back i { background: rgba(128, 160, 64, .18); }
+.chip.c-db i { background: rgba(176, 160, 208, .3); } .chip.c-proxy i { background: rgba(255, 192, 160, .45); }
+.chip.c-sec i { background: rgba(255, 208, 224, .7); } .chip.c-ext i { background: rgba(80, 48, 96, .1); }
+.step-ref { font-family: var(--mono); font-size: 16px; color: var(--ink-mute); }
+
+.callout {
+  border-left: 5px solid var(--peach); background: #fff5ef; border-radius: 0 12px 12px 0;
+  padding: 16px 24px; margin-top: 22px;
+}
+.callout p { font-size: 22px; }
+.callout .tag { font-family: var(--mono); font-size: 14px; letter-spacing: .08em; text-transform: uppercase; color: var(--peach-dark); display: block; margin-bottom: 6px; }
+
+/* ---------- Bauplan (wachsendes Diagramm) ---------- */
+#plan {
+  position: absolute; z-index: 5;
+  left: 880px; top: 56px; width: 680px; height: 790px;
+  border-radius: 20px;
+  background:
+    linear-gradient(var(--paper-2), var(--paper-2)) padding-box;
+  border: 1px solid var(--line);
+  opacity: 0; pointer-events: none;
+  transform: translateX(30px);
+  transition: left .7s var(--ease), top .7s var(--ease), width .7s var(--ease), height .7s var(--ease), opacity .4s, transform .6s var(--ease);
+}
+#plan.show { opacity: 1; pointer-events: auto; transform: none; }
+#plan.wide { left: 600px; top: 40px; width: 960px; height: 800px; }
+#plan::before {
+  content: ""; position: absolute; inset: 0; border-radius: 20px; pointer-events: none;
+  background-image: radial-gradient(rgba(144, 128, 176, .35) 1px, transparent 1.2px);
+  background-size: 18px 18px; opacity: .55;
+}
+#plan .plan-label {
+  position: absolute; left: 22px; top: 16px; font-family: var(--mono); font-size: 13px;
+  letter-spacing: .1em; text-transform: uppercase; color: var(--ink-mute);
+}
+#plan svg { position: absolute; left: 12px; top: 30px; width: calc(100% - 24px); height: calc(100% - 40px); overflow: visible; }
+
+#plan .node, #plan .edge, #plan .elabel, #plan .zone {
+  transition: opacity .55s var(--ease), transform .6s var(--ease);
+  transform-box: fill-box; transform-origin: center;
+}
+#plan .off { opacity: 0; transform: scale(.85); pointer-events: none; }
+#plan .edge.off, #plan .elabel.off { transform: none; }
+#plan .dim { opacity: .16; }
+
+.node rect { stroke-width: 2; rx: 12; }
+.node text { font-family: var(--display); font-weight: 600; font-size: 20px; fill: var(--ink); text-anchor: middle; dominant-baseline: middle; }
+.node text.sub { font-family: var(--mono); font-weight: 400; font-size: 13.5px; fill: var(--ink-mute); }
+.node { cursor: default; }
+.n-front rect { fill: #f1e9f5; stroke: var(--purple); }
+.n-back rect  { fill: #eff4e4; stroke: var(--olive-dark); }
+.n-db rect    { fill: #ece7f6; stroke: #4a3a8a; }
+.n-proxy rect { fill: #ffeadf; stroke: var(--peach-dark); }
+.n-sec rect   { fill: #ffeef4; stroke: var(--rose); }
+.n-ext rect   { fill: #ffffff; stroke: var(--plum); }
+.node.new rect { animation: glow 1.6s var(--ease) .3s 2; }
+@keyframes glow { 50% { filter: drop-shadow(0 0 10px rgba(255, 160, 110, .95)); } }
+.node .badge { opacity: 0; }
+.node.new .badge { opacity: 1; }
+.node .badge rect { fill: var(--peach); stroke: none; rx: 9; }
+.node .badge text { font-family: var(--mono); font-size: 11px; font-weight: 600; fill: var(--indigo); }
+
+.edge { fill: none; stroke: var(--violet); stroke-width: 2.2; stroke-linejoin: round; }
+.edge.sec { stroke: var(--rose); stroke-dasharray: 6 5; }
+.edge.main { stroke: var(--purple); stroke-width: 2.8; }
+.edge.hl { stroke: var(--peach-dark); stroke-width: 3.6; stroke-dasharray: none; }
+.node.hl rect { stroke-width: 3.5; filter: drop-shadow(0 6px 14px rgba(192, 102, 58, .35)); }
+.elabel rect { fill: var(--paper-2); }
+.elabel text { font-family: var(--mono); font-size: 14px; fill: var(--ink-soft); text-anchor: middle; dominant-baseline: middle; }
+.zone rect { fill: rgba(255, 192, 160, .07); stroke: var(--peach-dark); stroke-dasharray: 8 6; stroke-width: 1.5; rx: 18; }
+.zone text { font-family: var(--mono); font-size: 13px; fill: var(--peach-dark); }
+#token { opacity: 0; fill: var(--peach-dark); filter: drop-shadow(0 0 6px rgba(255, 140, 80, .9)); }
+
+#tip {
+  position: absolute; z-index: 8; max-width: 330px; padding: 14px 16px; border-radius: 12px;
+  background: var(--indigo); color: #efe9f8; font-size: 17px; line-height: 1.4;
+  opacity: 0; transform: translateY(6px); pointer-events: none;
+  transition: opacity .2s, transform .25s var(--ease);
+}
+#tip.show { opacity: 1; transform: none; }
+#tip b { color: var(--pink); display: block; font-family: var(--display); font-size: 19px; margin-bottom: 4px; }
+
+/* ---------- Durchlauf ---------- */
+ol.run { list-style: none; counter-reset: r; display: grid; gap: 8px; }
+ol.run li {
+  counter-increment: r; font-size: 19.5px; line-height: 1.35; padding: 10px 14px 10px 52px;
+  position: relative; border-radius: 12px; color: var(--ink-mute);
+  transition: background .35s, color .35s;
+}
+ol.run li::before {
+  content: counter(r); position: absolute; left: 12px; top: 9px; width: 28px; height: 28px;
+  display: grid; place-items: center; border-radius: 50%;
+  font-family: var(--mono); font-size: 14px; border: 1.5px solid var(--lavender); color: var(--violet);
+  transition: all .35s;
+}
+ol.run li.on { color: var(--ink-soft); }
+ol.run li.cur { background: #fff; box-shadow: 0 8px 22px rgba(80, 48, 96, .1); color: var(--ink); }
+ol.run li.cur::before { background: var(--peach-dark); border-color: var(--peach-dark); color: #fff; }
+ol.run li .who { font-family: var(--mono); font-size: 13px; color: var(--purple); display: block; letter-spacing: .04em; }
+ol.run li.f { opacity: 1; transform: none; } /* Liste bleibt sichtbar, Fortschritt über .on/.cur */
+
+/* ---------- BPMN ---------- */
+.bpmn { width: 100%; }
+.bpmn .el { transition: opacity .4s; }
+.bpmn .shape { fill: #fff; stroke: var(--ink); stroke-width: 2.5; transition: fill .35s, stroke .35s; }
+.bpmn .el.active .shape { fill: #ffeadf; stroke: var(--peach-dark); stroke-width: 3.5; }
+.bpmn .el.done .shape { fill: #f1e9f5; stroke: var(--purple); }
+.bpmn text { font-family: var(--body); font-size: 17px; fill: var(--ink); text-anchor: middle; dominant-baseline: middle; }
+.bpmn text.small { font-family: var(--mono); font-size: 13px; fill: var(--ink-mute); }
+.bpmn .flow { fill: none; stroke: var(--ink); stroke-width: 2; }
+.bpmn .icon { fill: none; stroke: var(--ink); stroke-width: 1.6; }
+.bpmn .gw-x { fill: none; stroke: var(--ink); stroke-width: 5; stroke-linecap: square; }
+.bpmn .gear .teeth { fill: none; stroke: var(--ink); stroke-width: 5; stroke-dasharray: 3.4 3.67; }
+.bpmn .gear .body { fill: #fff; stroke: var(--ink); stroke-width: 1.6; }
+.bpmn .gear .hub { fill: none; stroke: var(--ink); stroke-width: 1.6; }
+.vars {
+  margin-top: 26px; display: flex; gap: 14px; flex-wrap: wrap; min-height: 54px;
+}
+.var {
+  font-family: var(--mono); font-size: 18px; padding: 10px 16px; border-radius: 10px;
+  background: var(--indigo); color: #efe9f8; opacity: .18; transition: opacity .4s, transform .4s var(--ease);
+}
+.var.on { opacity: 1; transform: translateY(-2px); }
+.var b { color: var(--peach); font-weight: 600; }
+
+/* ---------- JWT ---------- */
+.jwt { font-family: var(--mono); font-size: 21px; line-height: 1.55; word-break: break-all; background: var(--indigo); border-radius: 14px; padding: 22px 26px; }
+.jwt span { transition: background .25s, box-shadow .25s; border-radius: 4px; cursor: help; }
+.jwt .h { color: var(--peach); } .jwt .p { color: var(--pink); } .jwt .sg { color: #c8e090; }
+.jwt span:hover, .jwt span.lit { background: rgba(255, 255, 255, .1); box-shadow: 0 0 0 3px rgba(255, 255, 255, .1); }
+.claims { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 18px; margin-top: 24px; }
+.claims .card { padding: 18px 20px; }
+.claims pre { font-size: 15.5px; padding: 14px 16px; margin-top: 8px; }
+
+/* ---------- Pipeline ---------- */
+.pipe { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0; margin: 10px 0 34px; position: relative; }
+.pipe::before {
+  content: ""; position: absolute; left: 57px; right: calc(25% - 57px); top: 43px; height: 2px;
+  background: linear-gradient(90deg, var(--purple), var(--olive));
+  transform: scaleX(0); transform-origin: left; transition: transform .6s var(--ease);
+}
+.pipe:has(.st:nth-child(2).on)::before { transform: scaleX(.3334); }
+.pipe:has(.st:nth-child(3).on)::before { transform: scaleX(.6667); }
+.pipe:has(.st:nth-child(4).on)::before { transform: scaleX(1); }
+.pipe .st { position: relative; padding: 0 18px; }
+.pipe .hexbig {
+  width: 78px; height: 88px; display: grid; place-items: center; margin-bottom: 16px;
+  clip-path: polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%);
+  background: var(--purple); color: #fff; font-family: var(--mono); font-size: 15px;
+  transition: transform .35s var(--ease), background .35s;
+}
+.pipe .st:hover .hexbig { transform: rotate(30deg) scale(1.06); background: var(--olive); }
+.pipe h3 { font-size: 24px; }
+.pipe p { font-size: 19px; }
+
+/* ---------- Abschluss ---------- */
+.rules { display: grid; grid-template-columns: 1fr 1fr; gap: 18px 40px; counter-reset: rule; }
+.rules .rule { counter-increment: rule; padding: 18px 0 18px 70px; position: relative; border-top: 1px solid var(--line); }
+.rules .rule::before {
+  content: counter(rule); position: absolute; left: 0; top: 14px;
+  font-family: var(--display); font-weight: 800; font-size: 46px; line-height: 1; color: var(--lavender);
+  transition: color .3s;
+}
+.rules .rule:hover::before { color: var(--purple); }
+.rules .rule p { font-size: 22px; }
+.rules .rule h3 { font-size: 25px; margin-bottom: 4px; }
+
+.links { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 30px; max-width: 1110px; }
+.links a {
+  display: block; text-decoration: none; padding: 16px 20px; border-radius: 14px; border: 1px solid rgba(176, 160, 208, .3);
+  color: #fff; font-family: var(--display); font-size: 22px; font-weight: 600;
+  transition: background .3s, border-color .3s, transform .3s var(--ease);
+}
+.links a span { display: block; font-family: var(--mono); font-size: 13px; color: var(--lavender); font-weight: 400; margin-top: 4px; }
+.links a:hover, .links a:focus-visible { background: rgba(176, 160, 208, .14); border-color: var(--pink); transform: translateY(-3px); outline: none; }
+
+/* ---------- Chrome ---------- */
+#bar { position: absolute; left: 100px; right: 100px; bottom: 34px; z-index: 6; display: flex; gap: 6px; align-items: center; }
+#bar .seg { flex: 1; height: 4px; border-radius: 2px; background: rgba(144, 128, 176, .25); position: relative; overflow: hidden; cursor: pointer; }
+#bar .seg i { position: absolute; inset: 0; background: var(--purple); transform: scaleX(0); transform-origin: left; transition: transform .5s var(--ease); }
+#bar .seg:hover { background: rgba(144, 128, 176, .45); }
+#bar .seg .lbl {
+  position: absolute; bottom: 12px; left: 0; font-family: var(--mono); font-size: 12px; color: var(--ink-mute);
+  white-space: nowrap; opacity: 0; transition: opacity .2s;
+}
+#bar .seg:hover .lbl, #bar .seg.cur .lbl { opacity: 1; }
+#bar .seg { overflow: visible; }
+#bar .count { font-family: var(--mono); font-size: 13px; color: var(--ink-mute); margin-left: 18px; min-width: 60px; text-align: right; }
+#stage.dark #bar .seg { background: rgba(176, 160, 208, .2); }
+#stage.dark #bar .seg i { background: var(--pink); }
+#stage.dark #bar .seg .lbl, #stage.dark #bar .count { color: var(--violet); }
+
+button.nav {
+  position: absolute; top: 0; bottom: 0; width: 8%; z-index: 4; border: 0; background: transparent; cursor: pointer;
+}
+button.nav.prev { left: 0; cursor: w-resize; } button.nav.next { right: 0; cursor: e-resize; }
+button.nav:focus-visible { outline: 3px solid var(--peach); outline-offset: -6px; }
+a:focus-visible { outline: 3px solid var(--peach); outline-offset: 3px; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition-duration: .01ms !important; }
+}
+</style>
+</head>
+<body>
+<div id="viewport">
+<div id="stage">
+
+  <!-- 1 · Titel -->
+  <section class="slide title dark" data-part="0">
+    <div class="text">
+      <div class="eyebrow"><span class="hex"></span>WInf-Projekt · Technik</div>
+      <h1>System&shy;architektur<span>.</span></h1>
+      <p>Schritt für Schritt vom Browser bis zum Server, an einem durchgehenden Beispiel.</p>
+    </div>
+    <div class="art"><img src="../static/img/development-software-06-work-process.png" alt=""></div>
+    <div class="meta">Weiter mit <kbd>→</kbd> oder <kbd>Leertaste</kbd> · Übersicht der Kapitel unten in der Leiste</div>
+  </section>
+
+  <!-- 2 · Beispiel -->
+  <section class="slide" data-part="0">
+    <div class="eyebrow"><span class="hex"></span>Das Beispiel für heute</div>
+    <h2>Ein Urlaubsantrag.</h2>
+    <div style="display:grid;grid-template-columns:1fr 520px;gap:50px;align-items:center;min-height:560px">
+      <div>
+        <p class="lead">Eine Mitarbeiterin beantragt zwei Wochen Urlaub. Ihre Teamleitung prüft den Antrag und genehmigt ihn. Danach sinkt der Resturlaub um zehn Tage.</p>
+        <p class="lead f" style="margin-top:28px">Klingt nach einem Formular und einer Tabelle. Wir bauen trotzdem die <em class="mark">ganze Architektur</em> des Projekts darum herum, denn jede Zeile der Geschichte stellt eine Anforderung.</p>
+      </div>
+      <img src="../static/img/development-software-09-teamwork-videoconferencing.png" alt="" style="width:520px">
+    </div>
+  </section>
+
+  <!-- 3 · Anforderungen → Bausteine -->
+  <section class="slide" data-part="0">
+    <div class="eyebrow"><span class="hex"></span>Von der Geschichte zur Architektur</div>
+    <h2>Jede Anforderung bringt einen Baustein.</h2>
+    <table class="map">
+      <thead><tr><th>Anforderung</th><th>Baustein</th><th>Schritt</th></tr></thead>
+      <tbody>
+        <tr class="f"><td>Mitarbeitende bedienen das System im Browser</td><td><span class="chip c-front"><i></i>React SPA</span></td><td class="step-ref">1</td></tr>
+        <tr class="f"><td>Anträge und Resturlaub werden dauerhaft gespeichert</td><td><span class="chip c-back"><i></i>Microservices</span> <span class="chip c-db"><i></i>PostgreSQL</span></td><td class="step-ref">2</td></tr>
+        <tr class="f"><td>Der Antrag durchläuft einen festen Ablauf mit Genehmigung</td><td><span class="chip c-back"><i></i>CIB seven</span></td><td class="step-ref">3</td></tr>
+        <tr class="f"><td>Nur die Teamleitung darf genehmigen</td><td><span class="chip c-sec"><i></i>Keycloak</span></td><td class="step-ref">4</td></tr>
+        <tr class="f"><td>Alles ist sicher unter einer Adresse erreichbar</td><td><span class="chip c-proxy"><i></i>Nginx Proxy Manager</span></td><td class="step-ref">5</td></tr>
+        <tr class="f"><td>Neue Versionen kommen kontrolliert auf den Server</td><td><span class="chip c-ext"><i></i>GitHub Actions, Portainer</span></td><td class="step-ref">6</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- 4 · Kapitel 1 -->
+  <section class="slide chapter dark" data-part="1">
+    <div class="wrap">
+      <div class="eyebrow"><span class="hex"></span>Schritt 1 · Oberfläche</div>
+      <h2>Womit arbeitet die Mitarbeiterin?</h2>
+      <p class="answer f"><span class="arrow">→</span>Mit einer Webanwendung, die komplett im Browser läuft.</p>
+    </div>
+    <div class="num">1</div>
+  </section>
+
+  <!-- 5 · SPA -->
+  <section class="slide with-plan" data-part="1" data-dia="1">
+    <div class="body">
+      <div class="eyebrow"><span class="hex"></span>Schritt 1 · React SPA</div>
+      <h2>Eine App, die im Browser lebt.</h2>
+      <p>Eine <strong>Single Page Application</strong> wird einmal geladen: HTML, JavaScript, CSS. Danach läuft sie <em class="mark">auf dem Rechner der Nutzerin</em> und holt nur noch Daten nach, als JSON über REST.</p>
+      <pre class="f" style="margin-top:22px"><span class="file">src/AntragsListe.tsx</span><span class="k">const</span> api = import.meta.env.<span class="a">VITE_API_URL</span>;
+<span class="k">const</span> res = <span class="k">await</span> <span class="n">fetch</span>(<span class="s">`${</span>api<span class="s">}/antraege`</span>);
+<span class="k">const</span> antraege = <span class="k">await</span> res.<span class="n">json</span>();
+<span class="c">// [{ id: 42, von: "2026-08-03", bis: "2026-08-14" }]</span></pre>
+      <div class="callout f">
+        <span class="tag">Typischer Denkfehler</span>
+        <p>„Das Frontend läuft auf dem Server.“ Der Server <strong>liefert</strong> die Dateien nur aus. Jeder Aufruf, den die App macht, kommt aus dem Browser, also von außen.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 6 · Kapitel 2 -->
+  <section class="slide chapter dark" data-part="2">
+    <div class="wrap">
+      <div class="eyebrow"><span class="hex"></span>Schritt 2 · Fachdaten</div>
+      <h2>Wo liegt der Antrag, wenn der Browser zu ist?</h2>
+      <p class="answer f"><span class="arrow">→</span>In einem Microservice mit eigener Datenbank.</p>
+    </div>
+    <div class="num">2</div>
+  </section>
+
+  <!-- 7 · Microservice -->
+  <section class="slide with-plan" data-part="2" data-dia="2">
+    <div class="body">
+      <div class="eyebrow"><span class="hex"></span>Schritt 2 · Urlaubs-Service</div>
+      <h2>Ein Service pro Fachthema.</h2>
+      <p>Der <strong>Urlaubs-Service</strong> kennt genau ein Thema: Anträge. Panache speichert sie in PostgreSQL, REST Jackson liefert sie als JSON. Kein SQL, kein Mapping-Code.</p>
+      <pre style="margin-top:24px;font-size:17px"><span class="file">Urlaubsantrag.java · UrlaubsantragResource.java</span><span class="a">@Entity</span>
+<span class="k">public class</span> <span class="n">Urlaubsantrag</span> <span class="k">extends</span> PanacheEntity {
+    <span class="k">public</span> String mitarbeiterId;
+    <span class="k">public</span> LocalDate von, bis;
+}
+<span class="a">@Path</span>(<span class="s">"/antraege"</span>)
+<span class="k">public class</span> <span class="n">UrlaubsantragResource</span> {
+    <span class="a">@GET</span>
+    <span class="k">public</span> List&lt;Urlaubsantrag&gt; <span class="n">alle</span>() {
+        <span class="k">return</span> Urlaubsantrag.listAll();
+    }
+}</pre>
+    </div>
+  </section>
+
+  <!-- 8 · Zweiter Service -->
+  <section class="slide with-plan" data-part="2" data-dia="3">
+    <div class="body">
+      <div class="eyebrow"><span class="hex"></span>Schritt 2 · Mitarbeiter-Service</div>
+      <h2>Der Resturlaub gehört woanders hin.</h2>
+      <p>Resturlaub, Team und Vorgesetzte sind ein anderes Fachthema. Also bekommt es einen eigenen <strong>Mitarbeiter-Service</strong> mit eigener Datenbank.</p>
+      <div class="cols" style="margin-top:30px">
+        <div class="card bad f">
+          <span class="tag">Verlockend</span>
+          <h3>Eine Datenbank für alle</h3>
+          <p>Der Urlaubs-Service liest die Tabelle <code>mitarbeiter</code> direkt. Benennt jemand eine Spalte um, bricht ein fremder Service.</p>
+        </div>
+        <div class="card good f">
+          <span class="tag">Unser Weg</span>
+          <h3>Jeder Service besitzt seine Daten</h3>
+          <p>Wer Resturlaub braucht, fragt die REST-API des Mitarbeiter-Service. Jeder Service wird eigenständig versioniert und deployed.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 9 · Kapitel 3 -->
+  <section class="slide chapter dark" data-part="3">
+    <div class="wrap">
+      <div class="eyebrow"><span class="hex"></span>Schritt 3 · Prozess</div>
+      <h2>Wer weiß, wo Antrag 42 gerade steht?</h2>
+      <p class="answer f"><span class="arrow">→</span>Eine Process Engine, die den Ablauf als BPMN ausführt.</p>
+    </div>
+    <div class="num">3</div>
+  </section>
+
+  <!-- 10 · Problem -->
+  <section class="slide" data-part="3">
+    <div class="eyebrow"><span class="hex"></span>Schritt 3 · Das Problem</div>
+    <h2>Abläufe wuchern im Code.</h2>
+    <div style="display:grid;grid-template-columns:1fr 600px;gap:56px;align-items:start">
+      <pre><span class="file">Ohne Process Engine</span><span class="k">if</span> (antrag.status == <span class="s">OFFEN</span> &amp;&amp; user.istTeamleitung()) {
+    antrag.status = genehmigt ? <span class="s">GENEHMIGT</span> : <span class="s">ABGELEHNT</span>;
+    <span class="k">if</span> (genehmigt) {
+        mitarbeiterClient.bucheResturlaub(antrag);
+        <span class="c">// und wenn der Mitarbeiter-Service gerade down ist?</span>
+    }
+}
+<span class="c">// Erinnerung nach 3 Tagen? Vertretung im Urlaub?</span>
+<span class="c">// Wer sieht, welche Anträge bei wem liegen?</span></pre>
+      <div>
+        <ul class="points">
+          <li class="f">Der Ablauf steht <strong>nirgends am Stück</strong>, nur verteilt über Statusfelder und <code>if</code>s.</li>
+          <li class="f">Wartezeiten, Fristen und Fehlerfälle werden zu Eigenbau.</li>
+          <li class="f">Die Fachabteilung kann den Ablauf weder lesen noch prüfen.</li>
+        </ul>
+        <div class="callout f"><span class="tag">Idee</span><p>Den Ablauf <strong>modellieren</strong> statt programmieren und von einer Engine ausführen lassen.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 11 · BPMN -->
+  <section class="slide" data-part="3" data-bpmn="0">
+    <div class="eyebrow"><span class="hex"></span>Schritt 3 · Der Ablauf als BPMN</div>
+    <h2>Das Modell ist das Programm.</h2>
+    <svg class="bpmn" viewBox="0 40 1400 270" role="img" aria-label="BPMN-Prozess Urlaubsantrag">
+      <defs><marker id="bm" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#201040"/></marker></defs>
+      <path class="flow" d="M86 140 H170" marker-end="url(#bm)"/>
+      <path class="flow" d="M390 140 H496" marker-end="url(#bm)"/>
+      <path class="flow" d="M576 140 H700" marker-end="url(#bm)"/>
+      <path class="flow" d="M920 140 H1050" marker-end="url(#bm)"/>
+      <path class="flow" d="M536 180 V270 H1050" marker-end="url(#bm)"/>
+      <text x="640" y="122" class="small">ja</text>
+      <text x="580" y="256" class="small">nein</text>
+
+      <g class="el" data-b="1"><circle class="shape" cx="60" cy="140" r="26"/><text x="60" y="196" class="small">Antrag gestellt</text></g>
+      <g class="el" data-b="2"><rect class="shape" x="170" y="95" width="220" height="90" rx="14"/>
+        <g class="icon" transform="translate(186,108)"><circle cx="9" cy="6" r="5"/><path d="M0 22 C0 13 18 13 18 22"/></g>
+        <text x="280" y="140">Antrag prüfen</text><text x="280" y="210" class="small">User Task · Teamleitung</text></g>
+      <g class="el" data-b="3"><path class="shape" d="M536 100 L576 140 L536 180 L496 140 Z"/><path class="gw-x" d="M523 127 L549 153 M549 127 L523 153"/><text x="536" y="62" class="small">genehmigt?</text></g>
+      <g class="el" data-b="4"><rect class="shape" x="700" y="95" width="220" height="90" rx="14"/>
+        <g class="gear" transform="translate(726,118)"><circle r="9" class="teeth"/><circle r="7" class="body"/><circle r="2.8" class="hub"/></g>
+        <text x="810" y="140">Resturlaub buchen</text><text x="810" y="210" class="small">Service Task · ruft Mitarbeiter-Service</text></g>
+      <g class="el" data-b="5"><circle class="shape" cx="1078" cy="140" r="26" style="stroke-width:5"/><text x="1078" y="196" class="small">genehmigt</text></g>
+      <g class="el" data-b="6"><circle class="shape" cx="1078" cy="270" r="26" style="stroke-width:5"/><text x="1160" y="270" class="small">abgelehnt</text></g>
+    </svg>
+    <div class="vars">
+      <span class="var" data-v="1">antragId = <b>42</b></span>
+      <span class="var" data-v="3">genehmigt = <b>true</b></span>
+    </div>
+    <p style="margin-top:22px;max-width:1250px" class="f" data-bpmn="1">Der Antrag startet eine <strong>Prozessinstanz</strong>. Sie trägt nur die Referenz <code>antragId = 42</code>, die Antragsdaten bleiben im Urlaubs-Service.</p>
+    <p class="f" data-bpmn="2" style="max-width:1250px">Die Engine <strong>wartet</strong> an der User Task, Stunden oder Wochen, und weiß jederzeit, bei wem der Antrag liegt.</p>
+    <p class="f" data-bpmn="4" style="max-width:1250px">Nach der Genehmigung ruft die Engine selbst den Mitarbeiter-Service auf. Sie <em class="mark">orchestriert</em> die Services.</p>
+  </section>
+
+  <!-- 12 · Orchestrator -->
+  <section class="slide with-plan" data-part="3" data-dia="4">
+    <div class="body">
+      <div class="eyebrow"><span class="hex"></span>Schritt 3 · CIB seven</div>
+      <h2>Die Engine in der Mitte.</h2>
+      <p><strong>CIB seven</strong> ist ein Fork von Camunda 7. Eine zentrale Instanz führt die BPMN-Prozesse aller Teams aus. Auf dem Server gibt es keine Weboberfläche, nur die REST API unter <code>/engine-rest</code>.</p>
+      <div class="cols" style="margin-top:28px">
+        <div class="card f"><span class="tag">CIB seven weiß</span><h3>Wie weit der Ablauf ist</h3><p>Welche Instanzen laufen, welche Task offen ist, welche Variablen gesetzt sind.</p></div>
+        <div class="card f"><span class="tag">Die Services wissen</span><h3>Was ein Antrag ist</h3><p>Zeitraum, Person, Resturlaub. Die fachliche Wahrheit bleibt in ihren Datenbanken.</p></div>
+      </div>
+      <p class="f" style="margin-top:24px;font-size:21px">Im Prozess stehen deshalb meist nur <strong>IDs</strong>. Wie man Fachdaten bei Bedarf nachlädt, zeigt die Seite <em>Daten in BPMN Prozessen</em>.</p>
+    </div>
+  </section>
+
+  <!-- 13 · Faustregel -->
+  <section class="slide with-plan" data-part="3" data-dia="4">
+    <div class="body">
+      <div class="eyebrow"><span class="hex"></span>Schritt 3 · Wen fragt die SPA?</div>
+      <h2>Fachdaten oder Prozess?</h2>
+      <div class="f" data-hl="spa-u,spa,urlaub" data-run="spa-u">
+        <h3 class="c-back">Fachdaten → Microservice</h3>
+        <pre style="font-size:16.5px"><span class="k">GET</span> https://urlaub.winfprojekt.de/antraege/<span class="a">42</span>
+<span class="c">→ { "id": 42, "von": "2026-08-03", "bis": "2026-08-14" }</span></pre>
+      </div>
+      <div class="f" data-hl="spa-cib,spa,cib" data-run="spa-cib" style="margin-top:26px">
+        <h3 class="c-front">Prozess → CIB seven</h3>
+        <pre style="font-size:16.5px"><span class="k">GET</span> https://cibseven.winfprojekt.de/engine-rest
+    /task?assignee=<span class="a">teamleitung</span>
+<span class="c">→ [{ "name": "Antrag prüfen", "processInstanceId": "…" }]</span></pre>
+      </div>
+      <p class="f" style="margin-top:24px">Eine Liste von Anträgen anzeigen: <strong>Microservice</strong>. „Welche Tasks sind bei mir offen?“ oder Prozess starten: <strong>CIB seven</strong>.</p>
+    </div>
+  </section>
+
+  <!-- 14 · Kapitel 4 -->
+  <section class="slide chapter dark" data-part="4">
+    <div class="wrap">
+      <div class="eyebrow"><span class="hex"></span>Schritt 4 · Identität</div>
+      <h2>Woher weiß der Service, wer anfragt?</h2>
+      <p class="answer f"><span class="arrow">→</span>Aus einem signierten Token, ausgestellt von Keycloak.</p>
+    </div>
+    <div class="num">4</div>
+  </section>
+
+  <!-- 15 · Keycloak -->
+  <section class="slide with-plan" data-part="4" data-dia="5">
+    <div class="body">
+      <div class="eyebrow"><span class="hex"></span>Schritt 4 · Keycloak</div>
+      <h2>Ein Login für alle.</h2>
+      <p>Drei Services mit drei Passwort-Tabellen wären drei Angriffsflächen. Stattdessen übernimmt <strong>Keycloak</strong> als zentraler Identity Provider Login, Rollen und Token-Ausgabe nach OpenID Connect.</p>
+      <ol class="run" style="margin-top:26px">
+        <li class="f" data-hl="spa-kc,spa,kc" data-run="spa-kc"><span class="who">SPA → Keycloak</span>Die App leitet zum Login-Formular von Keycloak weiter. Das Passwort sieht nur Keycloak.</li>
+        <li class="f" data-hl="spa-kc,spa,kc"><span class="who">Keycloak → SPA</span>Nach dem Login bekommt die App ein Access Token (JWT), per Authorization Code Flow mit PKCE.</li>
+        <li class="f" data-hl="spa-u,spa,urlaub" data-run="spa-u"><span class="who">SPA → Service</span>Jeder Aufruf trägt den Header <code>Authorization: Bearer …</code>.</li>
+        <li class="f" data-hl="u-kc,urlaub,kc,cib-kc,cib,m-kc,mitarb"><span class="who">Service ↔ Keycloak</span>Services und CIB seven prüfen die Signatur mit dem öffentlichen Schlüssel von Keycloak (JWKS). Der wird einmal geholt und gecacht.</li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- 16 · JWT -->
+  <section class="slide" data-part="4">
+    <div class="eyebrow"><span class="hex"></span>Schritt 4 · Ein Blick ins Token</div>
+    <h2>Ein JWT ist ein signierter Ausweis.</h2>
+    <div class="jwt"><span class="h" data-c="h">eyJhbGciOiJSUzI1NiIsImtpZCI6InJlYWxtLWtleSJ9</span>.<span class="p" data-c="p">eyJwcmVmZXJyZWRfdXNlcm5hbWUiOiJ0ZWFtbGVpdHVuZyIsInJlYWxtX2FjY2VzcyI6eyJyb2xlcyI6WyJ0ZWFtbGVpdHVuZyJdfSwiZXhwIjoxNzkxODA2NDAwfQ</span>.<span class="sg" data-c="s">Vb3x9kQm2pT7rZ0aLw5sYc8nH1fJ4dE6uK2oP9qR3tW</span></div>
+    <div class="claims">
+      <div class="card" data-c="h"><span class="tag">Header</span><h3>Wie signiert?</h3><pre>{ "alg": "RS256",
+  "kid": "realm-key" }</pre></div>
+      <div class="card" data-c="p"><span class="tag">Payload</span><h3>Wer, was, wie lange?</h3><pre>{ "preferred_username": "teamleitung",
+  "realm_access": { "roles": ["teamleitung"] },
+  "exp": 1791806400 }</pre></div>
+      <div class="card" data-c="s"><span class="tag">Signatur</span><h3>Echt?</h3><p style="font-size:19px">Nur Keycloak hat den privaten Schlüssel. Jeder Service prüft mit dem öffentlichen, ohne Keycloak zu fragen.</p></div>
+    </div>
+    <p class="f" style="margin-top:26px">Im Service reicht dann eine Annotation: <code>@RolesAllowed("teamleitung")</code> auf dem Endpunkt zum Genehmigen. Die Extension <code>quarkus-oidc</code> erledigt den Rest.</p>
+  </section>
+
+  <!-- 17 · Kapitel 5 -->
+  <section class="slide chapter dark" data-part="5">
+    <div class="wrap">
+      <div class="eyebrow"><span class="hex"></span>Schritt 5 · Eingang</div>
+      <h2>Sechs Container, aber nur eine Tür?</h2>
+      <p class="answer f"><span class="arrow">→</span>Ein Reverse Proxy nimmt alles an und verteilt nach Subdomain.</p>
+    </div>
+    <div class="num">5</div>
+  </section>
+
+  <!-- 18 · Proxy -->
+  <section class="slide with-plan" data-part="5" data-dia="6">
+    <div class="body">
+      <div class="eyebrow"><span class="hex"></span>Schritt 5 · Nginx Proxy Manager</div>
+      <h2>Eine Tür, viele Räume.</h2>
+      <p><strong>Nginx Proxy Manager</strong> ist der einzige Dienst, der aus dem Internet erreichbar ist. Er terminiert TLS mit Let's-Encrypt-Zertifikaten und leitet jede Subdomain an ihren Container weiter.</p>
+      <table class="map" style="margin-top:22px;font-size:20px">
+        <thead><tr><th>Öffentlich (HTTPS)</th><th>Intern (HTTP)</th></tr></thead>
+        <tbody>
+          <tr class="f"><td><code>frontend.winfprojekt.de</code></td><td><code>frontend:80</code></td></tr>
+          <tr class="f"><td><code>urlaub.winfprojekt.de</code></td><td><code>urlaub-service:8080</code></td></tr>
+          <tr class="f"><td><code>cibseven.winfprojekt.de</code></td><td><code>cibseven:8080</code></td></tr>
+          <tr class="f"><td><code>keycloak.winfprojekt.de</code></td><td><code>keycloak:8080</code></td></tr>
+        </tbody>
+      </table>
+      <p class="f" style="margin-top:20px;font-size:21px">Deshalb zeigt der Bauplan nur eine Kante zur SPA: <strong>jeder</strong> Aufruf aus dem Browser, auch an Services, CIB seven und Keycloak, geht durch diese Tür.</p>
+    </div>
+  </section>
+
+  <!-- 19 · Docker-Netzwerk -->
+  <section class="slide" data-part="5">
+    <div class="eyebrow"><span class="hex"></span>Schritt 5 · Wie der Proxy die Container findet</div>
+    <h2>Gemeinsames Netz statt offener Ports.</h2>
+    <div style="display:grid;grid-template-columns:640px 1fr;gap:56px;align-items:start">
+      <pre><span class="file">docker-compose.yml · urlaub-service</span><span class="a">services:</span>
+  <span class="n">urlaub-service:</span>
+    image: ghcr.io/org/urlaub-service:<span class="s">1.2.0</span>
+    networks: [<span class="s">nginx-reverse-proxy</span>, <span class="s">intern</span>]
+  <span class="n">datenbank:</span>
+    image: postgres:16
+    networks: [<span class="s">intern</span>]   <span class="c"># nur intern</span>
+
+<span class="a">networks:</span>
+  <span class="n">nginx-reverse-proxy:</span> { external: <span class="k">true</span> }
+  <span class="n">intern:</span> { driver: bridge }</pre>
+      <div>
+        <ul class="points">
+          <li class="f"><code>nginx-reverse-proxy</code> ist ein <strong>externes</strong> Netz auf dem Host. Wer darin hängt, ist für den Proxy per Servicename erreichbar.</li>
+          <li class="f">Die Datenbank hängt nur im Netz <code>intern</code>. Sie ist für den Service erreichbar, aber nie von außen.</li>
+          <li class="f">Kein <code>ports:</code>-Eintrag. Ein offener Host-Port würde am Proxy vorbei führen.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- 20 · Kapitel 6 -->
+  <section class="slide chapter dark" data-part="6">
+    <div class="wrap">
+      <div class="eyebrow"><span class="hex"></span>Schritt 6 · Betrieb</div>
+      <h2>Wie kommt Version 1.2.0 auf den Server?</h2>
+      <p class="answer f"><span class="arrow">→</span>Als Docker-Image, gebaut von der Pipeline, ausgerollt mit Portainer.</p>
+    </div>
+    <div class="num">6</div>
+  </section>
+
+  <!-- 21 · Pipeline -->
+  <section class="slide" data-part="6">
+    <div class="eyebrow"><span class="hex"></span>Schritt 6 · Vom Commit zum Container</div>
+    <h2>Gebaut wird automatisch, ausgerollt bewusst.</h2>
+    <div class="pipe">
+      <div class="st f"><div class="hexbig">tag</div><h3>Git-Tag <code>v1.2.0</code></h3><p>Push auf <code>main</code> oder ein Versions-Tag nach Semantic Versioning.</p></div>
+      <div class="st f"><div class="hexbig">CI</div><h3>GitHub Action</h3><p>Maven-Build, Docker-Image bauen, alles im Workflow <code>docker.yml</code>.</p></div>
+      <div class="st f"><div class="hexbig">img</div><h3>GHCR</h3><p>Das Image liegt als <code>ghcr.io/…:1.2.0</code> in der Registry.</p></div>
+      <div class="st f"><div class="hexbig">run</div><h3>Portainer</h3><p>Tag in der <code>docker-compose.yml</code> hochziehen, dann <em>Pull and redeploy</em>.</p></div>
+    </div>
+    <div class="cols f">
+      <div class="card"><span class="tag">Ein Artefakt, zwei Welten</span><h3>Konfiguration aus der Umgebung</h3><p>In Produktion setzt Portainer <code>QUARKUS_DATASOURCE_JDBC_URL</code> und <code>QUARKUS_OIDC_AUTH_SERVER_URL</code>. Im Repository stehen keine URLs und keine Passwörter.</p></div>
+      <div class="card"><span class="tag">Lokal</span><h3>Dev Services</h3><p>Ist nichts konfiguriert, startet Quarkus PostgreSQL und Keycloak selbst als Container. Deshalb bleibt die <code>application.properties</code> leer.</p></div>
+    </div>
+  </section>
+
+  <!-- 22 · Gesamtbild -->
+  <section class="slide with-wide" data-part="7" data-dia="6" data-plan="wide">
+    <div class="body">
+      <div class="eyebrow"><span class="hex"></span>Das Gesamtbild</div>
+      <h2>Alles zusammen.</h2>
+      <p>Jeder Baustein beantwortet genau eine Frage aus der Geschichte.</p>
+      <p style="margin-top:22px;font-size:21px">Fahrt mit der Maus über die Bausteine im Plan.</p>
+      <div class="callout" style="margin-top:34px">
+        <span class="tag">Selbst entwickelt</span>
+        <p>React SPA, die Microservices und die BPMN-Prozesse. Proxy, Keycloak, Datenbanken und die Engine selbst werden nur betrieben.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 23 · Durchlauf -->
+  <section class="slide with-wide" data-part="7" data-dia="6" data-plan="wide">
+    <div class="body">
+      <div class="eyebrow"><span class="hex"></span>Ein Antrag, einmal durch alles</div>
+      <h2 style="font-size:50px;margin-bottom:22px">Der Durchlauf.</h2>
+      <ol class="run" id="run">
+        <li class="f" data-hl="browser,proxy,spa,b-p,p-spa" data-run="b-p,p-spa"><span class="who">Browser → Proxy → SPA</span>App laden über <code>frontend.winfprojekt.de</code></li>
+        <li class="f" data-hl="spa,kc,spa-kc" data-run="spa-kc"><span class="who">SPA → Keycloak</span>Einloggen, Token erhalten</li>
+        <li class="f" data-hl="spa,urlaub,spa-u,db-u,u-db" data-run="spa-u,u-db"><span class="who">SPA → Urlaubs-Service</span>Antrag anlegen, er bekommt die ID 42</li>
+        <li class="f" data-hl="spa,cib,spa-cib" data-run="spa-cib"><span class="who">SPA → CIB seven</span>Prozess starten mit <code>antragId = 42</code></li>
+        <li class="f" data-hl="spa,cib,spa-cib" data-run="spa-cib"><span class="who">Teamleitung · SPA → CIB seven</span>Offene Tasks: „Antrag prüfen“</li>
+        <li class="f" data-hl="spa,urlaub,spa-u" data-run="spa-u"><span class="who">SPA → Urlaubs-Service</span>Antrag 42 laden und anzeigen</li>
+        <li class="f" data-hl="spa,cib,spa-cib" data-run="spa-cib"><span class="who">SPA → CIB seven</span>Task abschließen, <code>genehmigt = true</code></li>
+        <li class="f" data-hl="cib,mitarb,cib-m,db-m,m-db" data-run="cib-m,m-db"><span class="who">CIB seven → Mitarbeiter-Service</span>Service Task bucht zehn Tage Resturlaub ab</li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- 24 · Faustregeln -->
+  <section class="slide" data-part="7">
+    <div class="eyebrow"><span class="hex"></span>Zum Mitnehmen</div>
+    <h2>Sechs Faustregeln.</h2>
+    <div class="rules">
+      <div class="rule f"><h3>Die SPA läuft im Browser</h3><p>Jeder ihrer Aufrufe kommt von außen und braucht ein Token.</p></div>
+      <div class="rule f"><h3>Ein Service, ein Fachthema</h3><p>Mit eigener Datenbank. Fremde Daten nur über deren REST-API.</p></div>
+      <div class="rule f"><h3>Abläufe gehören in BPMN</h3><p>CIB seven hält den Zustand, im Prozess stehen IDs statt Kopien.</p></div>
+      <div class="rule f"><h3>Fachdaten oder Prozess?</h3><p>Liste anzeigen: Microservice. Offene Tasks, Prozess starten: CIB seven.</p></div>
+      <div class="rule f"><h3>Keycloak stellt aus, alle prüfen</h3><p>Services validieren das JWT selbst mit dem öffentlichen Schlüssel.</p></div>
+      <div class="rule f"><h3>Eine Tür nach außen</h3><p>Nur der Proxy ist öffentlich. Keine <code>ports:</code>, Konfiguration aus Umgebungsvariablen.</p></div>
+    </div>
+  </section>
+
+  <!-- 25 · Weiterlesen -->
+  <section class="slide chapter dark" data-part="7">
+    <div class="wrap" style="top:44%">
+      <div class="eyebrow"><span class="hex"></span>Weiterlesen auf winfprojekt.de</div>
+      <h2 style="font-size:84px">Jetzt seid ihr dran.</h2>
+      <div class="links">
+        <a href="https://winfprojekt.de/docs/technik/architektur">Systemarchitektur<span>/technik/architektur</span></a>
+        <a href="https://winfprojekt.de/docs/technik/frontend">Frontend mit React<span>/technik/frontend</span></a>
+        <a href="https://winfprojekt.de/docs/technik/microservices">Microservices mit Quarkus<span>/technik/microservices</span></a>
+        <a href="https://winfprojekt.de/docs/technik/cibseven">CIB seven<span>/technik/cibseven</span></a>
+        <a href="https://winfprojekt.de/docs/methodik/bpmn-daten">Daten in BPMN Prozessen<span>/methodik/bpmn-daten</span></a>
+        <a href="https://winfprojekt.de/docs/technik/oauth2-oidc">OAuth2 und OIDC<span>/technik/oauth2-oidc</span></a>
+        <a href="https://winfprojekt.de/docs/technik/keycloak">Keycloak<span>/technik/keycloak</span></a>
+        <a href="https://winfprojekt.de/docs/technik/reverse-proxy">Nginx Proxy Manager<span>/technik/reverse-proxy</span></a>
+        <a href="https://winfprojekt.de/docs/technik/deployment">Deployment mit Portainer<span>/technik/deployment</span></a>
+      </div>
+    </div>
+    <img src="../static/img/development-software-10-start-power-button.png" alt="" style="position:absolute;right:40px;bottom:110px;width:320px">
+  </section>
+
+  <!-- Bauplan -->
+  <div id="plan" aria-label="Bauplan der Architektur">
+    <span class="plan-label">Bauplan</span>
+    <svg viewBox="0 0 720 760" role="img" aria-label="Architekturdiagramm, wächst mit jedem Schritt">
+      <defs>
+        <marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#9080b0"/></marker>
+        <marker id="arp" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#704080"/></marker>
+        <marker id="arh" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#c0663a"/></marker>
+        <marker id="ars" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#b03a6a"/></marker>
+      </defs>
+
+      <g class="zone" data-step="6"><rect x="6" y="104" width="708" height="636"/><text x="24" y="728">Server · Docker-Container · Portainer</text></g>
+
+      <!-- Kanten -->
+      <path class="edge main" id="b-spa" data-step="1" data-until="6" d="M360 76 V228" marker-end="url(#arp)"/>
+      <path class="edge main" id="b-p" data-step="6" d="M360 76 V118" marker-end="url(#arp)"/>
+      <path class="edge main" id="p-spa" data-step="6" d="M360 176 V228" marker-end="url(#arp)"/>
+      <path class="edge" id="spa-u" data-step="2" d="M260 262 H115 V398" marker-end="url(#ar)"/>
+      <path class="edge" id="spa-m" data-step="3" d="M460 252 H605 V398" marker-end="url(#ar)"/>
+      <path class="edge main" id="spa-cib" data-step="4" d="M360 294 V398" marker-end="url(#arp)"/>
+      <path class="edge main" id="cib-u" data-step="4" d="M253 432 H224" marker-end="url(#arp)"/>
+      <path class="edge main" id="cib-m" data-step="4" d="M467 432 H496" marker-end="url(#arp)"/>
+      <path class="edge" id="u-db" data-step="2" d="M83 464 V526" marker-end="url(#ar)"/>
+      <path class="edge" id="m-db" data-step="3" d="M637 464 V526" marker-end="url(#ar)"/>
+      <path class="edge sec" id="u-kc" data-step="5" d="M192 464 V670 H248" marker-end="url(#ars)"/>
+      <path class="edge sec" id="m-kc" data-step="5" d="M528 464 V690 H472" marker-end="url(#ars)"/>
+      <path class="edge sec" id="cib-kc" data-step="5" d="M360 464 V638" marker-end="url(#ars)"/>
+      <path class="edge sec" id="spa-kc" data-step="5" d="M460 280 H486 V652 H472" marker-end="url(#ars)"/>
+
+      <!-- Kantenbeschriftungen -->
+      <g class="elabel" data-step="2"><rect x="142" y="250" width="92" height="24" rx="6"/><text x="188" y="262">Fachdaten</text></g>
+      <g class="elabel" data-step="3"><rect x="490" y="240" width="92" height="24" rx="6"/><text x="536" y="252">Fachdaten</text></g>
+      <g class="elabel" data-step="4"><rect x="282" y="334" width="156" height="24" rx="6"/><text x="360" y="346">Prozess · Tasks</text></g>
+      <g class="elabel" data-step="2"><rect x="113" y="484" width="52" height="24" rx="6"/><text x="139" y="496">JDBC</text></g>
+      <g class="elabel" data-step="3"><rect x="555" y="484" width="52" height="24" rx="6"/><text x="581" y="496">JDBC</text></g>
+      <g class="elabel" data-step="5"><rect x="368" y="559" width="56" height="24" rx="6"/><text x="396" y="571">JWKS</text></g>
+      <g class="elabel" data-step="5"><rect x="488" y="559" width="58" height="24" rx="6"/><text x="517" y="571">Login</text></g>
+
+      <!-- Knoten -->
+      <g class="node n-ext" id="browser" data-step="1" data-info="Browser|Hier läuft die SPA. Alles, was von hier kommt, kommt von außen.">
+        <rect x="230" y="16" width="260" height="60"/><text x="360" y="38">Browser</text><text class="sub" x="360" y="60">Mitarbeiterin · Teamleitung</text></g>
+      <g class="node n-proxy" id="proxy" data-step="6" data-info="Nginx Proxy Manager|Einziger öffentlicher Endpunkt. TLS mit Let's Encrypt, Weiterleitung per Subdomain.">
+        <rect x="220" y="120" width="280" height="56"/><text x="360" y="142">Nginx Proxy Manager</text><text class="sub" x="360" y="162">TLS · Subdomains</text>
+        <g class="badge"><rect x="440" y="110" width="44" height="18"/><text x="462" y="120" text-anchor="middle" dominant-baseline="middle">neu</text></g></g>
+      <g class="node n-front" id="spa" data-step="1" data-info="React SPA|Wird einmal ausgeliefert und läuft dann im Browser. Spricht per REST mit Services und CIB seven.">
+        <rect x="260" y="230" width="200" height="64"/><text x="360" y="254">React SPA</text><text class="sub" x="360" y="276">Vite · keycloak-js</text>
+        <g class="badge"><rect x="410" y="220" width="44" height="18"/><text x="432" y="230" text-anchor="middle" dominant-baseline="middle">neu</text></g></g>
+      <g class="node n-back" id="urlaub" data-step="2" data-info="Urlaubs-Service|Quarkus. Besitzt die Anträge und bietet sie als REST-API an.">
+        <rect x="8" y="400" width="214" height="64"/><text x="115" y="424">Urlaubs-Service</text><text class="sub" x="115" y="446">Quarkus · Anträge</text>
+        <g class="badge"><rect x="160" y="390" width="44" height="18"/><text x="182" y="400" text-anchor="middle" dominant-baseline="middle">neu</text></g></g>
+      <g class="node n-back" id="cib" data-step="4" data-info="CIB seven|Zentrale BPMN-Engine. Hält den Prozesszustand und ruft in Service Tasks die Microservices auf.">
+        <rect x="253" y="400" width="214" height="64"/><text x="360" y="424">CIB seven</text><text class="sub" x="360" y="446">BPMN · Orchestrator</text>
+        <g class="badge"><rect x="405" y="390" width="44" height="18"/><text x="427" y="400" text-anchor="middle" dominant-baseline="middle">neu</text></g></g>
+      <g class="node n-back" id="mitarb" data-step="3" data-info="Mitarbeiter-Service|Quarkus. Besitzt Mitarbeitende, Teams und Resturlaub.">
+        <rect x="498" y="400" width="214" height="64"/><text x="605" y="424">Mitarbeiter-Service</text><text class="sub" x="605" y="446">Quarkus · Resturlaub</text>
+        <g class="badge"><rect x="650" y="390" width="44" height="18"/><text x="672" y="400" text-anchor="middle" dominant-baseline="middle">neu</text></g></g>
+      <g class="node n-db" id="db-u" data-step="2" data-info="PostgreSQL|Datenbank des Urlaubs-Service. Nur im internen Netz erreichbar.">
+        <rect x="8" y="528" width="150" height="56"/><text x="83" y="548">PostgreSQL</text><text class="sub" x="83" y="568">Anträge</text></g>
+      <g class="node n-db" id="db-m" data-step="3" data-info="PostgreSQL|Datenbank des Mitarbeiter-Service. Kein anderer Service greift direkt darauf zu.">
+        <rect x="562" y="528" width="150" height="56"/><text x="637" y="548">PostgreSQL</text><text class="sub" x="637" y="568">Mitarbeitende</text></g>
+      <g class="node n-sec" id="kc" data-step="5" data-info="Keycloak|Identity Provider. Login, Rollen, JWT-Ausgabe nach OpenID Connect.">
+        <rect x="250" y="640" width="220" height="64"/><text x="360" y="664">Keycloak</text><text class="sub" x="360" y="686">OIDC · stellt JWTs aus</text>
+        <g class="badge"><rect x="420" y="630" width="44" height="18"/><text x="442" y="640" text-anchor="middle" dominant-baseline="middle">neu</text></g></g>
+
+      <circle id="token" r="7" cx="-20" cy="-20"/>
+    </svg>
+  </div>
+  <div id="tip"></div>
+
+  <button class="nav prev" aria-label="Vorherige Folie"></button>
+  <button class="nav next" aria-label="Nächste Folie"></button>
+  <div id="bar"></div>
+</div>
+</div>
+
+<script>
+(() => {
+  const stage = document.getElementById('stage');
+  const slides = [...document.querySelectorAll('.slide')];
+  const plan = document.getElementById('plan');
+  const svg = plan.querySelector('svg');
+  const token = document.getElementById('token');
+  const tip = document.getElementById('tip');
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // Bühne skalieren
+  function fit() {
+    const s = Math.min(innerWidth / 1600, innerHeight / 900) * 0.98;
+    stage.style.transform = `scale(${s})`;
+  }
+  addEventListener('resize', fit); fit();
+
+  // Fortschrittsleiste nach Kapiteln
+  const parts = ['Einstieg', 'Oberfläche', 'Fachdaten', 'Prozess', 'Identität', 'Eingang', 'Betrieb', 'Gesamtbild'];
+  const bar = document.getElementById('bar');
+  const segs = parts.map((name, p) => {
+    const seg = document.createElement('div');
+    seg.className = 'seg';
+    seg.innerHTML = `<i></i><span class="lbl">${name}</span>`;
+    seg.addEventListener('click', e => { e.stopPropagation(); go(slides.findIndex(s => +s.dataset.part === p), 0); });
+    bar.appendChild(seg);
+    return seg;
+  });
+  const count = document.createElement('span');
+  count.className = 'count';
+  bar.appendChild(count);
+
+  let cur = 0, frag = 0;
+  const frags = s => [...s.querySelectorAll('.f')];
+
+  // Bauplan
+  let runTimer = null;
+  function applyPlan(slide, f) {
+    const dia = slide.dataset.dia ? +slide.dataset.dia : 0;
+    plan.classList.toggle('show', dia > 0);
+    plan.classList.toggle('wide', slide.dataset.plan === 'wide');
+    if (!dia) { stopRun(); return; }
+    let hl = '', run = '';
+    frags(slide).slice(0, f).forEach(el => {
+      if (el.dataset.hl !== undefined) hl = el.dataset.hl;
+      if (el.dataset.run !== undefined) run = el.dataset.run; else if (el.dataset.hl !== undefined) run = '';
+    });
+    const hls = hl ? hl.split(',') : [];
+    svg.querySelectorAll('[data-step]').forEach(el => {
+      const step = +el.dataset.step, until = el.dataset.until ? +el.dataset.until : 99;
+      const on = step <= dia && dia < until;
+      el.classList.toggle('off', !on);
+      el.classList.toggle('new', on && step === dia && slide.dataset.plan !== 'wide');
+      const lit = hls.includes(el.id);
+      el.classList.toggle('hl', lit);
+      if (el.classList.contains('edge')) {
+        el.dataset.marker ??= el.getAttribute('marker-end');
+        el.setAttribute('marker-end', lit ? 'url(#arh)' : el.dataset.marker);
+      }
+      el.classList.toggle('dim', hls.length > 0 && !lit && on);
+    });
+    startRun(run ? run.split(',') : []);
+  }
+
+  function stopRun() {
+    cancelAnimationFrame(runTimer); runTimer = null;
+    token.style.opacity = 0;
+  }
+  function startRun(ids) {
+    stopRun();
+    if (!ids.length) return;
+    const paths = ids.map(id => document.getElementById(id));
+    const lens = paths.map(p => p.getTotalLength());
+    const total = lens.reduce((a, b) => a + b, 0);
+    const dur = Math.max(900, total * 3.2), pause = 700;
+    let t0 = null;
+    const tick = t => {
+      if (t0 === null) t0 = t;
+      let d = (t - t0) % (dur + pause);
+      let dist = reduce ? total : Math.min(d / dur, 1) * total;
+      let i = 0;
+      while (i < paths.length - 1 && dist > lens[i]) { dist -= lens[i]; i++; }
+      const pt = paths[i].getPointAtLength(Math.min(dist, lens[i]));
+      token.setAttribute('cx', pt.x); token.setAttribute('cy', pt.y);
+      token.style.opacity = d > dur ? 1 - (d - dur) / pause : 1;
+      if (!reduce) runTimer = requestAnimationFrame(tick);
+    };
+    runTimer = requestAnimationFrame(tick);
+  }
+
+  // Tooltips im Bauplan
+  svg.querySelectorAll('.node').forEach(n => {
+    n.addEventListener('mouseenter', () => {
+      if (n.classList.contains('off')) return;
+      const [title, text] = n.dataset.info.split('|');
+      tip.innerHTML = `<b>${title}</b>${text}`;
+      const sr = stage.getBoundingClientRect(), nr = n.getBoundingClientRect();
+      const k = sr.width / 1600;
+      let x = (nr.left - sr.left) / k, y = (nr.bottom - sr.top) / k + 10;
+      if (y > 760) y = (nr.top - sr.top) / k - 110;
+      tip.style.left = Math.min(x, 1240) + 'px';
+      tip.style.top = y + 'px';
+      tip.classList.add('show');
+    });
+    n.addEventListener('mouseleave', () => tip.classList.remove('show'));
+  });
+
+  // JWT: Teile und Karten gegenseitig hervorheben
+  document.querySelectorAll('[data-c]').forEach(el => {
+    const c = el.dataset.c;
+    el.addEventListener('mouseenter', () => document.querySelectorAll(`.jwt [data-c="${c}"]`).forEach(x => x.classList.add('lit')));
+    el.addEventListener('mouseleave', () => document.querySelectorAll('.jwt .lit').forEach(x => x.classList.remove('lit')));
+  });
+
+  // BPMN-Folie: Fragmente bewegen den Token durch den Prozess
+  function applyBpmn(slide, f) {
+    if (slide.dataset.bpmn === undefined) return;
+    // data-bpmn eines Fragments = Nummer des Elements, an dem der Token steht
+    let active = 0;
+    frags(slide).slice(0, f).forEach(el => { active = Math.max(active, +el.dataset.bpmn); });
+    slide.querySelectorAll('.el').forEach(el => {
+      const b = +el.dataset.b;
+      el.classList.toggle('active', b === active);
+      el.classList.toggle('done', b < active);
+      el.style.opacity = active >= 4 && b === 6 ? .35 : 1;
+    });
+    slide.querySelectorAll('.var').forEach(v => v.classList.toggle('on', active >= +v.dataset.v));
+  }
+
+  // Durchlauf: aktuelle Zeile markieren
+  function applyRun(slide, f) {
+    slide.querySelectorAll('ol.run li').forEach((li, i) => {
+      li.classList.toggle('cur', i === f - 1);
+    });
+  }
+
+  function render() {
+    slides.forEach((s, i) => s.classList.toggle('active', i === cur));
+    const slide = slides[cur];
+    frags(slide).forEach((el, i) => el.classList.toggle('on', i < frag));
+    stage.classList.toggle('dark', slide.classList.contains('dark'));
+    applyPlan(slide, frag);
+    applyBpmn(slide, frag);
+    applyRun(slide, frag);
+    const part = +slide.dataset.part;
+    segs.forEach((seg, p) => {
+      const inPart = slides.map((s, i) => [s, i]).filter(([s]) => +s.dataset.part === p);
+      const done = inPart.filter(([, i]) => i <= cur).length / inPart.length;
+      seg.querySelector('i').style.transform = `scaleX(${p < part ? 1 : p > part ? 0 : done})`;
+      seg.classList.toggle('cur', p === part);
+    });
+    count.textContent = `${cur + 1} / ${slides.length}`;
+    history.replaceState(null, '', `#${cur + 1}` + (frag ? `.${frag}` : ''));
+    tip.classList.remove('show');
+  }
+
+  function go(i, f) {
+    cur = Math.max(0, Math.min(slides.length - 1, i));
+    frag = f === 'end' ? frags(slides[cur]).length : f;
+    render();
+  }
+  function next() {
+    if (frag < frags(slides[cur]).length) { frag++; render(); }
+    else if (cur < slides.length - 1) go(cur + 1, 0);
+  }
+  function prev() {
+    if (frag > 0) { frag--; render(); }
+    else if (cur > 0) go(cur - 1, 'end');
+  }
+
+  addEventListener('keydown', e => {
+    if (e.metaKey || e.ctrlKey || e.altKey) return;
+    if (['ArrowRight', 'ArrowDown', ' ', 'PageDown', 'Enter'].includes(e.key)) { e.preventDefault(); next(); }
+    else if (['ArrowLeft', 'ArrowUp', 'PageUp', 'Backspace'].includes(e.key)) { e.preventDefault(); prev(); }
+    else if (e.key === 'Home') go(0, 0);
+    else if (e.key === 'End') go(slides.length - 1, 'end');
+    else if (e.key === 'f') document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen();
+  });
+  document.querySelector('.nav.next').addEventListener('click', next);
+  document.querySelector('.nav.prev').addEventListener('click', prev);
+
+  let tx = null;
+  addEventListener('touchstart', e => { tx = e.touches[0].clientX; }, { passive: true });
+  addEventListener('touchend', e => {
+    if (tx === null) return;
+    const dx = e.changedTouches[0].clientX - tx;
+    if (Math.abs(dx) > 40) dx < 0 ? next() : prev();
+    tx = null;
+  });
+
+  const m = location.hash.match(/^#(\d+)(?:\.(\d+))?/);
+  go(m ? +m[1] - 1 : 0, m && m[2] ? +m[2] : 0);
+})();
+</script>
+</body>
+</html>
