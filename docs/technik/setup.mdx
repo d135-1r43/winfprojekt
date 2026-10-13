@@ -9,13 +9,38 @@ import TabItem from '@theme/TabItem';
 
 Für die Mitarbeit am Projekt werden Java 25, Node.js, Docker, Maven und eine IDE benötigt.
 
+## Paketmanager
+
+Wir installieren alles über einen Paketmanager statt über einzelne Installer. Das spart das manuelle Setzen von `JAVA_HOME` und `Path`, und Updates gehen mit einem Befehl.
+
+<Tabs groupId="os">
+  <TabItem value="mac" label="macOS">
+    [Homebrew](https://brew.sh/) installieren, falls noch nicht vorhanden:
+    ```bash
+    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+    ```
+  </TabItem>
+  <TabItem value="win" label="Windows">
+    [Scoop](https://scoop.sh/) installiert Programme ohne Administratorrechte in den Benutzerordner und setzt Umgebungsvariablen selbst. In einer PowerShell (**nicht** als Administrator):
+    ```powershell
+    Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
+    Invoke-RestMethod -Uri https://get.scoop.sh | Invoke-Expression
+    ```
+    Scoop braucht Git, um weitere Paketquellen (*Buckets*) einzubinden. Das JDK liegt im Bucket `java`:
+    ```powershell
+    scoop install git
+    scoop bucket add java
+    ```
+    Alle mit Scoop installierten Programme aktualisieren: `scoop update *`
+  </TabItem>
+</Tabs>
+
 ## Java 25
 
 Als JDK-Distribution empfehlen wir [Eclipse Temurin 25](https://adoptium.net/) (OpenJDK, kostenlos, von der Adoptium-Community gepflegt).
 
 <Tabs groupId="os">
   <TabItem value="mac" label="macOS">
-    Mit [Homebrew](https://brew.sh/):
     ```bash
     brew install --cask temurin@25
     ```
@@ -25,15 +50,13 @@ Als JDK-Distribution empfehlen wir [Eclipse Temurin 25](https://adoptium.net/) (
     ```
   </TabItem>
   <TabItem value="win" label="Windows">
-    Mit [winget](https://learn.microsoft.com/de-de/windows/package-manager/winget/):
     ```powershell
-    winget install EclipseAdoptium.Temurin.25.JDK
+    scoop install temurin25-jdk
     ```
-    Danach ein neues Terminal öffnen und prüfen:
+    Scoop setzt dabei auch `JAVA_HOME`. Danach ein neues Terminal öffnen und prüfen:
     ```powershell
     java -version
     ```
-    Alternativ den Installer direkt von [adoptium.net](https://adoptium.net/) herunterladen; dieser setzt `JAVA_HOME` und den `PATH` automatisch.
   </TabItem>
 </Tabs>
 
@@ -54,7 +77,7 @@ Für das React-Frontend wird [Node.js](https://nodejs.org/) in der LTS-Version b
   </TabItem>
   <TabItem value="win" label="Windows">
     ```powershell
-    winget install OpenJS.NodeJS.LTS
+    scoop install nodejs-lts
     ```
     Danach ein neues Terminal öffnen und prüfen:
     ```powershell
@@ -76,7 +99,7 @@ Für das React-Frontend wird [Node.js](https://nodejs.org/) in der LTS-Version b
     Anschließend Docker Desktop aus dem Launchpad starten. Docker läuft im Hintergrund als Menüleisten-App.
   </TabItem>
   <TabItem value="win" label="Windows">
-    Installer von [docker.com/products/docker-desktop](https://www.docker.com/products/docker-desktop/) herunterladen und ausführen.
+    Docker Desktop ist die Ausnahme: Scoop bietet nur die Docker-CLI ohne Engine. Daher den Installer von [docker.com/products/docker-desktop](https://www.docker.com/products/docker-desktop/) herunterladen und ausführen.
 
     Docker Desktop benötigt unter Windows das **WSL 2**-Backend (wird beim Setup automatisch eingerichtet, sofern noch nicht vorhanden).
   </TabItem>
@@ -96,14 +119,9 @@ docker run hello-world
     ```
   </TabItem>
   <TabItem value="win" label="Windows">
-    1. Das Binary ZIP von [maven.apache.org/download.cgi](https://maven.apache.org/download.cgi) herunterladen und z. B. nach `C:\Program Files\Maven` entpacken.
-    2. Systemumgebungsvariable `MAVEN_HOME` auf diesen Ordner setzen.
-    3. `%MAVEN_HOME%\bin` zur Umgebungsvariable `Path` hinzufügen.
-    4. Ein neues Terminal öffnen und prüfen:
     ```powershell
-    mvn -version
+    scoop install maven
     ```
-    Alternativ beschreibt [maven.apache.org/install.html](https://maven.apache.org/install.html) die Installation über Chocolatey oder Scoop.
   </TabItem>
 </Tabs>
 
