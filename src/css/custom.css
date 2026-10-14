@@ -1,14 +1,56 @@
 /**
- * Farbschema abgeleitet aus der Illustrationsserie (development-software-*)
+ * Gestaltung nach slides/architektur.html
  *
- * Primary Purple  #704080   Navbar/Dark Plum  #503060
- * Light Lavender  #b0a0d0   Deep Indigo       #201040
- * Muted Violet    #9080b0   Olive Green       #80a040
- * Soft Pink       #ffd0e0   Peach             #ffc0a0
+ * Farben aus der Illustrationsserie (development-software-*):
+ * Primary Purple  #704080   Dark Plum      #503060
+ * Light Lavender  #b0a0d0   Deep Indigo    #201040
+ * Muted Violet    #9080b0   Olive Green    #80a040
+ * Soft Pink       #ffd0e0   Peach          #ffc0a0
+ *
+ * Schriften: Bricolage Grotesque (Überschriften), Atkinson Hyperlegible (Text),
+ * JetBrains Mono (Code, Labels). Geladen über `stylesheets` in docusaurus.config.ts.
  */
 
+/* ======================================================================
+   Tokens
+   ====================================================================== */
+
 :root {
-  /* Primary: Primary Purple */
+  --wp-indigo: #201040;
+  --wp-indigo-deep: #150b2e;
+  --wp-plum: #503060;
+  --wp-purple: #704080;
+  --wp-lavender: #b0a0d0;
+  --wp-violet: #9080b0;
+  --wp-olive: #80a040;
+  --wp-olive-dark: #5f7d2a;
+  --wp-pink: #ffd0e0;
+  --wp-peach: #ffc0a0;
+  --wp-peach-dark: #c0663a;
+  --wp-rose: #b03a6a;
+
+  --wp-paper: #fbf8fd;
+  --wp-paper-2: #f3edf8;
+  --wp-card: #ffffff;
+  --wp-line: #e4daee;
+  --wp-ink: #201040;
+  --wp-ink-soft: #503060;
+  --wp-ink-mute: #7a6a96;
+  --wp-accent: #704080;
+  --wp-mark: #ffd0e0;
+  --wp-dot: #c0663a;
+  --wp-shadow: 0 14px 30px rgba(80, 48, 96, 0.12);
+  --wp-glass: rgba(251, 248, 253, 0.78);
+
+  --wp-display: 'Bricolage Grotesque', system-ui, sans-serif;
+  --wp-body: 'Atkinson Hyperlegible', system-ui, sans-serif;
+  --wp-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  --wp-ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --wp-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --wp-hex: polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%);
+
+  /* Infima */
   --ifm-color-primary:          #704080;
   --ifm-color-primary-dark:     #653a73;
   --ifm-color-primary-darker:   #5f366d;
@@ -17,54 +59,59 @@
   --ifm-color-primary-lighter:  #865a97;
   --ifm-color-primary-lightest: #9d73af;
 
-  --ifm-code-font-size: 95%;
-  --docusaurus-highlighted-code-line-bg: rgba(112, 64, 128, 0.15);
+  --ifm-background-color: var(--wp-paper);
+  --ifm-background-surface-color: var(--wp-paper);
+  --ifm-font-color-base: var(--wp-ink-soft);
+  --ifm-heading-color: var(--wp-ink);
+  --ifm-font-family-base: var(--wp-body);
+  --ifm-heading-font-family: var(--wp-display);
+  --ifm-font-family-monospace: var(--wp-mono);
+  --ifm-font-size-base: 106.25%;
+  --ifm-line-height-base: 1.68;
+  --ifm-heading-font-weight: 800;
+  --ifm-global-radius: 12px;
+  --ifm-code-font-size: 88%;
+  --ifm-code-background: var(--wp-paper-2);
+  --ifm-code-border-radius: 6px;
+  --ifm-hr-background-color: var(--wp-line);
+  --ifm-toc-border-color: var(--wp-line);
+  --ifm-color-emphasis-300: var(--wp-line);
+  --ifm-link-color: var(--wp-accent);
+  --ifm-link-hover-color: var(--wp-ink);
+  --ifm-link-hover-decoration: none;
+  --ifm-menu-color: var(--wp-ink-soft);
+  --ifm-menu-color-active: var(--wp-ink);
+  --ifm-menu-color-background-hover: var(--wp-paper-2);
+  --ifm-menu-color-background-active: var(--wp-paper-2);
+  --ifm-table-border-width: 0;
+  --ifm-table-stripe-background: transparent;
+  --ifm-table-head-background: transparent;
+  --ifm-navbar-height: 4rem;
+  --ifm-navbar-background-color: transparent;
+  --ifm-navbar-shadow: none;
+  --ifm-navbar-link-color: var(--wp-ink-soft);
+  --ifm-navbar-link-hover-color: var(--wp-ink);
+  --ifm-navbar-link-active-color: var(--wp-ink);
+  --ifm-footer-background-color: var(--wp-indigo);
+  --ifm-transition-fast: 200ms;
 
-  /* Navbar */
-  --ifm-navbar-background-color: #503060;
-  --ifm-navbar-link-color: #ffd0e0;
-  --ifm-navbar-link-hover-color: #ffffff;
-
-  /* Footer */
-  --ifm-footer-background-color: #201040;
-  --ifm-footer-color: #b0a0d0;
-  --ifm-footer-link-color: #ffd0e0;
-  --ifm-footer-link-hover-color: #ffd0e0;
-  --ifm-footer-title-color: #ffffff;
-}
-
-/* Mobile Navbar Sidebar */
-.navbar-sidebar {
-  --ifm-menu-color: #ffd0e0;
-  --ifm-menu-color-active: #ffffff;
-}
-
-.navbar-sidebar__back {
-  color: #ffd0e0;
-}
-
-.navbar-sidebar__back:hover {
-  color: #ffffff;
-}
-
-/* Footer ist immer dark-styled, unabhängig vom Theme */
-.footer--dark {
-  --ifm-footer-link-color: #ffffff;
-  --ifm-footer-link-hover-color: #ffd0e0;
-  --ifm-footer-color: #c8bce0;
-  --ifm-footer-title-color: #ffffff;
-}
-
-.footer__copyright a {
-  color: #ffffff;
-}
-
-.footer__copyright a:hover {
-  color: #ffd0e0;
+  --docusaurus-highlighted-code-line-bg: rgba(255, 192, 160, 0.16);
 }
 
 [data-theme='dark'] {
-  /* Primary: Light Lavender (lesbar auf dunklem Hintergrund) */
+  --wp-paper: #150b2e;
+  --wp-paper-2: #201040;
+  --wp-card: #1b0e38;
+  --wp-line: #33235a;
+  --wp-ink: #f4effb;
+  --wp-ink-soft: #c8bce0;
+  --wp-ink-mute: #9080b0;
+  --wp-accent: #c7b6ea;
+  --wp-mark: rgba(255, 208, 224, 0.28);
+  --wp-dot: #ffd0e0;
+  --wp-shadow: 0 18px 40px rgba(0, 0, 0, 0.45);
+  --wp-glass: rgba(21, 11, 46, 0.72);
+
   --ifm-color-primary:          #b0a0d0;
   --ifm-color-primary-dark:     #9e90bb;
   --ifm-color-primary-darker:   #9688b2;
@@ -73,21 +120,870 @@
   --ifm-color-primary-lighter:  #cbb9ed;
   --ifm-color-primary-lightest: #dbcdf3;
 
-  --docusaurus-highlighted-code-line-bg: rgba(176, 160, 208, 0.15);
-
-  /* Seitenhintergrund */
-  --ifm-background-color:         #150b2e;
-  --ifm-background-surface-color: #201040;
-
-  /* Navbar */
-  --ifm-navbar-background-color: #201040;
-  --ifm-navbar-link-color: #b0a0d0;
-  --ifm-navbar-link-hover-color: #ffd0e0;
-
-  /* Footer */
   --ifm-footer-background-color: #0f0820;
-  --ifm-footer-color: #9080b0;
-  --ifm-footer-link-color: #c8bce0;
-  --ifm-footer-link-hover-color: #ffffff;
-  --ifm-footer-title-color: #b0a0d0;
+  --docusaurus-highlighted-code-line-bg: rgba(255, 192, 160, 0.16);
+}
+
+/* ======================================================================
+   Grundlagen
+   ====================================================================== */
+
+html {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  scrollbar-color: var(--wp-lavender) transparent;
+}
+
+::selection {
+  background: var(--wp-pink);
+  color: var(--wp-indigo);
+}
+
+:where(a, button, summary, input, [tabindex]):focus-visible {
+  outline: 3px solid var(--wp-peach);
+  outline-offset: 3px;
+  border-radius: 6px;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  letter-spacing: -0.025em;
+  font-variation-settings: 'opsz' 96;
+}
+
+kbd {
+  font-family: var(--wp-mono);
+  font-size: 0.8em;
+  border: 1px solid var(--wp-line);
+  border-bottom-width: 2px;
+  border-radius: 6px;
+  padding: 0.1em 0.45em;
+  background: var(--wp-card);
+  box-shadow: none;
+  color: var(--wp-ink);
+}
+
+@keyframes wp-rise {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: none; }
+}
+
+@keyframes wp-pop {
+  from { opacity: 0; transform: scale(0.4) rotate(-30deg); }
+  to   { opacity: 1; transform: none; }
+}
+
+@keyframes wp-float {
+  50% { transform: translateY(-10px) rotate(-0.6deg); }
+}
+
+/* ======================================================================
+   Navbar: Glas mit Lesefortschritt
+   ====================================================================== */
+
+.navbar {
+  border-bottom: 1px solid var(--wp-line);
+  isolation: isolate;
+}
+
+/* Hintergrund auf einer eigenen Ebene, damit backdrop-filter die mobile
+   Seitenleiste (ein Kind der Navbar mit position: fixed) nicht einsperrt */
+.navbar::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: var(--wp-glass);
+  backdrop-filter: saturate(1.6) blur(14px);
+  -webkit-backdrop-filter: saturate(1.6) blur(14px);
+}
+
+@supports (animation-timeline: scroll()) {
+  .navbar::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -1px;
+    height: 2px;
+    background: linear-gradient(90deg, var(--wp-purple), var(--wp-peach-dark) 60%, var(--wp-olive));
+    transform-origin: left;
+    transform: scaleX(0);
+    animation: wp-progress linear both;
+    animation-timeline: scroll(root block);
+  }
+
+  @keyframes wp-progress {
+    to { transform: scaleX(1); }
+  }
+}
+
+.navbar__brand {
+  gap: 0.15rem;
+}
+
+.navbar__logo {
+  transition: transform 0.5s var(--wp-spring);
+}
+
+.navbar__brand:hover .navbar__logo {
+  transform: rotate(-12deg) scale(1.08);
+}
+
+.navbar__title {
+  font-family: var(--wp-display);
+  font-weight: 800;
+  font-size: 1.15rem;
+  letter-spacing: -0.02em;
+  color: var(--wp-ink);
+}
+
+.navbar__title::after {
+  content: '.';
+  color: var(--wp-dot);
+}
+
+.navbar__link {
+  font-family: var(--wp-display);
+  font-weight: 600;
+  position: relative;
+  transition: color 0.2s;
+}
+
+.navbar__items:not(.navbar__items--right) .navbar__link::after,
+.navbar__items--right > .navbar__link::after {
+  content: '';
+  position: absolute;
+  left: var(--ifm-navbar-item-padding-horizontal);
+  right: var(--ifm-navbar-item-padding-horizontal);
+  bottom: 0.15rem;
+  height: 2px;
+  border-radius: 2px;
+  background: var(--wp-accent);
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform 0.35s var(--wp-ease);
+}
+
+.navbar__link:hover::after,
+.navbar__link--active::after {
+  transform: scaleX(1) !important;
+  transform-origin: left !important;
+}
+
+.navbar__items--right svg[class*='iconExternalLink'] {
+  transition: transform 0.3s var(--wp-ease);
+}
+
+.navbar__link:hover svg[class*='iconExternalLink'] {
+  transform: translate(2px, -2px);
+}
+
+/* Theme-Umschalter */
+.navbar button[class*='toggleButton'] {
+  border-radius: 50%;
+  transition: background 0.2s, transform 0.5s var(--wp-spring);
+}
+
+.navbar button[class*='toggleButton']:hover {
+  background: var(--wp-paper-2);
+  transform: rotate(25deg);
+}
+
+.navbar button[class*='toggleButton']:active {
+  transform: rotate(25deg) scale(0.88);
+}
+
+/* Lokale Suche */
+.navbar__search-input {
+  font-family: var(--wp-body);
+  background-color: var(--wp-paper-2);
+  border: 1px solid var(--wp-line);
+  border-radius: 999px;
+  color: var(--wp-ink);
+  transition: width 0.4s var(--wp-ease), border-color 0.2s, box-shadow 0.2s, background-color 0.2s;
+}
+
+.navbar__search-input:focus {
+  outline: none;
+  border-color: var(--wp-lavender);
+  background-color: var(--wp-card);
+  box-shadow: 0 0 0 4px rgba(176, 160, 208, 0.25);
+}
+
+@media (min-width: 997px) {
+  .navbar__search-input:focus {
+    width: 16rem;
+  }
+}
+
+/* Mobile Seitenleiste */
+.navbar-sidebar {
+  background: var(--wp-paper);
+}
+
+/* ======================================================================
+   Seitenleiste
+   ====================================================================== */
+
+.theme-doc-sidebar-container {
+  border-right-color: var(--wp-line) !important;
+}
+
+.menu {
+  font-size: 0.95rem;
+}
+
+.menu__link {
+  position: relative;
+  border-radius: 10px;
+  padding-left: calc(var(--ifm-menu-link-padding-horizontal) + 0.55rem);
+  transition: background 0.2s, color 0.2s;
+}
+
+.menu__link--active:not(.menu__link--sublist) {
+  color: var(--wp-ink);
+  font-weight: 700;
+}
+
+.menu__link--active:not(.menu__link--sublist)::before {
+  content: '';
+  position: absolute;
+  left: 0.5rem;
+  top: calc(50% - 4.5px);
+  width: 8px;
+  height: 9px;
+  background: var(--wp-olive);
+  clip-path: var(--wp-hex);
+  animation: wp-pop 0.45s var(--wp-spring) both;
+}
+
+.menu__link--sublist-caret::after,
+.menu__caret::before {
+  transition: transform 0.3s var(--wp-ease);
+}
+
+/* ======================================================================
+   Inhaltsverzeichnis rechts
+   ====================================================================== */
+
+.theme-doc-toc-desktop {
+  padding-left: 2rem;
+}
+
+.table-of-contents {
+  font-size: 1rem;
+}
+
+.table-of-contents.table-of-contents__left-border {
+  padding-left: 1.25rem;
+}
+
+.table-of-contents__link {
+  position: relative;
+  display: inline-block;
+  color: var(--wp-ink-mute);
+  transition: color 0.2s, transform 0.35s var(--wp-ease);
+}
+
+.table-of-contents__link:hover {
+  color: var(--wp-ink);
+}
+
+.table-of-contents__link--active {
+  color: var(--wp-accent);
+  transform: translateX(4px);
+}
+
+.table-of-contents__link--active::before {
+  content: '';
+  position: absolute;
+  left: -0.9rem;
+  top: 0.55em;
+  width: 7px;
+  height: 8px;
+  background: var(--wp-accent);
+  clip-path: var(--wp-hex);
+  animation: wp-pop 0.4s var(--wp-spring) both;
+}
+
+/* ======================================================================
+   Dokumentseiten
+   ====================================================================== */
+
+/* Brotkrumen als Eyebrow wie auf den Folien */
+.breadcrumbs {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  font-family: var(--wp-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.breadcrumbs::before {
+  content: '';
+  width: 11px;
+  height: 12px;
+  margin-right: 0.35rem;
+  background: var(--wp-olive);
+  clip-path: var(--wp-hex);
+}
+
+.breadcrumbs__link {
+  background: none !important;
+  padding: 0.15rem 0.1rem;
+  color: var(--wp-ink-mute);
+  transition: color 0.2s;
+}
+
+.breadcrumbs__link:hover {
+  color: var(--wp-accent);
+}
+
+.breadcrumbs__item--active .breadcrumbs__link {
+  color: var(--wp-accent);
+}
+
+/* Inhalt erscheint bei jedem Seitenwechsel gestaffelt */
+.theme-doc-markdown > * {
+  animation: wp-rise 0.6s var(--wp-ease) both;
+  animation-delay: 0.32s;
+}
+.theme-doc-markdown > :nth-child(1) { animation-delay: 0s; }
+.theme-doc-markdown > :nth-child(2) { animation-delay: 0.05s; }
+.theme-doc-markdown > :nth-child(3) { animation-delay: 0.1s; }
+.theme-doc-markdown > :nth-child(4) { animation-delay: 0.14s; }
+.theme-doc-markdown > :nth-child(5) { animation-delay: 0.18s; }
+.theme-doc-markdown > :nth-child(6) { animation-delay: 0.22s; }
+.theme-doc-markdown > :nth-child(7) { animation-delay: 0.26s; }
+.theme-doc-markdown > :nth-child(8) { animation-delay: 0.29s; }
+
+.markdown h1:first-child,
+.markdown header h1 {
+  font-size: clamp(2.3rem, 1.6rem + 2.6vw, 3.5rem);
+  line-height: 1.02;
+  letter-spacing: -0.035em;
+  margin-bottom: 1.5rem;
+}
+
+.markdown h2 {
+  font-size: clamp(1.6rem, 1.3rem + 1vw, 2.1rem);
+  line-height: 1.1;
+  margin-top: 3rem;
+}
+
+.markdown h3 {
+  font-size: 1.3rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  margin-top: 2rem;
+}
+
+.markdown h4 {
+  font-weight: 600;
+  letter-spacing: -0.005em;
+}
+
+.markdown strong {
+  color: var(--wp-ink);
+}
+
+.hash-link {
+  opacity: 0;
+  color: var(--wp-lavender);
+  transform: translateX(-4px);
+  display: inline-block;
+  transition: opacity 0.2s, transform 0.3s var(--wp-ease), color 0.2s !important;
+}
+
+*:hover > .hash-link,
+.hash-link:focus {
+  opacity: 1;
+  transform: none;
+}
+
+.hash-link:hover {
+  color: var(--wp-accent);
+}
+
+/* Links: Markierung wächst wie der Textmarker auf den Folien */
+.markdown a:not(.hash-link):not([class*='button']) {
+  color: var(--wp-accent);
+  text-decoration: none;
+  background-image: linear-gradient(var(--wp-mark), var(--wp-mark));
+  background-repeat: no-repeat;
+  background-position: 0 100%;
+  background-size: 100% 2px;
+  padding: 0 1px;
+  border-radius: 2px;
+  transition: background-size 0.3s var(--wp-ease), color 0.2s;
+}
+
+.markdown a:not(.hash-link):not([class*='button']):hover {
+  color: var(--wp-ink);
+  background-size: 100% 42%;
+}
+
+.markdown a:has(> img) {
+  background: none !important;
+}
+
+/* Listen mit Sechseck-Punkten */
+.markdown ul:not([class]) {
+  list-style: none;
+  padding-left: 1.6rem;
+}
+
+.markdown ul:not([class]) > li {
+  position: relative;
+}
+
+.markdown ul:not([class]) > li::before {
+  content: '';
+  position: absolute;
+  left: -1.35rem;
+  top: 0.55em;
+  width: 9px;
+  height: 10px;
+  background: var(--wp-lavender);
+  clip-path: var(--wp-hex);
+  transition: background 0.2s, transform 0.4s var(--wp-spring);
+}
+
+.markdown ul:not([class]) > li:hover::before {
+  background: var(--wp-accent);
+  transform: rotate(30deg) scale(1.15);
+}
+
+.markdown ul:not([class]) ul:not([class]) > li::before {
+  width: 7px;
+  height: 8px;
+  top: 0.6em;
+  background: var(--wp-violet);
+  opacity: 0.6;
+}
+
+.markdown ol {
+  padding-left: 1.6rem;
+}
+
+.markdown ol > li::marker {
+  font-family: var(--wp-mono);
+  font-size: 0.85em;
+  color: var(--wp-accent);
+}
+
+.markdown li + li {
+  margin-top: 0.3rem;
+}
+
+/* Inline-Code wie auf den Folien */
+:not(pre) > code {
+  border: 1px solid var(--wp-line);
+  color: var(--wp-plum);
+  padding: 0.1em 0.38em;
+  vertical-align: baseline;
+}
+
+[data-theme='dark'] :not(pre) > code {
+  color: var(--wp-pink);
+}
+
+/* Zitate */
+.markdown blockquote {
+  border-left: 3px solid var(--wp-lavender);
+  color: var(--wp-ink-soft);
+  font-size: 1.05em;
+  padding: 0.25rem 1.25rem;
+}
+
+/* Tabellen wie table.map */
+.markdown table {
+  border-collapse: collapse;
+  font-size: 0.95rem;
+}
+
+.markdown table thead tr {
+  border-bottom: 2px solid var(--wp-ink);
+}
+
+.markdown table th {
+  font-family: var(--wp-mono);
+  font-weight: 400;
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--wp-ink-mute);
+  text-align: left;
+  padding: 0.5rem 0.9rem 0.65rem;
+}
+
+.markdown table tr {
+  border-top: 0;
+}
+
+.markdown table tbody tr {
+  border-bottom: 1px solid var(--wp-line);
+  transition: background 0.25s;
+}
+
+.markdown table tbody tr:hover {
+  background: var(--wp-paper-2);
+}
+
+.markdown table td {
+  padding: 0.7rem 0.9rem;
+  vertical-align: top;
+}
+
+/* Bilder */
+.markdown img:not([src*='development-software-']):not([src$='.svg']) {
+  border: 1px solid var(--wp-line);
+  border-radius: 14px;
+  box-shadow: var(--wp-shadow);
+}
+
+.markdown img[src*='development-software-'] {
+  animation: wp-float 7s ease-in-out infinite;
+  filter: drop-shadow(0 18px 30px rgba(80, 48, 96, 0.18));
+}
+
+.markdown hr {
+  height: 1px;
+  margin: 3rem 0;
+}
+
+/* ======================================================================
+   Codeblöcke: Indigo wie auf den Folien
+   ====================================================================== */
+
+.theme-code-block {
+  --ifm-pre-background: #201040;
+  border-radius: 14px;
+  box-shadow: inset 0 0 0 1px rgba(176, 160, 208, 0.18), 0 10px 24px rgba(32, 16, 64, 0.12);
+  overflow: hidden;
+}
+
+[data-theme='dark'] .theme-code-block {
+  box-shadow: inset 0 0 0 1px rgba(176, 160, 208, 0.18);
+}
+
+.theme-code-block pre {
+  font-size: 0.86rem;
+  line-height: 1.65;
+}
+
+.theme-code-block div[class*='codeBlockTitle'] {
+  background: #1a0d36;
+  color: var(--wp-violet);
+  font-family: var(--wp-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  border-bottom: 1px solid rgba(176, 160, 208, 0.16) !important;
+}
+
+.theme-code-block button {
+  color: var(--wp-lavender);
+  background: rgba(176, 160, 208, 0.08);
+  border: 1px solid rgba(176, 160, 208, 0.25);
+  border-radius: 8px;
+  transition: opacity 0.2s, background 0.2s, transform 0.3s var(--wp-spring);
+}
+
+.theme-code-block button:hover {
+  background: rgba(176, 160, 208, 0.2);
+  transform: scale(1.06);
+}
+
+.theme-code-block button:active {
+  transform: scale(0.92);
+}
+
+/* ======================================================================
+   Admonitions wie die Callouts der Folien
+   ====================================================================== */
+
+.theme-admonition {
+  --wp-adm: var(--wp-violet);
+  --wp-adm-bg: var(--wp-paper-2);
+  border: 0;
+  border-left: 4px solid var(--wp-adm);
+  border-radius: 4px 14px 14px 4px;
+  background: var(--wp-adm-bg);
+  color: var(--wp-ink-soft);
+  box-shadow: none;
+  padding: 1rem 1.4rem;
+  transition: transform 0.35s var(--wp-ease), box-shadow 0.35s var(--wp-ease);
+}
+
+.theme-admonition:hover {
+  transform: translateX(3px);
+}
+
+.theme-admonition > div:first-child {
+  font-family: var(--wp-mono);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  color: var(--wp-adm);
+  margin-bottom: 0.45rem;
+}
+
+.theme-admonition > div:first-child svg {
+  fill: var(--wp-adm);
+  width: 1.1rem;
+  height: 1.1rem;
+}
+
+.theme-admonition a {
+  text-decoration: none;
+}
+
+.theme-admonition code {
+  background: var(--wp-card);
+}
+
+.theme-admonition-tip    { --wp-adm: var(--wp-olive-dark); --wp-adm-bg: #f5f8ec; }
+.theme-admonition-info   { --wp-adm: var(--wp-purple);     --wp-adm-bg: #f5eff9; }
+.theme-admonition-warning,
+.theme-admonition-caution { --wp-adm: var(--wp-peach-dark); --wp-adm-bg: #fff5ef; }
+.theme-admonition-danger { --wp-adm: var(--wp-rose);       --wp-adm-bg: #fff6f9; }
+
+[data-theme='dark'] .theme-admonition-tip     { --wp-adm: #a8c868;          --wp-adm-bg: rgba(128, 160, 64, 0.1); }
+[data-theme='dark'] .theme-admonition-info    { --wp-adm: var(--wp-lavender); --wp-adm-bg: rgba(176, 160, 208, 0.1); }
+[data-theme='dark'] .theme-admonition-note    { --wp-adm: var(--wp-violet);   --wp-adm-bg: rgba(144, 128, 176, 0.1); }
+[data-theme='dark'] .theme-admonition-warning,
+[data-theme='dark'] .theme-admonition-caution { --wp-adm: var(--wp-peach);    --wp-adm-bg: rgba(255, 192, 160, 0.08); }
+[data-theme='dark'] .theme-admonition-danger  { --wp-adm: var(--wp-pink);     --wp-adm-bg: rgba(255, 208, 224, 0.08); }
+
+/* ======================================================================
+   Tabs
+   ====================================================================== */
+
+.tabs {
+  box-shadow: inset 0 -1px 0 var(--wp-line);
+  gap: 0.25rem;
+}
+
+.tabs__item {
+  font-family: var(--wp-display);
+  font-weight: 600;
+  border-radius: 10px 10px 0 0;
+  border-bottom: 2px solid transparent;
+  color: var(--wp-ink-mute);
+  transition: color 0.2s, background 0.2s, border-color 0.3s var(--wp-ease);
+}
+
+.tabs__item:hover {
+  background: var(--wp-paper-2);
+  color: var(--wp-ink);
+}
+
+.tabs__item--active {
+  color: var(--wp-accent);
+  border-bottom-color: var(--wp-accent);
+}
+
+.tabs + div[class*='margin-top'] > [role='tabpanel']:not([hidden]) {
+  animation: wp-rise 0.4s var(--wp-ease) both;
+}
+
+/* ======================================================================
+   Vor/Zurück-Karten am Seitenende
+   ====================================================================== */
+
+.pagination-nav {
+  gap: 1rem;
+}
+
+.pagination-nav__link {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid var(--wp-line);
+  border-radius: 16px;
+  background: var(--wp-card);
+  padding: 1.1rem 1.3rem;
+  transition: transform 0.35s var(--wp-ease), box-shadow 0.35s var(--wp-ease), border-color 0.35s;
+}
+
+.pagination-nav__link::before,
+[data-spotlight]::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
+  background: radial-gradient(240px circle at var(--mx, 50%) var(--my, 50%), rgba(176, 160, 208, 0.22), transparent 70%);
+  transition: opacity 0.3s;
+}
+
+.pagination-nav__link:hover::before,
+[data-spotlight]:hover::before {
+  opacity: 1;
+}
+
+.pagination-nav__link:hover {
+  transform: translateY(-3px);
+  border-color: var(--wp-lavender);
+  box-shadow: var(--wp-shadow);
+}
+
+.pagination-nav__sublabel {
+  font-family: var(--wp-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--wp-ink-mute);
+  margin-bottom: 0.3rem;
+}
+
+.pagination-nav__label {
+  font-family: var(--wp-display);
+  font-weight: 700;
+  font-size: 1.1rem;
+  letter-spacing: -0.01em;
+  color: var(--wp-ink);
+}
+
+.pagination-nav__link--prev .pagination-nav__label::before,
+.pagination-nav__link--next .pagination-nav__label::after {
+  display: inline-block;
+  color: var(--wp-accent);
+  transition: transform 0.35s var(--wp-spring);
+}
+
+.pagination-nav__link--prev .pagination-nav__label::before { content: '← '; }
+.pagination-nav__link--next .pagination-nav__label::after  { content: ' →'; }
+.pagination-nav__link--prev:hover .pagination-nav__label::before { transform: translateX(-4px); }
+.pagination-nav__link--next:hover .pagination-nav__label::after  { transform: translateX(4px); }
+
+/* Fußzeile der Dokumentseite */
+.theme-doc-footer {
+  font-family: var(--wp-mono);
+  font-size: 0.78rem;
+}
+
+.theme-edit-this-page {
+  color: var(--wp-ink-mute);
+  transition: color 0.2s;
+}
+
+.theme-edit-this-page:hover {
+  color: var(--wp-accent);
+}
+
+/* Nach-oben-Knopf */
+.theme-back-to-top-button {
+  background: var(--wp-indigo);
+  border-radius: 50%;
+  box-shadow: var(--wp-shadow);
+  transition: opacity 0.3s, visibility 0.3s, transform 0.4s var(--wp-spring), background 0.2s;
+}
+
+.theme-back-to-top-button::after {
+  background-color: var(--wp-pink);
+}
+
+.theme-back-to-top-button:hover {
+  background: var(--wp-purple);
+  transform: translateY(-3px) scale(1.04);
+}
+
+/* ======================================================================
+   Footer wie die Kapitel-Folien
+   ====================================================================== */
+
+.footer--dark {
+  --ifm-footer-link-color: #e9e2f5;
+  --ifm-footer-link-hover-color: var(--wp-pink);
+  --ifm-footer-color: var(--wp-lavender);
+  --ifm-footer-title-color: var(--wp-lavender);
+  position: relative;
+  overflow: hidden;
+  padding-top: 3.5rem;
+  padding-bottom: 3rem;
+}
+
+.footer--dark::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image: radial-gradient(rgba(144, 128, 176, 0.35) 1px, transparent 1.2px);
+  background-size: 18px 18px;
+  mask-image: linear-gradient(180deg, transparent, #000 70%);
+  -webkit-mask-image: linear-gradient(180deg, transparent, #000 70%);
+  opacity: 0.5;
+}
+
+.footer .container {
+  position: relative;
+}
+
+.footer__title {
+  font-family: var(--wp-mono);
+  font-weight: 400;
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.footer__title::before {
+  content: '';
+  width: 10px;
+  height: 11px;
+  background: var(--wp-olive);
+  clip-path: var(--wp-hex);
+}
+
+.footer__link-item {
+  display: inline-block;
+  font-family: var(--wp-display);
+  font-weight: 600;
+  transition: color 0.2s, transform 0.35s var(--wp-ease);
+}
+
+.footer__link-item:hover {
+  transform: translateX(4px);
+}
+
+.footer__link-item svg {
+  opacity: 0.6;
+}
+
+.footer__copyright {
+  font-family: var(--wp-mono);
+  font-size: 0.78rem;
+  letter-spacing: 0.04em;
+  color: var(--wp-violet);
+  margin-top: 1.5rem;
+}
+
+.footer__copyright a {
+  color: #fff;
+  transition: color 0.2s;
+}
+
+.footer__copyright a:hover {
+  color: var(--wp-pink);
+  text-decoration: none;
+}
+
+/* ======================================================================
+   Bewegung reduzieren
+   ====================================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation: none !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }

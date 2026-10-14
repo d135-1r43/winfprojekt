@@ -5,6 +5,21 @@ import type {Plugin} from '@docusaurus/types';
 import {cp, readdir, readFile, writeFile} from 'node:fs/promises';
 import path from 'node:path';
 
+// Code-Farben wie die <pre>-Blöcke der Präsentation: Indigo-Grund in beiden Modi
+const winfCode: typeof prismThemes.dracula = {
+  plain: {color: '#e9e2f5', backgroundColor: '#201040'},
+  styles: [
+    {types: ['comment', 'prolog', 'doctype', 'cdata'], style: {color: '#9080b0', fontStyle: 'italic'}},
+    {types: ['keyword', 'builtin', 'important', 'atrule', 'selector'], style: {color: '#ffd0e0'}},
+    {types: ['string', 'char', 'inserted', 'url', 'regex'], style: {color: '#c8e090'}},
+    {types: ['attr-name', 'annotation', 'decorator', 'property', 'tag'], style: {color: '#ffc0a0'}},
+    {types: ['number', 'boolean', 'constant', 'symbol', 'class-name', 'function'], style: {color: '#b0a0d0'}},
+    {types: ['punctuation', 'operator'], style: {color: '#c8bce0'}},
+    {types: ['deleted'], style: {color: '#ff8fb0'}},
+    {types: ['variable', 'parameter'], style: {color: '#e9e2f5'}},
+  ],
+};
+
 // This runs in Node.js - Don't use client-side code here (browser APIs, JSX...)
 
 // Übernimmt die Präsentationen aus /slides nach build/slides.
@@ -56,7 +71,20 @@ const config: Config = {
 
   onBrokenLinks: 'throw',
 
+  stylesheets: [
+    'https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap',
+  ],
+
   headTags: [
+    // Schriften wie in slides/architektur.html
+    {
+      tagName: 'link',
+      attributes: {rel: 'preconnect', href: 'https://fonts.googleapis.com'},
+    },
+    {
+      tagName: 'link',
+      attributes: {rel: 'preconnect', href: 'https://fonts.gstatic.com', crossorigin: 'anonymous'},
+    },
     // Privacy-friendly analytics by Plausible
     {
       tagName: 'script',
@@ -96,6 +124,8 @@ const config: Config = {
   ],
 
   plugins: [slidesPlugin],
+
+  clientModules: ['./src/clientModules/spotlight.ts'],
 
   presets: [
     [
@@ -187,8 +217,8 @@ const config: Config = {
       copyright: `© ${new Date().getFullYear()} <a href="https://herhoffer.net" target="_blank" rel="noopener noreferrer">Markus Herhoffer</a>`,
     },
     prism: {
-      theme: prismThemes.github,
-      darkTheme: prismThemes.dracula,
+      theme: winfCode,
+      darkTheme: winfCode,
       additionalLanguages: ['java'],
     },
   } satisfies Preset.ThemeConfig,
