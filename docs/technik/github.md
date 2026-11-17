@@ -73,7 +73,7 @@ Ein Klon ist nur ein Ordner auf eurer Festplatte, und das Projekt sollte dort ge
 Neue Features und Bugfixes werden nicht direkt auf `main` gepusht, sondern über **Pull Requests** eingebracht. Wie Branches erstellt, aktuell gehalten und per Merge oder Rebase integriert werden, ist in der [Methodik-Seite zu Branches und Pull Requests](../methodik/branches-und-prs) beschrieben.
 
 - Jeder PR ist mit einem **GitHub Issue** verknüpft (z. B. `Closes #42` im PR-Text)
-- PRs werden vom **Dozenten** gemerged oder per Rebase integriert
+- PRs werden von der Person gemerged oder per Rebase integriert, die sie reviewt hat, nie vom Autor selbst. Studierende dürfen mergen, sobald der Dozent es im Projekt freigegeben hat, bis dahin merged der Dozent (siehe [Code Reviews](../methodik/code-reviews#wer-merged))
 - Direkte Commits auf `main` sind nicht vorgesehen
 
 ## GitHub Actions

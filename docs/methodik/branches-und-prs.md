@@ -12,7 +12,7 @@ Wir arbeiten **nicht** mit Forks. Das Repository wird einmalig geklont, alle Bra
 
 ## Ein Feature entwickeln
 
-Der Ausgangspunkt ist immer ein GitHub Issue. Daraus entsteht ein Branch, auf dem die Änderung entwickelt wird. Ist die Arbeit fertig, wird ein Pull Request geöffnet, der den Dozenten zum Review einlädt. Nach dem Review wird der PR gemerged oder rebased, je nachdem, was die sauberere Historie ergibt.
+Der Ausgangspunkt ist immer ein GitHub Issue. Daraus entsteht ein Branch, auf dem die Änderung entwickelt wird. Ist die Arbeit fertig, wird ein Pull Request geöffnet, in dem ein Teammitglied oder der Dozent als Reviewer eingetragen wird. Nach dem Review wird der PR gemerged oder rebased, je nachdem, was die sauberere Historie ergibt.
 
 **Ablauf:**
 
@@ -20,7 +20,7 @@ Der Ausgangspunkt ist immer ein GitHub Issue. Daraus entsteht ein Branch, auf de
 2. Branch von `main` erstellen, z. B. `feature/login` oder `fix/token-expiry`
 3. Änderungen committen und den Branch pushen
 4. Pull Request öffnen und im PR-Text auf das Issue verweisen (`Closes #12`)
-5. Dozent reviewed und integriert den PR per Merge oder Rebase
+5. Nach dem Review integriert der Reviewer den PR per Merge oder Rebase. Bis der Dozent das Merge-Recht im Projekt freigibt, übernimmt das der Dozent (siehe [Code Reviews](./code-reviews#wer-merged)).
 
 ## Merge vs. Rebase
 
